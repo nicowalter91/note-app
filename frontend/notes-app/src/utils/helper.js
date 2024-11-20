@@ -4,7 +4,7 @@ export const validateEmail = (email) => {
 }
 
 export const getInitials = (name) => {
-    if (!name) return "";
+    if (!name || typeof name !== 'string') return "";
 
     const words = name.split(" ");
     let initials = "";
@@ -13,5 +13,6 @@ export const getInitials = (name) => {
         initials += words[i][0];
     }
 
-    return initials.toLocaleUpperCase();
+    return initials.toUpperCase();
 };
+
