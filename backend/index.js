@@ -53,6 +53,8 @@ app.post("/create-account", async (req, res) => {
         });
     };
 
+    console.log('full Name:', fullName);
+
     const user = new User({
         fullName,
         email,
