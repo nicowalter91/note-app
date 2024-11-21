@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
 
 // Create Account
 app.post("/create-account", async (req, res) => {
+    console.log("Entering create accoun");
     const { fullName, email, password } = req.body;
 
     if (!fullName) {
@@ -50,16 +51,19 @@ app.post("/create-account", async (req, res) => {
         return res.json({
             error: true,
             message: "User already exist",
+    
         });
     };
 
     console.log('full Name:', fullName);
+    console.log('User Model: ' + JSON.stringify(User.schema.paths));
 
     const user = new User({
         fullName,
         email,
         password,
     });
+    console.log("user:" + user )
 
     await user.save();
 

@@ -16,6 +16,7 @@ const Home = () => {
     data: null,
   });
 
+  const [allNotes, setAllNotes] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
 
   const navigate = useNavigate();
@@ -35,33 +36,47 @@ const Home = () => {
     }
   };
 
-  
+  // Get All Notes
+  const getAllNotes = async () => {
+    try {
+      const response = await axiosInstance.get("/get-all-notes");
+
+      if (response.data && response.data.notes) {
+        setAllNotes(response.data.notes);
+      }
+    } catch (error) {
+      console.log("An unexpected error occurred. Please try again."); 
+    }
+  };
+
   useEffect(() => {
-  
+    getAllNotes()
     getUserInfo();
     return () => {
     
     }
   }, [])
 
-   
-
   return (
     <div>
-      <>
       <Navbar userInfo={ userInfo } />
 
       <div className='container mx-auto'>
         <div className='grid grid-cols-3 gap-4 mt-8'>
-          <NoteCard 
-            title="Meeting on 7th April" 
-            date="3rd April 2024" 
-            content="Enim voluptate labore incididunt et esse ex enim labore non." 
-            tags="#Meeting" isPinned={true} 
-            onEdit={() => {}} 
-            onDelete={() => {}} 
-            onPinNote={() => {}}/>
-          </div>    
+          { allNotes.map((item, index) => (
+              <NoteCard 
+                key={item._id}
+                title={item.title}
+                date={item.createdOn}
+                content={item.content}
+                tags={item.tags}
+                isPinned={item.isPinned}
+                onEdit={() => {}} 
+                onDelete={() => {}} 
+                onPinNote={() => {}}
+              />
+          ))}
+        </div>    
       </div>
 
       <button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
@@ -92,7 +107,6 @@ const Home = () => {
         }}
       />
       </Modal>
-      </>
     </div>
   )
 }
