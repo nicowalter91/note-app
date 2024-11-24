@@ -6,6 +6,7 @@ import AddEditNotes from './AddEditNotes';
 import Modal from "react-modal";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
+import Toast from '../../components/ToastMessage/Toast';
 
 
 const Home = () => {
@@ -16,10 +17,35 @@ const Home = () => {
     data: null,
   });
 
+  const [showToastMsg, setShowToastMsg] = useState({
+    isShown: false,
+    message: "",
+    data: null,
+  });
+
   const [allNotes, setAllNotes] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleEdit = (noteDetails) => {
+    setOpenAddEditModal({isShown: true, data: noteDetails, type: "edit"});
+  };
+
+  const showToastMessage = (message, type) => {
+    setShowToastMsg({
+      isShown: false,
+      message,
+      type
+    });
+  };
+
+  const handleCloseToast = () => {
+    setShowToastMsg({
+      isShown: false,
+      message: "",
+    });
+  };
 
   // Get User Info
   const getUserInfo = async () => {
@@ -61,23 +87,26 @@ const Home = () => {
     <div>
       <Navbar userInfo={ userInfo } />
 
-      <div className='container mx-auto'>
-        <div className='grid grid-cols-3 gap-4 mt-8'>
-          { allNotes.map((item, index) => (
-              <NoteCard 
-                key={item._id}
-                title={item.title}
-                date={item.createdOn}
-                content={item.content}
-                tags={item.tags}
-                isPinned={item.isPinned}
-                onEdit={() => {}} 
-                onDelete={() => {}} 
-                onPinNote={() => {}}
-              />
-          ))}
-        </div>    
-      </div>
+          <div className='container mx-auto'>
+            <div className='grid grid-cols-3 gap-4 mt-8'>
+              { allNotes.map((item, index) => (
+                  <NoteCard 
+                    key={item._id}
+                    title={item.title}
+                    date={item.createdOn}
+                    content={item.content}
+                    tags={item.tags}
+                    isPinned={item.isPinned}
+                    onEdit={() => handleEdit(item)} 
+                    onDelete={() => {}} 
+                    onPinNote={() => {}}
+                  />
+              ))}
+            </div>    
+          </div>
+    
+
+      
 
       <button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
       onClick={()=> {
@@ -105,8 +134,17 @@ const Home = () => {
         onClose={() => {
           setOpenAddEditModal({ isShown: false, type: "add", data: null});
         }}
+        getAllNotes={getAllNotes}
       />
       </Modal>
+
+      <Toast
+        isShown={showToastMsg.isShown}
+        message={showToastMsg.message}
+        type={showToastMsg.type}
+        onClose={handleCloseToast}
+      />
+
     </div>
   )
 }
