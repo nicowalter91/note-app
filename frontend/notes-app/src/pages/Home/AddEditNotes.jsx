@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import TagInput from '../../components/Input/TagInput'
 import { MdClose } from 'react-icons/md'
 import axiosInstance from '../../utils/axiosInstance';
+import FileUpload from '../../components/FileUpload/FileUpload';
 
 const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }) => {
   const [title, setTitle] = useState(noteData?.title || "");
@@ -99,6 +100,10 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
             value={title}
             onChange={({target}) => setTitle(target.value)}
         />
+      </div>
+
+      <div>
+        <FileUpload />
       </div>
 
       <div className='flex flex-col gap-2 mt-4'>
