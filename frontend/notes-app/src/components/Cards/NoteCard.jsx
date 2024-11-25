@@ -9,11 +9,11 @@ const NoteCard = ({title, date, content, tags, isPinned, onEdit, onDelete, onPin
         <div className='flex items-center justify-between'>
         <div>
             <h6 className='text-sm font-medium'>{title}</h6>
-            <span className='text-xs text-slate-500'>{moment(date).format('DD.MM.YYYY HH:MM')}</span>
+            <span className='text-xs text-slate-500'>{moment(date).format('DD.MM.YYYY')}</span>
         </div>
 
         
-        <MdOutlinePushPin className={`icon-btn ${isPinned ? 'text-primary': 'text-slate-300' }`} />
+        <MdOutlinePushPin className={`icon-btn ${isPinned ? 'text-primary': 'text-slate-300' }`} onClick={onPinNote} />
         </div>  
         
         <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 60)}</p>
