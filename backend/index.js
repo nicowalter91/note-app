@@ -16,6 +16,30 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const { authenticateToken } = require("./utilities");
 
+// ** Neuen Import für multer hinzufügen **
+const multer = require("multer");
+const path = require("path");
+
+// Multer Konfiguration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "./uploads/");  // Speichert die hochgeladenen Bilder im 'uploads' Ordner
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname));  // Benennt die Datei um, um Konflikte zu vermeiden
+    }
+});
+  
+const upload = multer({ storage: storage });
+
+// Middleware
+app.use(express.json());
+app.use(cors({ origin: "*" }));
+
+app.get("/", (req, res) => {
+    res.json({ data: "hello"});
+});
+
 app.use(express.json());
 
 app.use(
@@ -134,10 +158,10 @@ app.get("/get-user", authenticateToken, async (req, res) => {
     });
 });
 
-// Add Note
-app.post("/add-note", authenticateToken, async (req, res) => {
+// Route zum Hinzufügen einer Notiz (mit Bild)
+app.post("/add-note", authenticateToken, upload.single("image"), async (req, res) => {
     const { title, content, tags } = req.body;
-    const { user }   = req.user;
+    const { user } = req.user;
 
     if (!title) {
         return res.status(400).json({error: true, message: "Title is required" });
@@ -150,11 +174,17 @@ app.post("/add-note", authenticateToken, async (req, res) => {
     }
 
     try{
+        // Bild-URL generieren, falls ein Bild hochgeladen wurde
+        const imageUrl = req.file ? `http://localhost:8000/uploads/${req.file.filename}` : null;
+        
+        console.log('Uploaded image URL:', imageUrl); // Debugging-Zeile, um zu prüfen, ob die URL korrekt ist
+
         const note = new Note({
             title,
             content,
             tags: tags || [],
             userId: user._id,
+            imageUrl, // Bild-URL wird in der Notiz gespeichert
         });
 
         await note.save();
@@ -162,29 +192,29 @@ app.post("/add-note", authenticateToken, async (req, res) => {
         return res.json({
             error: false,
             note, 
-            message: "Note added succesfully",
+            message: "Note added successfully",
         });
-        
+
     } catch (error) {
+        console.error("Error saving note:", error);
         return res.status(500).json({
             error: true,
             message: "Internal Server Error",
         });
-        
     }
-    
 });
 
+    
+app.use('/uploads', express.static('uploads'));
+
 // Edit Note
-app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
+app.put("/edit-note/:noteId", authenticateToken, upload.single("image"), async (req, res) => {
     const noteId = req.params.noteId;
     const { title, content, tags, isPinned } = req.body;
     const { user } = req.user;
 
-    if (!title && !content && !tags) {
-        return res
-            .status(400)
-            .json({ error: true, message: "No changes provided"})
+    if (!title && !content && !tags && !isPinned && !req.file) {
+        return res.status(400).json({ error: true, message: "No changes provided" });
     }
 
     try {
@@ -199,23 +229,28 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
         if (tags) note.tags = tags;
         if (isPinned) note.isPinned = isPinned;
 
+        // Wenn ein neues Bild hochgeladen wurde, aktualisiere die Bild-URL
+        if (req.file) {
+            // Bild-URL generieren
+            note.imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
+        }
+
         await note.save();
 
         return res.json({
             error: false,
             note,
             message: "Note updated successfully",
-        })
+        });
 
-    }
-
-    catch (error) {
+    } catch (error) {
         return res.status(500).json({
             error: true,
             message: "Internal Server Error",
         });
     }
 });
+
 
 // Get All Notes
 app.get("/get-all-notes/", authenticateToken, async (req, res) => {
