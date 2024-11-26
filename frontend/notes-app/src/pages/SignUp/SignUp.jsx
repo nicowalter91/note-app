@@ -1,96 +1,130 @@
-import React, { useState } from 'react'
-import Navbar from '../../components/Navbar/Navbar'
-import PasswordInput from '../../components/Input/PasswordInput'
-import { Link, useNavigate } from "react-router-dom"
-import { validateEmail } from '../../utils/helper'
-import axiosInstance from '../../utils/axiosInstance'
+import React, { useState } from 'react';
+import Navbar from '../../components/Navbar/Navbar';
+import PasswordInput from '../../components/Input/PasswordInput';
+import { Link, useNavigate } from "react-router-dom";
+import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
 
 const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  // State-Hooks für Formularwerte
+  const [name, setName] = useState(""); // Name des Benutzers
+  const [email, setEmail] = useState(""); // Email des Benutzers
+  const [password, setPassword] = useState(""); // Passwort des Benutzers
+  const [error, setError] = useState(null); // Fehlerzustand
+  const [isSubmitting, setIsSubmitting] = useState(false); // Zustand für Formularabsendung (Verhindert mehrfaches Absenden)
 
+  // useNavigate-Hook von react-router-dom zum Weiterleiten auf eine andere Seite
   const navigate = useNavigate();
 
+  // Handler für die Anmeldung
   const handleSignUp = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Verhindert das Standardverhalten (Seiten-Reload) bei Absenden des Formulars
 
-    if(!name) {
-      setError("Please enter your name");
+    // Vorab Validierungen der Eingabefelder
+    if (!name) {
+      setError("Please enter your name"); // Setzt eine Fehlermeldung, wenn der Name nicht eingegeben wurde
       return;
     }
 
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    };
-
-    if(!password) {
-      setError("Please enter the password");
+      setError("Please enter a valid email address."); // Setzt eine Fehlermeldung, wenn die Email ungültig ist
       return;
     }
 
-    setError("")
-  
-    //SignUp API Call
+    if (!password) {
+      setError("Please enter the password"); // Setzt eine Fehlermeldung, wenn das Passwort leer ist
+      return;
+    }
+
+    setError("");  // Fehler zurücksetzen, falls alle Eingaben valide sind
+    setIsSubmitting(true);  // Formular befindet sich im Absende-Zustand (Laden)
+
     try {
+      // API-Aufruf zur Registrierung des Benutzers
       const response = await axiosInstance.post("/create-account", {
         fullName: name,
         email: email,
         password: password,
       });
 
-      //Handle successfully registration response
-      if (response.data && response.data.error) {
-        localStorage.setItem("token", response.data.accessToken);
-        setError(response.data.message)
-        return
+      // Erfolgsfall: Wenn ein accessToken zurückgegeben wird, wird der Benutzer eingeloggt
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken); // Speichert das accessToken im LocalStorage
+        navigate('/dashboard'); // Weiterleitung zur Dashboard-Seite
+      } else {
+        // Wenn kein Token zurückgegeben wird, wird eine Fehlernachricht gesetzt
+        setError(response.data.message || "An error occurred during registration.");
       }
 
-      if (response.data && response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken)
-        navigate('/dashboard');
-      }
     } catch (error) {
-      // Handle registration error
-      if(error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("An unexpected error occurred, Please try again");
-      };
+      // Fehlerbehandlung für unerwartete Fehler
+      setError(error?.response?.data?.message || "An unexpected error occurred. Please try again");
+    } finally {
+      // Schaltet den Absende-Zustand zurück, unabhängig vom Erfolg oder Fehler
+      setIsSubmitting(false);
     }
   }
-  
 
   return (
     <>
-    <Navbar />
+      {/* Navbar-Komponente */}
+      <Navbar />
 
-    <div className='flex items-center justify-center mt-28'>
-      <div className='w-96 border rounded bg-white px-7 py-10'>
-        <form onSubmit= {handleSignUp}>
-          <h4 className="text-2xl mb-7">SignUp</h4>
+      {/* Anmeldeformular */}
+      <div className='flex items-center justify-center mt-28'>
+        <div className='w-96 border rounded bg-white px-7 py-10'>
+          <form onSubmit={handleSignUp}>
+            {/* Formularüberschrift */}
+            <h4 className="text-2xl mb-7">SignUp</h4>
 
-          <input type="text" placeholder='Name' className='input-box' value={name} onChange={(e) => setName(e.target.value)}/>
-          <input type="text" placeholder='Email' className='input-box' value={email} onChange={(e) => setEmail(e.target.value)}/>
-          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)}/>
+            {/* Eingabefeld für den Namen */}
+            <input 
+              type="text" 
+              placeholder='Name' 
+              className='input-box' 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} // Ändert den Namen im State
+            />
+            
+            {/* Eingabefeld für die E-Mail */}
+            <input 
+              type="text" 
+              placeholder='Email' 
+              className='input-box' 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} // Ändert die E-Mail im State
+            />
+            
+            {/* Passwort-Eingabefeld, verwendet eine separate Komponente */}
+            <PasswordInput 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} // Ändert das Passwort im State
+            />
 
-          {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+            {/* Wenn ein Fehler existiert, wird er hier angezeigt */}
+            {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
 
-          <button type='submit' className='btn-primary'>Create Account</button>
+            {/* Submit-Button */}
+            <button 
+              type='submit' 
+              className={`btn-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`} 
+              disabled={isSubmitting} // Verhindert das Absenden bei laufendem Upload
+            >
+              {isSubmitting ? 'Creating Account...' : 'Create Account'} {/* Textänderung des Buttons während des Ladevorgangs */}
+            </button>
 
-          <p className='text-sm text-center mt-4'>
-            Already have an account?{" "}
-            <Link to="/login" className='font-medium text-primary underline'>
-            Login</Link>
-          </p>
-    </form>
-    </div>
-    </div>
-
+            {/* Link zur Login-Seite, falls der Benutzer bereits ein Konto hat */}
+            <p className='text-sm text-center mt-4'>
+              Already have an account?{" "}
+              <Link to="/login" className='font-medium text-primary underline'>
+                Login
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
     </>
-  )
+  );
 }
 
-export default SignUp
+export default SignUp;

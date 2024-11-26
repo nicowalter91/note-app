@@ -1,32 +1,40 @@
-import React, { useState } from 'react'
-import Navbar from '../../components/Navbar/Navbar'
-import { Link, useNavigate } from "react-router-dom"
-import PasswordInput from '../../components/Input/PasswordInput'
-import { validateEmail } from '../../utils/helper'
-import axiosInstance from '../../utils/axiosInstance'
+import React, { useState } from 'react';
+import Navbar from '../../components/Navbar/Navbar';
+import { Link, useNavigate } from "react-router-dom";
+import PasswordInput from '../../components/Input/PasswordInput';
+import { validateEmail } from '../../utils/helper';
+import axiosInstance from '../../utils/axiosInstance';
+
+// Erweiterte E-Mail-Validierung mit Regex
+const isValidEmail = (email) => {
+  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return emailPattern.test(email);
+};
 
 const Login = () => {
+  const [email, setEmail] = useState(""); // Zustand für E-Mail
+  const [password, setPassword] = useState(""); // Zustand für Passwort
+  const [error, setError] = useState(null); // Zustand für Fehlernachricht
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const navigate = useNavigate(); // React Router Hook für Navigation
 
-  const navigate = useNavigate();
-
+  // Login-Handler
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Verhindert das Standardformularverhalten (Seiten-Reload)
 
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    };
-
-    if(!password) {
-      setError("Please enter the password");
+    // Erweiterte E-Mail-Validierung
+    if (!isValidEmail(email)) {
+      setError("Bitte gib eine gültige E-Mail-Adresse ein.");
       return;
     }
 
-    setError("")
+    // Überprüfen, ob das Passwort eingegeben wurde
+    if (!password) {
+      setError("Bitte gib ein Passwort ein.");
+      return;
+    }
+
+    setError(""); // Fehler zurücksetzen, wenn alle Validierungen bestanden sind
 
     // Login API Call
     try {
@@ -35,50 +43,71 @@ const Login = () => {
         password: password,
       });
 
-      //Handle successfully login response
+      // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
-        navigate("/dashboard");
+        localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
+        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
       }
     } catch (error) {
-      // Handle login error
-      if(error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
+      // Fehlerbehandlung
+      if (error.response) {
+        if (error.response.status === 401) {
+          setError("Falsche E-Mail-Adresse oder Passwort.");
+        } else if (error.response.data && error.response.data.message) {
+          setError(error.response.data.message); // Serverfehlernachricht anzeigen
+        } else {
+          setError("Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später noch einmal.");
+        }
       } else {
-        setError("An unexpected error occurred, Please try again");
-      };
+        // Fehler, wenn keine Antwort vom Server kommt (z.B. Netzwerkfehler)
+        setError("Netzwerkfehler. Bitte überprüfe deine Internetverbindung.");
+      }
     }
   };
 
   return (
     <>
-    <Navbar />
+      <Navbar /> {/* Navbar anzeigen */}
 
-    <div className='flex items-center justify-center mt-28'>
-      <div className='w-96 border rounded bg-white px-7 py-10'>
-        <form onSubmit= {handleLogin}>
-          <h4 className="text-2xl mb-7">LogIn</h4>
+      <div className='flex items-center justify-center mt-28'>
+        <div className='w-96 border rounded bg-white px-7 py-10'>
+          <form onSubmit={handleLogin}>
+            <h4 className="text-2xl mb-7">LogIn</h4>
 
-          <input type="text" placeholder='Email' className='input-box' value={email} onChange={(e) => setEmail(e.target.value)}/>
+            {/* Eingabefeld für E-Mail */}
+            <input 
+              type="text" 
+              placeholder='E-Mail' 
+              className='input-box' 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+            />
 
-          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)}/>
+            {/* Passwort-Eingabefeld */}
+            <PasswordInput 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+            />
 
-          {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+            {/* Anzeige der Fehlermeldung, falls vorhanden */}
+            {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
 
-          <button type='submit' className='btn-primary'>Login</button>
+            {/* Login-Button */}
+            <button type='submit' className='btn-primary'>Login</button>
 
-          <p className='text-sm text-center mt-4'>Not registered yet? {" "}
-            <Link to="/signUp" className='font-medium text-primary underline'>
-          Create an Account</Link>
-          </p>
-        
-        </form>
+            {/* Link zum Erstellen eines Kontos, falls der Benutzer noch nicht registriert ist */}
+            <p className='text-sm text-center mt-4'>
+              Noch nicht registriert?{" "}
+              <Link to="/signUp" className='font-medium text-primary underline'>
+                Erstelle ein Konto
+              </Link>
+            </p>
+          
+          </form>
+        </div>
       </div>
-    </div>
-
-
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
