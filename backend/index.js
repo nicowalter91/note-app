@@ -87,32 +87,39 @@ app.post("/create-account", async (req, res) => {
     });
 });
 
+const bcrypt = require("bcrypt");
+
 // Login-Route
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     // Validierung der Eingaben
     if (!email) {
-        return res.status(400).json({ message: "Email is required"});
+        return res.status(400).json({ message: "Email is required" });
     }
     if (!password) {
-        return res.status(400).json({ message: "Password is required"});
+        return res.status(400).json({ message: "Password is required" });
     }
 
-    // Überprüfen, ob der Benutzer existiert
-    const userInfo = await User.findOne({ email: email });
+    try {
+        // Überprüfen, ob der Benutzer existiert
+        const userInfo = await User.findOne({ email: email });
 
-    if (!userInfo) {
-        return res.status(400).json({ message: "User not found" });
-    }
+        if (!userInfo) {
+            return res.status(400).json({ message: "User not found" });
+        }
 
-    // Überprüfen, ob die Anmeldedaten korrekt sind
-    if (userInfo.email == email && userInfo.password == password) {
-        const user = { user: userInfo };
+        // Überprüfen, ob das Passwort korrekt ist
+        const isPasswordValid = await bcrypt.compare(password, userInfo.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: true, message: "Invalid Credentials" });
+        }
 
         // JWT-Token für den Benutzer erstellen
+        const user = { user: userInfo };
         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: "36000m",
+            expiresIn: "36000m", // Token-Gültigkeit
         });
 
         return res.json({
@@ -120,14 +127,17 @@ app.post("/login", async (req, res) => {
             message: "Login Successful",
             email,
             accessToken,
-        })
-    } else {
-        return res.status(400).json({
+        });
+
+    } catch (error) {
+        // Fehlerbehandlung
+        return res.status(500).json({
             error: true,
-            message: "Invalid Credentials",
+            message: "Internal Server Error",
         });
     }
 });
+
 
 // Route zum Abrufen von Benutzerinformationen
 app.get("/get-user", authenticateToken, async (req, res) => {
