@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import ProfileInfo from '../Cards/ProfileInfo'; // Importiert die ProfileInfo-Komponente.
 import { useNavigate } from 'react-router-dom'; // Importiert den useNavigate-Hook für die Navigation.
 import SearchBar from '../SearchBar/SearchBar'; // Importiert die SearchBar-Komponente.
+import Logo from '../../assets/img/Logo.png'; // Korrekt: Importiere das Logo aus dem 'assets/img' Ordner
+
 
 const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   // Zustand für die Suchabfrage, die vom Benutzer eingegeben wird.
@@ -32,8 +34,11 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
 
   return (
     <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow'>
+        <div className='flex'>
         {/* Navigationsleiste mit Logo */}
-        <h2 className='text-xl font-medium text-black py-2'>mytacticlab</h2>
+        <img src={Logo} alt="Logo" className='h-10' />
+        <h2 className='text-xl font-medium text-black py-2 ml-5'>mytacticlab</h2>
+        </div>
 
         {/* Suchleiste mit übergebenem Wert und Handlern */}
         <SearchBar 
@@ -48,8 +53,9 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
           userInfo={userInfo}  // Überträgt die Benutzerdaten an die ProfileInfo-Komponente.
           onLogout={onLogout}  // Überträgt die Logout-Funktion an die ProfileInfo-Komponente.
         />
+        
     </div>
-  )
+  );
 }
 
 export default Navbar;
