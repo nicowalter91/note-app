@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
     res.json({ data: "hello"});
 });
 
-// BACKEND READY!!!
+/* ROUTES !!! */
 
 // Route zum Erstellen eines neuen Benutzerkontos
 app.post("/create-account", async (req, res) => {
