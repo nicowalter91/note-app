@@ -144,8 +144,10 @@ const Home = () => {
 
         {/* Hauptinhalt rechts */}
         <div className="flex-1 p-6">
+        <h1 className='text-4xl font-medium text-blue-500 my-6'>Dashboard</h1>
           {allNotes.length > 0 ? (
             <div className="grid grid-cols-3 gap-4 mt-8">
+              
               {allNotes.map((item) => (
                 <NoteCard
                   key={item._id}
