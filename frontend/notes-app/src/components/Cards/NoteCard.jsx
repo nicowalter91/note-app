@@ -25,7 +25,7 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
         </div>  
 
         {/* Vorschau des Inhalts der Notiz (nur die ersten 60 Zeichen) */}
-        <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 60)}</p>
+        <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 120)}</p>
 
         {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
         <div className="flex items-center justify-between mt-2">
