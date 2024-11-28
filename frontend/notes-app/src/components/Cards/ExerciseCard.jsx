@@ -23,14 +23,14 @@ const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote,
     return (
         <div className="flex gap-4">
             {/* Die reguläre NoteCard */}
-            <div 
+            <div
                 className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-out w-full sm:w-1/3 md:w-1/4 lg:w-1/4 cursor-pointer"
                 onClick={openModal} // Modal öffnen bei Klick auf die Karte
             >
                 <div className="flex items-center justify-between">
                     <div>
                         {/* Titel der Notiz */}
-                        <h6 className="text-sm font-medium">{title}</h6>
+                        <h6 className="text-sm font-medium">3vs2 Linie brechen</h6>
                         {/* Formatiertes Datum */}
                         <span className="text-xs text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
                     </div>
@@ -46,7 +46,7 @@ const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote,
                 <img src={Example} alt="Logo" className="w-full h-32 object-cover rounded-md mt-4" />
 
                 {/* Vorschau des Inhalts der Notiz (nur die ersten 60 Zeichen) */}
-                <p className="text-xs text-slate-600 mt-2">{content}</p>
+                <p className="text-xs text-slate-600 mt-2">Hier steht eine Beschreibung</p>
 
                 {/* Buttons für Bearbeiten und Löschen der Notiz */}
                 <div className="flex items-center gap-2 mt-4">
@@ -81,7 +81,7 @@ const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote,
                         zIndex: 10000,
                         width: '60%', // Breite des Modals (60%)
                         maxWidth: '900px', // Maximale Breite des Modals
-                        maxHeight: '90%', // Maximale Höhe des Modals
+                        maxHeight: '60%', // Maximale Höhe des Modals
                         backgroundColor: 'white',
                         margin: 'auto',
                         borderRadius: '10px',
@@ -91,28 +91,37 @@ const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote,
                 }}
                 contentLabel="Modal Inhalt"
             >
-                {/* Close-Button im Modal */}
-                <button 
-                    className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-50"
-                    onClick={closeModal}  // Modal schließen
-                >
-                    <MdClose className="text-xl text-slate-400" />
-                </button>
+                {/* Kopfzeile: Titel, Datum und Close-Button */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-medium">3vs2 Linie brechen</h3>
+                        <span className="text-sm text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
+                    </div>
+                    <button
+                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-50"
+                        onClick={closeModal}  // Modal schließen
+                    >
+                        <MdClose className="text-xl text-slate-400" />
+                    </button>
+                </div>
 
                 {/* Modal-Inhalt */}
                 <div className="p-4">
-                    <h3 className="text-xl font-medium">{title}</h3>
-                    <span className="text-sm text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
-                    <div className="mt-4">
-                        <img src={Example} alt="Logo" className="w-full h-48 object-cover rounded-md" />
+                    {/* Bild und Content nebeneinander */}
+                    <div className="flex mt-4 gap-4">
+                        <img src={Example} alt="Logo" className="w-1/2 h-auto object-cover rounded-md" />
+                        <p className="text-sm text-gray-700 w-1/2">Hier steht eine Beschreibung</p>
                     </div>
-                    <p className="mt-4 text-sm text-gray-700">{content}</p>
-                    <div className="flex items-center gap-2 mt-4">
+
+                    {/* Edit- und Delete-Buttons unten rechts */}
+                    <div className="flex justify-end gap-2 mt-6">
                         <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
                         <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
                     </div>
                 </div>
             </Modal>
+
+
         </div>
     );
 };
