@@ -51,7 +51,7 @@ const SignUp = () => {
       // Erfolgsfall: Wenn ein accessToken zurückgegeben wird, wird der Benutzer eingeloggt
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken); // Speichert das accessToken im LocalStorage
-        navigate('/dashboard'); // Weiterleitung zur Dashboard-Seite
+        navigate('/notes'); // Weiterleitung zur Notes-Seite
       } else {
         // Wenn kein Token zurückgegeben wird, wird eine Fehlernachricht gesetzt
         setError(response.data.message || "An error occurred during registration.");
