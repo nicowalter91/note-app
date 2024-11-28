@@ -4,6 +4,7 @@ import moment from "moment";
 import { MdOutlinePushPin } from 'react-icons/md'; // Pin-Icon
 import { MdCreate, MdDelete } from 'react-icons/md'; // Edit- und Delete-Icons
 
+
 // NoteCard-Komponente: Eine Komponente zur Darstellung einer Notizkarte
 const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPinNote }) => {
   return (
