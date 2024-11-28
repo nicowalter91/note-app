@@ -29,6 +29,10 @@ const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
 
+  // Paginierung: Zustand für die aktuelle Seite und die Anzahl der Notizen pro Seite
+  const [currentPage, setCurrentPage] = useState(1);
+  const notesPerPage = 11; // Maximale Anzahl der angezeigten Notizen pro Seite
+
   const navigate = useNavigate();
 
   const handleEdit = (noteDetails) => {
@@ -129,6 +133,26 @@ const Home = () => {
     return () => {};
   }, []);
 
+  // Paginierung: Berechne, welche Notizen auf der aktuellen Seite angezeigt werden
+  const indexOfLastNote = currentPage * notesPerPage;
+  const indexOfFirstNote = indexOfLastNote - notesPerPage;
+  const currentNotes = allNotes.slice(indexOfFirstNote, indexOfLastNote);
+
+  // Berechne die Gesamtzahl der Seiten
+  const totalPages = Math.ceil(allNotes.length / notesPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col">
       {/* Fixierte Navbar oben */}
@@ -150,10 +174,32 @@ const Home = () => {
         {/* Hauptinhalt rechts */}
         <div className="flex-1 ml-64 p-6 overflow-y-auto">
           <h1 className="text-4xl font-medium text-blue-500 my-6">Dashboard</h1>
+          {/* Paginierungsbuttons */}
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400"
+            >
+              Previous
+            </button>
   
-          {allNotes.length > 0 ? (
+            <span className="self-center text-lg">
+              Page {currentPage} of {totalPages}
+            </span>
+  
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-gray-400"
+            >
+              Next
+            </button>
+          </div>
+  
+          {currentNotes.length > 0 ? (
             <div className="grid grid-cols-3 gap-4 mt-8">
-              {allNotes.map((item) => (
+              {currentNotes.map((item) => (
                 <NoteCard
                   key={item._id}
                   title={item.title}
@@ -177,6 +223,8 @@ const Home = () => {
               }
             />
           )}
+
+          
         </div>
       </div>
   
@@ -218,8 +266,6 @@ const Home = () => {
       />
     </div>
   );
-  
-  
 };
 
 export default Home;
