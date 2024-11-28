@@ -75,7 +75,7 @@ const Login = () => {
         <div className='flex-1 flex items-center justify-center bg-white'>
           <div className='w-96 border rounded px-7 py-10'>
             <form onSubmit={handleLogin}>
-              <h4 className="text-2xl mb-7 font-medium">Willkommen</h4>
+              <h4 className="text-2xl mb-7 font-medium">👋 Willkommen</h4>
               <p className='text-sm font-thin'>Enter your email address and passwort to log in</p>
 
               <div className='mt-10'>
@@ -103,9 +103,9 @@ const Login = () => {
 
               {/* Link zum Erstellen eines Kontos, falls der Benutzer noch nicht registriert ist */}
               <p className='text-sm text-center mt-4'>
-                Noch nicht registriert?{" "}
+                Not yet registered?{" "}
                 <Link to="/signUp" className='font-medium text-primary underline'>
-                  Erstelle ein Konto
+                  Sign Up
                 </Link>
               </p>
 
