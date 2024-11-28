@@ -130,7 +130,7 @@ const Home = () => {
   useEffect(() => {
     getAllNotes();
     getUserInfo();
-    return () => {};
+    return () => { };
   }, []);
 
   // Paginierung: Berechne, welche Notizen auf der aktuellen Seite angezeigt werden
@@ -163,17 +163,17 @@ const Home = () => {
           handleClearSearch={handleClearSearch}
         />
       </div>
-  
+
       {/* Flex-Container für Sidebar und Hauptinhalt */}
       <div className="flex flex-1 pt-16">
         {/* Sidebar links, die unter der Navbar bleibt */}
         <div className="w-64 bg-blue-600 text-white h-full fixed top-16 left-0 bottom-0">
-          <Sidebar />
+        <Sidebar userInfo={userInfo} onLogout={() => { localStorage.clear(); navigate("/login"); }} />
         </div>
-  
+
         {/* Hauptinhalt rechts */}
         <div className="flex-1 ml-64 p-6 overflow-y-auto">
-          <h1 className="text-4xl font-medium text-blue-500 my-6">Dashboard</h1>
+          <h1 className="text-4xl font-medium text-blue-500 my-6">Notes</h1>
           {/* Paginierungsbuttons */}
           <div className="flex justify-between mt-6">
             <button
@@ -183,11 +183,11 @@ const Home = () => {
             >
               Previous
             </button>
-  
+
             <span className="self-center text-lg">
               Page {currentPage} of {totalPages}
             </span>
-  
+
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}
@@ -196,7 +196,7 @@ const Home = () => {
               Next
             </button>
           </div>
-  
+
           {currentNotes.length > 0 ? (
             <div className="grid grid-cols-3 gap-4 mt-8">
               {currentNotes.map((item) => (
@@ -224,10 +224,10 @@ const Home = () => {
             />
           )}
 
-          
+
         </div>
       </div>
-  
+
       {/* Button zum Hinzufügen einer neuen Notiz */}
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
@@ -237,12 +237,20 @@ const Home = () => {
       >
         <MdAdd className="text-[32px] text-white" />
       </button>
-  
+
       {/* Modal für Notizen hinzufügen/bearbeiten */}
       <Modal
         isOpen={openAddEditModal.isShown}
-        onRequestClose={() => {}}
-        style={{ overlay: { backgroundColor: "rgba(0,0,0,0.2)" } }}
+        onRequestClose={() => { }}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            zIndex: 9999, // Höherer z-index für das Overlay
+          },
+          content: {
+            zIndex: 10000, // Höherer z-index für den Inhalt des Modals
+          },
+        }}
         contentLabel=""
         className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
       >
@@ -256,7 +264,8 @@ const Home = () => {
           showToastMessage={showToastMessage}
         />
       </Modal>
-  
+
+
       {/* Toast-Benachrichtigung */}
       <Toast
         isShown={showToastMsg.isShown}
