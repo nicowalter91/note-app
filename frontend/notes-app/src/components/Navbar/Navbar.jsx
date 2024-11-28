@@ -33,7 +33,7 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   }
 
   return (
-    <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow'>
+    <div className='fixed top-0 left-0 w-full bg-white flex items-center justify-between px-6 py-2 drop-shadow'>
         <div className='flex'>
         {/* Navigationsleiste mit Logo */}
         <img src={Logo} alt="Logo" className='h-10' />

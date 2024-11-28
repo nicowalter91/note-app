@@ -130,24 +130,29 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
-      <Navbar
-        userInfo={userInfo}
-        onSearchNote={onSearchNote}
-        handleClearSearch={handleClearSearch}
-      />
-
+    <div className="h-screen flex flex-col">
+      {/* Fixierte Navbar oben */}
+      <div className="fixed top-0 left-0 right-0 z-10">
+        <Navbar
+          userInfo={userInfo}
+          onSearchNote={onSearchNote}
+          handleClearSearch={handleClearSearch}
+        />
+      </div>
+  
       {/* Flex-Container für Sidebar und Hauptinhalt */}
-      <div className="flex">
-        {/* Sidebar links */}
-        <Sidebar />
-
+      <div className="flex flex-1 pt-16">
+        {/* Sidebar links, die unter der Navbar bleibt */}
+        <div className="w-64 bg-blue-600 text-white h-full fixed top-16 left-0 bottom-0">
+          <Sidebar />
+        </div>
+  
         {/* Hauptinhalt rechts */}
-        <div className="flex-1 p-6">
-        <h1 className='text-4xl font-medium text-blue-500 my-6'>Dashboard</h1>
+        <div className="flex-1 ml-64 p-6 overflow-y-auto">
+          <h1 className="text-4xl font-medium text-blue-500 my-6">Dashboard</h1>
+  
           {allNotes.length > 0 ? (
             <div className="grid grid-cols-3 gap-4 mt-8">
-              
               {allNotes.map((item) => (
                 <NoteCard
                   key={item._id}
@@ -174,16 +179,18 @@ const Home = () => {
           )}
         </div>
       </div>
-
+  
+      {/* Button zum Hinzufügen einer neuen Notiz */}
       <button
-        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
+        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
         onClick={() => {
           setOpenAddEditModal({ isShown: true, type: "add", data: null });
         }}
       >
         <MdAdd className="text-[32px] text-white" />
       </button>
-
+  
+      {/* Modal für Notizen hinzufügen/bearbeiten */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() => {}}
@@ -201,7 +208,8 @@ const Home = () => {
           showToastMessage={showToastMessage}
         />
       </Modal>
-
+  
+      {/* Toast-Benachrichtigung */}
       <Toast
         isShown={showToastMsg.isShown}
         message={showToastMsg.message}
@@ -210,6 +218,8 @@ const Home = () => {
       />
     </div>
   );
+  
+  
 };
 
 export default Home;
