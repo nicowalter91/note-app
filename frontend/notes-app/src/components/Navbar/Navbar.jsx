@@ -1,59 +1,60 @@
 // Importiert React, useState und andere notwendige Komponenten/Tools.
 import React, { useState } from 'react';
 import ProfileInfo from '../Cards/ProfileInfo'; // Importiert die ProfileInfo-Komponente.
-import { useNavigate } from 'react-router-dom'; // Importiert den useNavigate-Hook für die Navigation.
+import { useNavigate, useLocation } from 'react-router-dom'; // useLocation hinzugefügt, um den aktuellen Pfad zu prüfen.
 import SearchBar from '../SearchBar/SearchBar'; // Importiert die SearchBar-Komponente.
-import Logo from '../../assets/img/Logo.png'; // Korrekt: Importiere das Logo aus dem 'assets/img' Ordner
-
+import Logo from '../../assets/img/Logo.png'; // Korrekt: Importiere das Logo aus dem 'assets/img' Ordner.
 
 const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
-  // Zustand für die Suchabfrage, die vom Benutzer eingegeben wird.
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Zustand für die Suchabfrage.
+  const navigate = useNavigate(); // Navigationsfunktion.
+  const location = useLocation(); // Holt den aktuellen Pfad.
 
-  // useNavigate wird verwendet, um das Benutzer-Interface zu navigieren (z.B. Weiterleitung zu einer anderen Seite).
-  const navigate = useNavigate();
-
-  // Funktion zum Abmelden des Benutzers, entfernt alle Daten aus dem lokalen Speicher und leitet zur Login-Seite weiter.
+  // Funktion zum Abmelden des Benutzers.
   const onLogout = () => {
     localStorage.clear(); // Löscht alle Daten im lokalen Speicher.
-    navigate("/login");   // Navigiert den Benutzer zur Login-Seite.
+    navigate("/login");   // Navigiert zur Login-Seite.
   };
 
-  // Funktion, die die Notizen durchsucht, wenn eine Suchabfrage vorhanden ist.
+  // Funktion zum Suchen nach Notizen.
   const handleSearch = () => {
-    if(searchQuery) {  // Überprüft, ob die Suchabfrage nicht leer ist.
-      onSearchNote(searchQuery);  // Ruft die übergebene Funktion `onSearchNote` auf, um nach Notizen zu suchen.
+    if (searchQuery) {
+      onSearchNote(searchQuery);
     }
   };
 
-  // Funktion, die die Suchabfrage zurücksetzt und die Suche löscht.
+  // Funktion zum Zurücksetzen der Suche.
   const onClearSearch = () => {
-    setSearchQuery(""); // Setzt den Zustand der Suchabfrage zurück.
-    handleClearSearch(); // Ruft die übergebene Funktion `handleClearSearch` auf, um die Suche zurückzusetzen.
-  }
+    setSearchQuery(""); // Setzt die Suchabfrage zurück.
+    handleClearSearch();
+  };
+
+  // Bedingtes Rendern der Suchleiste, außer auf Login- und Signup-Seiten.
+  const isSearchVisible = location.pathname !== "/login" && location.pathname !== "/signUp";
 
   return (
     <div className='fixed top-0 left-0 w-full bg-white flex items-center justify-between px-6 py-2 drop-shadow'>
-        <div className='flex'>
+      <div className='flex'>
         {/* Navigationsleiste mit Logo */}
         <img src={Logo} alt="Logo" className='h-10' />
         <h2 className='text-xl font-medium text-black py-2 ml-5'>mytacticlab</h2>
-        </div>
+      </div>
 
-        {/* Suchleiste mit übergebenem Wert und Handlern */}
+      {/* Bedingte Anzeige der Suchleiste */}
+      {isSearchVisible && (
         <SearchBar 
-          value={searchQuery}  // Bindet den Zustand `searchQuery` an das Suchfeld.
-          onChange={({ target }) => setSearchQuery(target.value)}  // Aktualisiert den Zustand der Suchabfrage bei Eingabe.
-          handleSearch={handleSearch}  // Such-Funktion wird aufgerufen, wenn der Benutzer die Suche startet.
-          onClearSearch={onClearSearch}  // Funktion zum Zurücksetzen der Suche.
+          value={searchQuery} 
+          onChange={({ target }) => setSearchQuery(target.value)} 
+          handleSearch={handleSearch} 
+          onClearSearch={onClearSearch} 
         />
+      )}
 
-        {/* Anzeige der Benutzerdaten und Logout-Button */}
-        <ProfileInfo 
-          userInfo={userInfo}  // Überträgt die Benutzerdaten an die ProfileInfo-Komponente.
-          onLogout={onLogout}  // Überträgt die Logout-Funktion an die ProfileInfo-Komponente.
-        />
-        
+      {/* Anzeige der Benutzerdaten und Logout-Button */}
+      <ProfileInfo 
+        userInfo={userInfo} 
+        onLogout={onLogout} 
+      />
     </div>
   );
 }
