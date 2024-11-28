@@ -46,7 +46,7 @@ const Login = () => {
       // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
-        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
+        navigate("/notes"); // Benutzer zu den Notes weiterleiten
       }
     } catch (error) {
       // Fehlerbehandlung
