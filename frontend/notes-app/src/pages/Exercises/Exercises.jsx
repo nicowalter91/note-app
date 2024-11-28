@@ -4,6 +4,7 @@ import Sidebar from '../../components/SideBar/SideBar.jsx';
 import Toast from '../../components/ToastMessage/Toast';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
+import ExerciseCard from '../../components/Cards/ExerciseCard.jsx';
 
 const Layout = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -75,7 +76,7 @@ const Layout = ({ children }) => {
         {/* Hauptinhalt rechts */}
         <div className="flex-1 ml-64 p-6 overflow-y-auto">
         <h1 className="text-4xl font-medium text-blue-500 my-6">Exercises</h1>
-            
+            <ExerciseCard />
         </div>
 
       </div>
