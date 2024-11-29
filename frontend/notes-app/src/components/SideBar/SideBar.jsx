@@ -1,18 +1,15 @@
 import React from 'react';
-import { FaDumbbell, FaCog, FaStickyNote } from 'react-icons/fa';
+import { FaPen, FaRunning, FaTools, FaSignOutAlt, FaUser } from 'react-icons/fa'; // Neue, passendere Icons
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ userInfo, onLogout }) => {
-  // Extrahiere den Vornamen des Benutzers aus userInfo (falls vorhanden)
-  const firstName = userInfo?.fullName.split(' ')[0]; // Extrahiert den Vornamen, indem der Name am Leerzeichen geteilt wird
-
   const NavItem = ({ icon, label }) => (
     <a
       href={`/${label.toLowerCase()}`}
-      className="flex items-center px-6 py-3 hover:bg-white hover:text-blue-500 transition duration-200"
+      className="flex flex-col items-center px-4 py-3 hover:bg-white hover:text-blue-500 transition duration-200"
     >
-      <span className="mr-3">{icon}</span>
-      <span className="text-lg">{label}</span>
+      <span className="text-xl">{icon}</span> {/* Noch kleinere Icons */}
+      <span className="text-sm mt-2">{label}</span> {/* Noch kleineres Label */}
     </a>
   );
 
@@ -24,26 +21,23 @@ const Sidebar = ({ userInfo, onLogout }) => {
   };
 
   return (
-    <div className="fixed left-0 h-screen bg-blue-600 text-white flex flex-col">
-      {/* Willkommen Text oben */}
-      <div className="text-left ml-5 text-2xl py-6">
-        <p className='font-medium'>Willkommen,</p>
-        <p> {firstName} 👋 </p> {/* Zeigt den Vornamen unter "Willkommen" an */}
-      </div>
-
+    <div className="w-20 fixed left-0 h-screen bg-blue-600 text-white flex flex-col items-center py-6"> {/* Breite angepasst */}
       {/* Navigation Items */}
-      <nav className="flex flex-col mt-6 space-y-2">
-        <NavItem icon={<FaStickyNote />} label="Notes" />
-        <NavItem icon={<FaDumbbell />} label="Exercises" />
-        <NavItem icon={<FaCog />} label="Settings" />
+      <nav className="flex flex-col mt-6 space-y-4">
+        <NavItem icon={<FaPen />} label="Notes" /> {/* Passenderes Icon für "Notes" */}
+        <NavItem icon={<FaRunning />} label="Exercises" /> {/* Passenderes Icon für "Exercises" */}
+
       </nav>
 
-      {/* Logout-Button am unteren Rand */}
-      <button 
-        className="text-sm text-blue-600 bg-white py-2 px-4 m-5 rounded-full mt-auto mb-20 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        onClick={handleLogout}>
-        Logout
-      </button>
+      {/* Navigation Items Bottom */}
+      <div className="flex item-center flex-col mt-auto mb-12">
+        {/* HR mit Abstand */}
+        <hr className="w-10 mx-auto border-t border-gray-300 my-4" /> {/* Zentrierte Linie */}
+        <NavItem icon={<FaUser />} label="Profil" />
+        <NavItem icon={<FaTools />} label="Settings" /> {/* Passenderes Icon für "Settings" */}
+        <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={handleLogout} />
+
+      </div>
     </div>
   );
 };

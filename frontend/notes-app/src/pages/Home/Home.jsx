@@ -167,7 +167,7 @@ const Home = () => {
       {/* Flex-Container für Sidebar und Hauptinhalt */}
       <div className="flex flex-1 pt-16">
         {/* Sidebar links, die unter der Navbar bleibt */}
-        <div className="w-64 bg-blue-600 text-white h-full fixed top-16 left-0 bottom-0">
+        <div>
         <Sidebar userInfo={userInfo} onLogout={() => { localStorage.clear(); navigate("/login"); }} />
         </div>
 
