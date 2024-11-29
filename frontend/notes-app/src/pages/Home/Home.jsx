@@ -63,6 +63,12 @@ const Home = () => {
     }
   };
 
+  // Notiz editieren
+  const handleEdit = (noteDetails) => {
+    setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
+  };
+
+
   // Notiz löschen
   const deleteNote = async (data) => {
     const noteId = data._id;
