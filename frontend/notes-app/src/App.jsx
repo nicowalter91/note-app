@@ -6,6 +6,10 @@ import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
 import Exercises from './pages/Exercises/Exercises';
 import Profil from './pages/Profil/Profil';
 import Settings from './pages/Settings/Settings';
+import Team from './pages/Team/team';
+import Tactic from './pages/Tactic/tactic';
+import Video from './pages/Video/video';
+
 
 // Definiere die Routen der App
 const routes = (
@@ -17,6 +21,11 @@ const routes = (
       <Route path="/exercises" exact element={<Exercises />} />
       <Route path="/profil" exact element={<Profil />} />
       <Route path="/settings" examt element={<Settings />} />
+      <Route path="/team" examt element={<Team />} />
+      <Route path="/tactic" examt element={<Tactic />} />
+      <Route path="/video" examt element={<Video />} />
+      
+      
       
       
     </Routes>

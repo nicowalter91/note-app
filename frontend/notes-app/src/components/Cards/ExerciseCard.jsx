@@ -5,8 +5,8 @@ import { MdCreate, MdDelete, MdClose } from 'react-icons/md'; // Close-Icon für
 import Modal from 'react-modal'; // Modal importieren
 import Example from '../../assets/img/example.png'; // Beispielbild
 
-// ExerciseCard-Komponente: Eine Komponente zur Darstellung einer Übungskarte
-const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinExercise, onAddExercise }) => {
+// NoteCard-Komponente: Eine Komponente zur Darstellung einer Notizkarte
+const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote, onAddExercise }) => {
     // Zustand für das Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -22,15 +22,15 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
 
     return (
         <div className="flex gap-4">
-            {/* Die reguläre ExerciseCard */}
+            {/* Die reguläre NoteCard */}
             <div
-                className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-out w-full cursor-pointer"
+                className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-out w-full sm:w-1/3 md:w-1/4 lg:w-1/4 cursor-pointer"
                 onClick={openModal} // Modal öffnen bei Klick auf die Karte
             >
                 <div className="flex items-center justify-between">
                     <div>
-                        {/* Titel der Übung */}
-                        <h6 className="text-sm font-medium">3vs2 auf Linie brechen</h6>
+                        {/* Titel der Notiz */}
+                        <h6 className="text-sm font-medium">3vs2 Linie brechen</h6>
                         {/* Formatiertes Datum */}
                         <span className="text-xs text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
                     </div>
@@ -38,17 +38,17 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
                     {/* Pin-Icon, das auf den Status "isPinned" reagiert */}
                     <MdOutlinePushPin
                         className={`icon-btn ${isPinned ? 'text-primary' : 'text-slate-300'}`}
-                        onClick={onPinExercise} // Event-Handler, der das Pinnen der Übung ermöglicht
+                        onClick={onPinNote} // Event-Handler, der das Pinnen der Notiz ermöglicht
                     />
                 </div>
 
                 {/* Bild mit abgerundeten Ecken und kleinerer Breite */}
                 <img src={Example} alt="Logo" className="w-full h-32 object-cover rounded-md mt-4" />
 
-                {/* Vorschau des Inhalts der Übung (nur die ersten 60 Zeichen) */}
-                <p className="text-xs text-slate-600 mt-2">Das ist ein Text.</p>
+                {/* Vorschau des Inhalts der Notiz (nur die ersten 60 Zeichen) */}
+                <p className="text-xs text-slate-600 mt-2">Hier steht eine Beschreibung</p>
 
-                {/* Buttons für Bearbeiten und Löschen der Übung */}
+                {/* Buttons für Bearbeiten und Löschen der Notiz */}
                 <div className="flex items-center gap-2 mt-4">
                     {/* Bearbeiten-Icon */}
                     <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
@@ -57,7 +57,16 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
                 </div>
             </div>
 
-            
+            {/* Die leere Karte mit gestricheltem Rand */}
+            <div
+                className="border-dashed border-2 border-gray-400 rounded p-4 w-full sm:w-1/3 md:w-1/4 lg:w-1/4 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all"
+                onClick={onAddExercise} // onClick-Handler für das Hinzufügen einer Übung
+            >
+                <div className="flex flex-col items-center justify-center text-center">
+                    <MdAdd className="text-4xl text-gray-500 mb-2" /> {/* Plus-Symbol */}
+                    <p className="text-sm text-gray-500">Add Exercise</p>
+                </div>
+            </div>
 
             {/* Modal-Komponente */}
             <Modal
@@ -85,7 +94,7 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
                 {/* Kopfzeile: Titel, Datum und Close-Button */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-xl font-medium">3vs2 auf Linie brechen</h3>
+                        <h3 className="text-xl font-medium">3vs2 Linie brechen</h3>
                         <span className="text-sm text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
                     </div>
                     <button
@@ -101,7 +110,7 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
                     {/* Bild und Content nebeneinander */}
                     <div className="flex mt-4 gap-4">
                         <img src={Example} alt="Logo" className="w-1/2 h-auto object-cover rounded-md" />
-                        <p className="text-sm text-gray-700 w-1/2">Das ist ein Text.</p>
+                        <p className="text-sm text-gray-700 w-1/2">Hier steht eine Beschreibung</p>
                     </div>
 
                     {/* Edit- und Delete-Buttons unten rechts */}
@@ -111,9 +120,11 @@ const ExerciseCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinE
                     </div>
                 </div>
             </Modal>
+
+
         </div>
     );
 };
 
-// Exportiert die ExerciseCard-Komponente, damit sie in anderen Teilen der Anwendung verwendet werden kann
-export default ExerciseCard;
+// Exportiert die NoteCard-Komponente, damit sie in anderen Teilen der Anwendung verwendet werden kann
+export default NoteCard;

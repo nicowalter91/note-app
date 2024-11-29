@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPen, FaRunning, FaTools, FaSignOutAlt, FaUser } from 'react-icons/fa'; 
+import { FaPen, FaDumbbell, FaTools, FaSignOutAlt, FaUser, FaUsers, FaClipboard, FaVideo } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ userInfo }) => {
@@ -40,7 +40,10 @@ const Sidebar = ({ userInfo }) => {
       {/* Navigation Items */}
       <nav className="flex flex-col space-y-4">
         <NavItem icon={<FaPen />} label="Notes" />
-        <NavItem icon={<FaRunning />} label="Exercises" />
+        <NavItem icon={<FaDumbbell />} label="Exercises" />
+        <NavItem icon={<FaUsers />} label="Team" />
+        <NavItem icon={<FaClipboard />} label="Tactic" />
+        <NavItem icon={<FaVideo />} label="Video" />
       </nav>
 
       {/* Navigation Items Bottom */}
