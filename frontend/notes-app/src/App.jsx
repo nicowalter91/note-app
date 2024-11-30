@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';  // Importiere benötigte Komponenten von 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Importiere benötigte Komponenten von 'react-router-dom'
 import Home from './pages/Home/Home';  // Importiere die Home-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
+import Tactic from './pages/Tactic/Tactic';  // Importiere die SignUp-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -11,6 +12,8 @@ const routes = (
       <Route path="/dashboard" exact element={<Home />}/>  {/* Route für die Dashboard-Seite */}
       <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}
       <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}
+      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
+      <Route exact path="/" element={<Navigate to="/login" />}/>
     </Routes>
   </Router>
 );
