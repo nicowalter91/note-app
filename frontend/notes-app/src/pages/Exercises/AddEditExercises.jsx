@@ -144,7 +144,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               <img
                 src={URL.createObjectURL(image)}
                 alt="Preview"
-                className="w-full h-80 object-cover rounded mb-4"
+                className="w-full  object-cover rounded mb-4"
               />
               <button
                 className="flex items-center gap-2 text-red-500 text-sm hover:underline"
