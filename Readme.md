@@ -2,5 +2,24 @@
 
 ## Install
 
---TODO: insert start statements for front and backend
---TODO: insert postman collection for backend
+In root folder execute:
+
+```
+npm run:install
+```
+
+This installs dependecies for frontend and backend.
+
+## Run the app
+
+### Backend
+
+```
+npm run start:backend
+```
+
+### Frontend
+
+```
+npm run start:frontend
+```
