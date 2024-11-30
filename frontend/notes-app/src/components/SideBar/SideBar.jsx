@@ -2,12 +2,11 @@ import React from 'react';
 import { FaPen, FaDumbbell, FaTools, FaSignOutAlt, FaUser, FaUsers, FaClipboard, FaVideo } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const Sidebar = ({ userInfo }) => {
+const Sidebar = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();  // Zugriff auf die aktuelle URL
 
-  // Funktion zum Ausloggen und Weiterleitung zur Login-Seite
-  const handleLogout = () => {
+  onLogout = () => {
     localStorage.clear(); // Löscht alle Daten im lokalen Speicher.
     navigate("/login");   // Navigiert den Benutzer zur Login-Seite.
   };
@@ -52,7 +51,7 @@ const Sidebar = ({ userInfo }) => {
         <NavItem icon={<FaUser />} label="Profil" />
         <NavItem icon={<FaTools />} label="Settings" />
         {/* Logout Button */}
-        <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={handleLogout} />
+        <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={onLogout} />
       </div>
     </div>
   );
