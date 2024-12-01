@@ -3,7 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home/Home';  // Importiere die Home-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
-import Tactic from './pages/Tactic/Tactic';  // Importiere die SignUp-Seite
+import Exercises from './pages/Exercises/Exercises';
+import Profil from './pages/Profil/Profil';
+import Settings from './pages/Settings/Settings';
+import Team from './pages/Team/team';
+import Tactic from './pages/Tactic/Tactic';
+import Video from './pages/Video/video';
 
 // Definiere die Routen der App
 const routes = (
@@ -13,6 +18,12 @@ const routes = (
       <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}
       <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}
       <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
+      <Route path="/notes" exact element={<Home />}/> 
+      <Route path="/exercises" exact element={<Exercises />} />
+      <Route path="/profil" exact element={<Profil />} />
+      <Route path="/settings" examt element={<Settings />} />
+      <Route path="/team" examt element={<Team />} />
+      <Route path="/video" examt element={<Video />} />
       <Route exact path="/" element={<Navigate to="/login" />}/>
     </Routes>
   </Router>

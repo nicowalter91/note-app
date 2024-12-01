@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from '../../components/Input/PasswordInput';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
+import bgImage from '../../assets/img/soccer_background.jpg';
 
 // Erweiterte E-Mail-Validierung mit Regex
 const isValidEmail = (email) => {
@@ -46,7 +47,7 @@ const Login = () => {
       // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
-        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
+        navigate("/notes"); // Benutzer zu den Notes weiterleiten
       }
     } catch (error) {
       // Fehlerbehandlung
@@ -69,41 +70,52 @@ const Login = () => {
     <>
       <Navbar /> {/* Navbar anzeigen */}
 
-      <div className='flex items-center justify-center mt-28'>
-        <div className='w-96 border rounded bg-white px-7 py-10'>
-          <form onSubmit={handleLogin}>
-            <h4 className="text-2xl mb-7">LogIn</h4>
+      <div className='flex min-h-screen'>
+        {/* Linke Seite: Login-Formular */}
+        <div className='flex-1 flex items-center justify-center bg-white'>
+          <div className='w-96 border rounded px-7 py-10'>
+            <form onSubmit={handleLogin}>
+              <h4 className="text-2xl mb-7 font-medium">👋 Willkommen</h4>
+              <p className='text-sm font-thin'>Enter your email address and passwort to log in</p>
 
-            {/* Eingabefeld für E-Mail */}
-            <input 
-              type="text" 
-              placeholder='E-Mail' 
-              className='input-box' 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-            />
+              <div className='mt-10'>
+                {/* Eingabefeld für E-Mail */}
+                <input
+                  type="text"
+                  placeholder='E-Mail'
+                  className='input-box'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
-            {/* Passwort-Eingabefeld */}
-            <PasswordInput 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-            />
+                {/* Passwort-Eingabefeld */}
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
 
-            {/* Anzeige der Fehlermeldung, falls vorhanden */}
-            {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+              {/* Anzeige der Fehlermeldung, falls vorhanden */}
+              {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
 
-            {/* Login-Button */}
-            <button type='submit' className='btn-primary'>Login</button>
+              {/* Login-Button */}
+              <button type='submit' className='btn-primary'>Login</button>
 
-            {/* Link zum Erstellen eines Kontos, falls der Benutzer noch nicht registriert ist */}
-            <p className='text-sm text-center mt-4'>
-              Noch nicht registriert?{" "}
-              <Link to="/signUp" className='font-medium text-primary underline'>
-                Erstelle ein Konto
-              </Link>
-            </p>
-          
-          </form>
+              {/* Link zum Erstellen eines Kontos, falls der Benutzer noch nicht registriert ist */}
+              <p className='text-sm text-center mt-4'>
+                Not yet registered?{" "}
+                <Link to="/signUp" className='font-medium text-primary underline'>
+                  Sign Up
+                </Link>
+              </p>
+
+            </form>
+          </div>
+        </div>
+
+        {/* Rechte Seite: Hintergrundbild */}
+        <div className='flex-1 bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
+          {/* Hier könnte auch optionaler Inhalt hinzugefügt werden */}
         </div>
       </div>
     </>

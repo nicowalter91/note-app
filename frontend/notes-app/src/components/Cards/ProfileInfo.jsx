@@ -1,10 +1,22 @@
 // Importieren von React und einer Hilfsfunktion 'getInitials' aus einem Hilfsmodul
 import React from 'react';
 import { getInitials } from '../../utils/helper'; // Funktion, die die Initialen des Benutzernamens zurückgibt
+import { useNavigate } from 'react-router-dom';
 
 // ProfileInfo-Komponente: Zeigt Benutzerinformationen an und ermöglicht das Abmelden
-const ProfileInfo = ({ userInfo, onLogout }) => {
+const ProfileInfo = ({ userInfo, onLogout}) => {
+
+  const navigate = useNavigate();
+
+  onLogout = () => {
+    localStorage.clear(); // Löscht alle Daten im lokalen Speicher.
+    navigate("/login");   // Navigiert den Benutzer zur Login-Seite.
+  };
+
   return (
+
+    
+    
     // Überprüft, ob userInfo vorhanden ist (falls nicht, wird nichts gerendert)
     userInfo && (
     <div className='flex items-center gap-3'>
