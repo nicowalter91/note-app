@@ -5,6 +5,7 @@ import { createVoronoiFromPoints } from "./utils/canvas-utils.jsx";
 import Modal from "react-modal";
 import axiosInstance from "../../utils/axiosInstance";
 import * as fabric from "fabric";
+import Layout from '../../components/Layout/Layout'
 
 const Tactic = () => {
   const [userInfo, setUserInfo] = useState(null); // Zustand für Benutzerdaten
@@ -98,13 +99,12 @@ const Tactic = () => {
       if (error.response.status === 401) {
         localStorage.clear(); // Bei 401 Fehler (unauthorized) den lokalen Speicher löschen
         navigate("/login"); // Zur Login-Seite navigieren
-      }
+            }
     }
   };
 
   return (
-    <div>
-      <Navbar userInfo={userInfo} />
+  <Layout>
       <div className="container mx-auto">
         <div className="grid grid-cols-3 gap-4 mt-8">
           <canvas
@@ -122,10 +122,10 @@ const Tactic = () => {
             className="btn-primary"
           >
             Generate Voronoi
-          </button>
+           </button>
         </div>
-      </div>
-    </div>
+      </div> 
+  </Layout>
   );
 };
 

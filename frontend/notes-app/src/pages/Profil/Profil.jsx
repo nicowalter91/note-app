@@ -4,7 +4,7 @@ import Layout from '../../components/Layout/Layout'
 const Profil = () => {
   return (
     <div>
-      <Layout></Layout>
+      <Layout><div>Test</div></Layout>
     </div>
   )
 }
