@@ -5,7 +5,6 @@ require("dotenv").config();
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
 
-
 // Laden der Konfiguration aus config.json
 const config = require("./config.json");
 
@@ -22,9 +21,7 @@ const Exercises = require("./models/exercises.model");
 // Express und Middleware einrichten
 const express = require("express");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
 const { authenticateToken } = require("./utilities");
-const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -41,7 +38,7 @@ app.get("/", (req, res) => {
 
 // Route zum Erstellen eines neuen Benutzerkontos
 app.post("/create-account", async (req, res) => {
-    createUser(req, res);
+  createUser(req, res);
 });
 
 // Login-Route

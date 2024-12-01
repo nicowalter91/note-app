@@ -1,5 +1,7 @@
 // *** Controller for User ***
 const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const getUser = async (req, res) => {
   const { user } = req.user;
@@ -18,7 +20,7 @@ const getUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
   if (!email) return res.status(400).json({ message: "Email is required" });
   if (!password)
@@ -52,39 +54,39 @@ const loginUser = async (req, res) => {
   }
 };
 
-const createUser = async (req, res)  => {
-    const { fullName, email, password } = req.body;
+const createUser = async (req, res) => {
+  const { fullName, email, password } = req.body;
 
-    // Validierung der Eingabedaten
-    if (!fullName)
-      return res
-        .status(400)
-        .json({ error: true, message: "Full Name is required" });
-    if (!email)
-      return res.status(400).json({ error: true, message: "Email is required" });
-    if (!password)
-      return res
-        .status(400)
-        .json({ error: true, message: "Password is required" });
-  
-    // Überprüfen, ob der Benutzer existiert
-    const isUser = await User.findOne({ email });
-    if (isUser) return res.json({ error: true, message: "User already exists" });
-  
-    // Benutzer erstellen und speichern
-    const user = new User({ fullName, email, password });
-    await user.save();
-  
-    // JWT-Token generieren
-    const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "36000m",
-    });
-    return res.json({
-      error: false,
-      user,
-      accessToken,
-      message: "Registration Successful",
-    });
+  // Validierung der Eingabedaten
+  if (!fullName)
+    return res
+      .status(400)
+      .json({ error: true, message: "Full Name is required" });
+  if (!email)
+    return res.status(400).json({ error: true, message: "Email is required" });
+  if (!password)
+    return res
+      .status(400)
+      .json({ error: true, message: "Password is required" });
+
+  // Überprüfen, ob der Benutzer existiert
+  const isUser = await User.findOne({ email });
+  if (isUser) return res.json({ error: true, message: "User already exists" });
+
+  // Benutzer erstellen und speichern
+  const user = new User({ fullName, email, password });
+  await user.save();
+
+  // JWT-Token generieren
+  const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "36000m",
+  });
+  return res.json({
+    error: false,
+    user,
+    accessToken,
+    message: "Registration Successful",
+  });
 };
 
-module.exports = { getUser, loginUser, createUser};
+module.exports = { getUser, loginUser, createUser };
