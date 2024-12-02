@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from '../../components/Input/PasswordInput';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
-import bgImage from '../../assets/img/soccer_background.jpg';
+import bgImage from "../../assets/img/background.png";
 
 // Erweiterte E-Mail-Validierung mit Regex
 const isValidEmail = (email) => {
