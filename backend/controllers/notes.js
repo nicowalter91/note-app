@@ -64,6 +64,94 @@ const editNote = async (req, res) => {
     }
 };
 
+const getNotes = async (req, res) => {
+  const { user } = req.user;
+
+  try {
+    const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
+    return res.json({
+      error: false,
+      notes,
+      message: "All notes retrieved successfully",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const deleteNote = async (req, res) => {
+  const { noteId } = req.params;
+  const { user } = req.user;
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    if (!note)
+      return res.status(404).json({ error: true, message: "Note not found" });
+
+    await Note.deleteOne({ _id: noteId, userId: user._id });
+    return res.json({ error: false, message: "Note deleted successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const isPinned = async (req, res) => {
+  const { noteId } = req.params;
+  const { isPinned } = req.body;
+  const { user } = req.user;
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    if (!note)
+      return res.status(404).json({ error: true, message: "Note not found" });
+
+    note.isPinned = isPinned;
+    await note.save();
+    return res.json({
+      error: false,
+      note,
+      message: "Note updated successfully",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const searchNote = async (req, res) => {
+  const { user } = req.user;
+  const { query } = req.query;
+
+  if (!query)
+    return res
+      .status(400)
+      .json({ error: true, message: "Search query is required" });
+
+  try {
+    const matchingNotes = await Note.find({
+      userId: user._id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } },
+      ],
+    });
+    return res.json({
+      error: false,
+      notes: matchingNotes,
+      message: "Notes matching query retrieved",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
 
 
-module.exports = { addNote, editNote};
+
+module.exports = { addNote, editNote, getNotes, deleteNote, isPinned, searchNote};

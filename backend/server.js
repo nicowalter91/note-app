@@ -1,13 +1,12 @@
 // *** Konfigurations- und Initialisierungsblock ***
-
-// Laden der Umgebungsvariablen aus der .env-Datei
 require("dotenv").config();
+const config = require("./config.json");
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
-const { addNote, editNote } = require("./controllers/notes");
+const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 
-// Laden der Konfiguration aus config.json
-const config = require("./config.json");
+
+
 
 // Verbindung zur MongoDB-Datenbank herstellen
 const connectDB = require("./config/db");
@@ -65,94 +64,22 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 
 // Route zum Abrufen aller Notizen eines Benutzers
 app.get("/get-all-notes", authenticateToken, async (req, res) => {
-  const { user } = req.user;
-
-  try {
-    const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
-    return res.json({
-      error: false,
-      notes,
-      message: "All notes retrieved successfully",
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
-  }
+ getNotes(req,res);
 });
 
 // Route zum Löschen einer Notiz
 app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
-  const { noteId } = req.params;
-  const { user } = req.user;
-
-  try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
-    if (!note)
-      return res.status(404).json({ error: true, message: "Note not found" });
-
-    await Note.deleteOne({ _id: noteId, userId: user._id });
-    return res.json({ error: false, message: "Note deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
-  }
+  deleteNote(req,res);
 });
 
 // Route zum Aktualisieren des "isPinned"-Werts
 app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
-  const { noteId } = req.params;
-  const { isPinned } = req.body;
-  const { user } = req.user;
-
-  try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
-    if (!note)
-      return res.status(404).json({ error: true, message: "Note not found" });
-
-    note.isPinned = isPinned;
-    await note.save();
-    return res.json({
-      error: false,
-      note,
-      message: "Note updated successfully",
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
-  }
+  isPinned(req, res);
 });
 
 // Route zur Suche nach Notizen
 app.get("/search-notes", authenticateToken, async (req, res) => {
-  const { user } = req.user;
-  const { query } = req.query;
-
-  if (!query)
-    return res
-      .status(400)
-      .json({ error: true, message: "Search query is required" });
-
-  try {
-    const matchingNotes = await Note.find({
-      userId: user._id,
-      $or: [
-        { title: { $regex: new RegExp(query, "i") } },
-        { content: { $regex: new RegExp(query, "i") } },
-      ],
-    });
-    return res.json({
-      error: false,
-      notes: matchingNotes,
-      message: "Notes matching query retrieved",
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
-  }
+  searchNote(req,res);
 });
 
 // *** Server starten ***
