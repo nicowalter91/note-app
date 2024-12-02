@@ -10,9 +10,10 @@ const { addNote, editNote } = require("./controllers/notes");
 const config = require("./config.json");
 
 // Verbindung zur MongoDB-Datenbank herstellen
-const mongoose = require("mongoose");
-console.log("DB is running.");
-mongoose.connect(config.connectionString);
+const connectDB = require("./config/db");
+connectDB();
+
+
 
 // Import von Datenbankmodellen
 const User = require("./models/user.model");
