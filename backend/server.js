@@ -4,6 +4,7 @@
 require("dotenv").config();
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
+const { addNote } = require("./controllers/notes");
 
 // Laden der Konfiguration aus config.json
 const config = require("./config.json");
@@ -35,7 +36,6 @@ app.get("/", (req, res) => {
 });
 
 // *** Benutzerverwaltungsrouten ***
-
 // Route zum Erstellen eines neuen Benutzerkontos
 app.post("/create-account", async (req, res) => {
   createUser(req, res);
@@ -52,34 +52,9 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 });
 
 // *** Notizverwaltungsrouten ***
-
 // Route zum Hinzufügen einer neuen Notiz
 app.post("/add-note", authenticateToken, async (req, res) => {
-  const { title, content, tags } = req.body;
-  const { user } = req.user;
-
-  if (!title)
-    return res.status(400).json({ error: true, message: "Title is required" });
-  if (!content)
-    return res
-      .status(400)
-      .json({ error: true, message: "Content is required" });
-
-  try {
-    const note = new Note({
-      title,
-      content,
-      tags: tags || [],
-      userId: user._id,
-    });
-
-    await note.save();
-    return res.json({ error: false, note, message: "Note added successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
-  }
+  addNote(req, res);
 });
 
 // Route zum Bearbeiten einer Notiz
