@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Importiere benötigte Komponenten von 'react-router-dom'
-import Home from './pages/Home/Home';  // Importiere die Home-Seite
+import Home from './pages/Notes/Notes';  // Importiere die Home-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
 import Exercises from './pages/Exercises/Exercises';

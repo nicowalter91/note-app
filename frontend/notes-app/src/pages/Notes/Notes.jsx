@@ -13,7 +13,7 @@ import Layout from '../../components/Layout/Layout';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import SearchBar from '../../components/SearchBar/SearchBar'; // Importiere die SearchBar
 
-const Home = () => {
+const Notes = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
@@ -290,4 +290,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Notes;
