@@ -13,53 +13,30 @@ import Layout from '../../components/Layout/Layout';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import SearchBar from '../../components/SearchBar/SearchBar'; // Importiere die SearchBar
 
-const Notes = () => {
-
-  //*** Variablen ***//
-  const [allNotes, setAllNotes] = useState([]);
-  const [userInfo, setUserInfo] = useState(null);
-  const [isSearch, setIsSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
-  const [currentPage, setCurrentPage] = useState(1);
-  const notesPerPage = 12;
-
-  const navigate = useNavigate();
-
-  //*** Zustand Modal ***//
+const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
   });
 
-  //*** Zustand Toastmessage ***//
   const [showToastMsg, setShowToastMsg] = useState({
     isShown: false,
     message: "",
     data: null,
   });
 
-  //*** Paginierung ***//
-  const indexOfLastNote = currentPage * notesPerPage;
-  const indexOfFirstNote = indexOfLastNote - notesPerPage;
-  const currentNotes = allNotes.slice(indexOfFirstNote, indexOfLastNote);
-  const totalPages = Math.ceil(allNotes.length / notesPerPage);
+  const [allNotes, setAllNotes] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
 
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const notesPerPage = 12;
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const navigate = useNavigate();
 
-  
-
-  //*** User-Info abrufen ***//
+  // User-Info abrufen
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
@@ -74,7 +51,7 @@ const Notes = () => {
     }
   };
 
-  //*** Alle Notizen abrufen ***//
+  // Alle Notizen abrufen
   const getAllNotes = async () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
@@ -86,13 +63,13 @@ const Notes = () => {
     }
   };
 
-  //*** Notiz editieren ***//
+  // Notiz editieren
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
 
-  //*** Notiz löschen ***//
+  // Notiz löschen
   const deleteNote = async (data) => {
     const noteId = data._id;
     try {
@@ -106,7 +83,7 @@ const Notes = () => {
     }
   };
 
-  //***  Suchanfrage senden ***//
+  // Suchanfrage senden
   const onSearchNote = async (query) => {
     if (!query.trim()) {
       setIsSearch(false);
@@ -127,7 +104,7 @@ const Notes = () => {
     }
   };
 
-  //*** Alle Notizen pinnen/unpinnen ***//
+  // Alle Notizen pinnen/unpinnen
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
     try {
@@ -144,7 +121,7 @@ const Notes = () => {
     }
   };
 
-  //*** Toast-Nachricht anzeigen ***//
+  // Toast-Nachricht anzeigen
   const showToastMessage = (message, type) => {
     setShowToastMsg({
       isShown: true,
@@ -153,7 +130,7 @@ const Notes = () => {
     });
   };
 
-  //*** Toast schließen ***//
+  // Toast schließen
   const handleCloseToast = () => {
     setShowToastMsg({
       isShown: false,
@@ -161,20 +138,36 @@ const Notes = () => {
     });
   };
 
-  //*** Suchabfrage zurücksetzen ***//
+  // Suchabfrage zurücksetzen
   const handleClearSearch = () => {
     setSearchQuery("");
     setIsSearch(false);
     getAllNotes(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
   };
 
-  //*** useEffect für initiales Laden der Notizen und Benutzerdaten ***//
+  // useEffect für initiales Laden der Notizen und Benutzerdaten
   useEffect(() => {
     getAllNotes();
     getUserInfo();
   }, []);
 
- 
+  // Paginierung
+  const indexOfLastNote = currentPage * notesPerPage;
+  const indexOfFirstNote = indexOfLastNote - notesPerPage;
+  const currentNotes = allNotes.slice(indexOfFirstNote, indexOfLastNote);
+  const totalPages = Math.ceil(allNotes.length / notesPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <Layout
@@ -297,4 +290,4 @@ const Notes = () => {
   );
 };
 
-export default Notes;
+export default Home;
