@@ -1,7 +1,4 @@
-// Importiert das Mongoose-Modul, um mit MongoDB zu interagieren.
 const mongoose = require("mongoose");
-
-// Ruft das Schema-Objekt von Mongoose ab, um ein Datenmodell zu definieren.
 const Schema = mongoose.Schema;
 
 // Definiert ein Schema für Notizen, die in der Datenbank gespeichert werden sollen.

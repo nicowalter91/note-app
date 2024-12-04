@@ -88,7 +88,7 @@ app.post("/add-exercise", authenticateToken, async (req, res) => {
 });
 
 app.put("/edit-exercise/:exerciseId", authenticateToken, async (req, res) => {
-  editExercise(req, res);
+  editExercise(req, res); 
 });
 
 app.get("/get-all-exercises", authenticateToken, async (req, res) => {
@@ -99,7 +99,7 @@ app.delete("/delete-exercise/:exerciseId", authenticateToken, async (req, res) =
   deleteExercise(req,res);
 });
 
-app.put("/update-exercise-pinned/:noteId", authenticateToken, async (req, res) => {
+app.put("/update-exercise-pinned/:exerciseId", authenticateToken, async (req, res) => {
   isPinnedExercise(req, res);
 });
 
