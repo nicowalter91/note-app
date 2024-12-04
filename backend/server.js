@@ -4,7 +4,7 @@ const config = require("./config.json");
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
-
+const { addExercise, editExercise, getExercises, deleteExercise, searchExercise, isPinnedExercise} = require("./controllers/exercises");
 
 
 
@@ -80,6 +80,31 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
 // Route zur Suche nach Notizen
 app.get("/search-notes", authenticateToken, async (req, res) => {
   searchNote(req,res);
+});
+
+// *** Übungswaltungsrouten ***
+app.post("/add-exercise", authenticateToken, async (req, res) => {
+  addExercise(req, res);
+});
+
+app.put("/edit-exercise/:exerciseId", authenticateToken, async (req, res) => {
+  editExercise(req, res);
+});
+
+app.get("/get-all-exercises", authenticateToken, async (req, res) => {
+  getExercises(req,res);
+ });
+
+app.delete("/delete-exercise/:exerciseId", authenticateToken, async (req, res) => {
+  deleteExercise(req,res);
+});
+
+app.put("/update-exercise-pinned/:noteId", authenticateToken, async (req, res) => {
+  isPinnedExercise(req, res);
+});
+
+app.get("/search-exercise", authenticateToken, async (req, res) => {
+  searchExercise(req,res);
 });
 
 // *** Server starten ***

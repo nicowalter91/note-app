@@ -8,9 +8,21 @@ const exerciseSchema = new mongoose.Schema({
     type: String,
     required: true, // Der Titel ist erforderlich
   },
-  content: {
+  organisation: {
     type: String,
     required: true, // Der Inhalt ist ebenfalls erforderlich
+  },
+  durchfuerung: {
+    type: String,
+    required: true, // Der Inhalt ist ebenfalls erforderlich
+  },
+  coaching: {
+    type: String,
+    required: true, // Der Inhalt ist ebenfalls erforderlich
+  },
+  variante: {
+    type: String,
+    
   },
   date: {
     type: Date,
