@@ -8,33 +8,119 @@ import Layout from '../../components/Layout/Layout';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import AddEditExercise from '../../pages/Exercises/AddEditExercises';
+import AddNotesImg from '../../assets/img/addData.png';
+import NoDataImg from '../../assets/img/noData.png';
+import EmptyCard from '../../components/EmptyCard/EmptyCard';
+import Toast from '../../components/ToastMessage/Toast';
 
 const Exercises = () => {
+
+   //*** Variablen ***//
   const [allExercises, setAllExercises] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
   const [currentPage, setCurrentPage] = useState(1);
   const exercisesPerPage = 12;
   const navigate = useNavigate();
 
-  // Zustand für das Öffnen des Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('add');  // "add" oder "edit"
-  const [exerciseData, setExerciseData] = useState(null);  // Daten für die bearbeitete Übung
+  //*** Zustand Modal ***//
+  const [openAddEditModal, setOpenAddEditModal] = useState({
+    isShown: false,
+    type: "add",
+    data: null,
+  });
 
-  // Alle Übungen abrufen
-  const getAllExercises = async () => {
+  //*** Zustand Toastmessage ***//
+  const [showToastMsg, setShowToastMsg] = useState({
+    isShown: false,
+    message: "",
+    data: null,
+  });
+
+   //*** Toast-Nachricht anzeigen ***//
+   const showToastMessage = (message, type) => {
+    setShowToastMsg({
+      isShown: true,
+      message,
+      type,
+    });
+  };
+
+  //*** Toast schließen ***//
+  const handleCloseToast = () => {
+    setShowToastMsg({
+      isShown: false,
+      message: "",
+    });
+  };
+
+  //*** Paginierung ***//
+  const indexOfLastExercise = currentPage * exercisesPerPage;
+  const indexOfFirstExercise = indexOfLastExercise - exercisesPerPage;
+  const currentExercises = allExercises.slice(indexOfFirstExercise, indexOfLastExercise);
+  const totalPages = Math.ceil(allExercises.length / exercisesPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+   //*** User-Info abrufen ***//
+   const getUserInfo = async () => {
     try {
-      const response = await axiosInstance.get("/get-all-exercises");
-      if (response.data && response.data.exercises) {
-        setAllExercises(response.data.exercises);
+      const response = await axiosInstance.get("/get-user");
+      if (response.data && response.data.user) {
+        setUserInfo(response.data.user);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+      }
+    }
+  };
+
+    //*** Alle Exercises abrufen ***//
+    const getAllExercises = async () => {
+      try {
+        const response = await axiosInstance.get("/get-all-exercises");
+        if (response.data && response.data.exercises) {
+          setAllExercises(response.data.exercises);
+        }
+      } catch (error) {
+        console.log("An unexpected error occurred. Please try again.");
+      }
+    };
+
+    //*** Exercise editieren ***//
+  const handleEditExercise = (noteDetails) => {
+    setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
+  };
+
+  //*** Exercise löschen ***//
+  const deleteExercise = async (data) => {
+    const exerciseId = data._id;
+    try {
+      const response = await axiosInstance.delete("/delete-note/" + exerciseId);
+      if (response.data && !response.data.error) {
+        showToastMessage("Exercise Deleted Successfully", "delete");
+        getAllExercises();
       }
     } catch (error) {
       console.log("An unexpected error occurred. Please try again.");
     }
   };
 
-  // Suchanfrage senden
+
+  //***  Suchanfrage senden ***//
   const onSearchExercise = async (query) => {
     if (!query.trim()) {
       setIsSearch(false);
@@ -55,43 +141,45 @@ const Exercises = () => {
     }
   };
 
-  // Paginierung
-  const indexOfLastExercise = currentPage * exercisesPerPage;
-  const indexOfFirstExercise = indexOfLastExercise - exercisesPerPage;
-  const currentExercises = allExercises.slice(indexOfFirstExercise, indexOfLastExercise);
-  const totalPages = Math.ceil(allExercises.length / exercisesPerPage);
-
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  //*** Alle Notizen pinnen/unpinnen ***//
+  const updateIsPinnedExercise
+   = async (exerciseData) => {
+    const exerciseId = exerciseData._id;
+    try {
+      const response = await axiosInstance.put(
+        "/update-exercise-pinned/" + exerciseId,
+        { isPinned: !exerciseData.isPinned }
+      );
+      if (response.data && response.data.exercise) {
+        showToastMessage("Exercise Updated Successfully");
+        getAllExercises();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+    //*** Suchabfrage zurücksetzen ***//
+    const handleClearSearch = () => {
+      setSearchQuery("");
+      setIsSearch(false);
+      getAllExercises(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
+    };
 
-  // Modal Handling
-  const openModal = (type, exercise = null) => {
-    setModalType(type);  // Setzt den Modal-Typ (add oder edit)
-    setExerciseData(exercise);  // Falls edit, setze die Übung, die bearbeitet wird
-    setIsModalOpen(true);  // Öffne das Modal
-  };
 
-  const closeModal = () => {
-    setIsModalOpen(false);  // Schließt das Modal
-    setExerciseData(null);  // Setze die Übung auf null zurück
-  };
-
-  // useEffect für das initiale Laden der Übungen
+  //*** useEffect für initiales Laden der Exercises und Benutzerdaten ***//
   useEffect(() => {
     getAllExercises();
+    getUserInfo();
   }, []);
 
   return (
-    <Layout>
+    <Layout
+    userInfo={userInfo}
+    onLogout={() => { localStorage.clear(); navigate("/login"); }}
+    onSearchExercise={onSearchExercise}
+    handleClearSearch={handleClearSearch}
+    >
       <h1 className="text-4xl font-medium text-blue-500 my-6">Exercises</h1>
 
       <div className="flex items-center justify-between mb-6">
@@ -109,7 +197,7 @@ const Exercises = () => {
             }}
           />
 
-          {/* Paginierung */}
+          {/* Paginierung rechts */}
           <div className="flex items-center gap-4 ml-auto">
             <button
               onClick={prevPage}
@@ -135,41 +223,78 @@ const Exercises = () => {
       </div>
 
       {/* Übungen anzeigen */}
+      {currentExercises.length > 0 ? (
       <div className="grid grid-cols-3 gap-4 mt-8">
         {currentExercises.map((exercise) => (
           <ExerciseCard
             key={exercise._id}
-            exerciseData={exercise}  // Weitergabe der Übung an die ExerciseCard
-            onEdit={() => openModal('edit', exercise)}  // Wenn auf "Bearbeiten" geklickt wird, öffne das Modal im Bearbeitungsmodus
-            onDelete={() => {}}
-            onPinExercise={() => {}}
+            title={exercise.title}
+            date={exercise.createdOn}
+            organisation={exercise.organisation}
+            durchfuehrung={exercise.durchfuehrung}
+            coaching={exercise.coaching}
+            variante={exercise.variante}
+            onEdit={()=> handleEditExercise(exercise)}
+            onDelete={() => deleteExercise(exercise)}
+            onPinExercise={() => updateIsPinnedExercise(exercise) }
           />
         ))}
       </div>
+      ) : (
+        <EmptyCard
+        imgSrc={isSearch ? NoDataImg : AddNotesImg}
+        message={
+          isSearch
+            ? `Oops! No Exercises found matching your search.`
+            : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`
+        }
+      />
+    )}
+      
 
       {/* Add Exercise Button */}
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
-        onClick={() => openModal('add')}  // Wenn auf das Plus-Symbol geklickt wird, öffne das Modal im Hinzufügungsmodus
+        onClick={() => {
+          setOpenAddEditModal({ isShown: true, type: "add", data: null });
+        }}
       >
         <MdAdd className="text-[32px] text-white" />
       </button>
 
-      {/* Modal-Komponente für das Hinzufügen oder Bearbeiten einer Übung */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 w-4/5">
-            {/* AddEditExercise-Komponente */}
-            <AddEditExercise
-              exerciseData={exerciseData}
-              type={modalType}  // Sendet den Modal-Typ (add oder edit)
-              getAllExercises={getAllExercises}
-              onClose={closeModal}
-              showToastMessage={(message) => alert(message)}  // Hier könnte eine benutzerdefinierte Toast-Nachricht verwendet werden
-            />
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={openAddEditModal.isShown}
+        onRequestClose={() => { }}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            zIndex: 9999,
+          },
+          content: {
+            zIndex: 10000,
+          },
+        }}
+        contentLabel=""
+        className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
+      >
+        <AddEditExercise
+          type={openAddEditModal.type}
+          ExerciseData={openAddEditModal.data}
+          onClose={() => {
+            setOpenAddEditModal({ isShown: false, type: "add", data: null });
+          }}
+          getAllExercises={getAllExercises}
+          showToastMessage={showToastMessage}
+        />
+      </Modal>
+
+         {/* Toast-Benachrichtigung */}
+         <Toast
+        isShown={showToastMsg.isShown}
+        message={showToastMsg.message}
+        type={showToastMsg.type}
+        onClose={handleCloseToast}
+      />
     </Layout>
   );
 };

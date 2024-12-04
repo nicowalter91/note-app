@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MdClose, MdDelete } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
+import TagInput from '../../components/Input/TagInput'  
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
   const [title, setTitle] = useState(exerciseData?.title || '');
@@ -11,6 +12,96 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [tags, setTags] = useState(exerciseData?.tags || []);
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
+
+  //** Neue Exercise hinzufügen ***//
+  const addNewExercise = async () => {
+    try {
+      const response = await axiosInstance.post("/add-exercise", {
+        title,
+        organisation,
+        durchfuehrung,
+        coaching,
+        variante,
+        tags
+      });
+      if (response.data && response.data.exercise) {
+        showToastMessage("Exercise Added Successfully");
+        getAllExercises();  // Alle Notizen erneut abrufen
+        onClose();  // Schließt das Modal/Fenster
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message)
+      }
+    }
+  };
+
+    //** Neue Exercise editieren ***//
+    const editExercise = async () => {
+      const noteId = exerciseDataData._id 
+  
+      try {
+        // API-Anfrage zum Bearbeiten der Notiz
+        const response = await axiosInstance.put("/edit-exercise/" + exerciseId, {
+        title,
+        organisation,
+        durchfuehrung,
+        coaching,
+        variante,
+        tags
+        });
+  
+        // Erfolgsnachricht anzeigen, wenn die Notiz erfolgreich aktualisiert wurde
+        if (response.data && response.data.exercise) {
+          showToastMessage("Exercise Updated Successfully");
+          getAllExercises();  // Alle Notizen erneut abrufen
+          onClose();  // Schließt das Modal/Fenster
+        }
+      } catch (error) {
+        // Fehlerbehandlung: Zeigt eine Fehlermeldung an
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          setError(error.response.data.message)
+        }
+      }
+    };
+
+  const handleAddExercise = () => {
+    if(!title) {
+      setError("Please enter the title");
+      return;
+    }
+
+    if(!organisation) {
+      setError("Please enter the organisation");
+      return;
+    }
+
+    if(!durchfuehrung) {
+      setError("Please enter the durchfuehrung");
+      return;
+    }
+
+    if(!coaching) {
+      setError("Please enter the coaching");
+      return;
+    }
+
+    setError("");
+
+    if(type === "edit") {
+      editExercise();
+    } else {
+      addNewExercise();
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -23,97 +114,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     setImage(null);
   };
 
-  const handleAddTag = (e) => {
-    if (e.key === 'Enter' && e.target.value.trim()) {
-      if (!tags.includes(e.target.value.trim())) {
-        setTags([...tags, e.target.value.trim()]);
-        e.target.value = '';
-      }
-    }
-  };
 
-  const handleRemoveTag = (tag) => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const addNewExercise = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('organisation', organisation);
-      formData.append('durchfuehrung', durchfuehrung);
-      formData.append('coaching', coaching);
-      formData.append('variante', variante);
-      formData.append('tags', tags.join(','));
-      if (image) {
-        formData.append('image', image);
-      }
-
-      const response = await axiosInstance.post('/add-exercise', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data && response.data.exercise) {
-        showToastMessage('Exercise Added Successfully');
-        getAllExercises();
-        onClose();
-      }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
-      }
-    }
-  };
-
-  const editExercise = async () => {
-    const exerciseId = exerciseData._id;
-
-    try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('organisation', organisation);
-      formData.append('durchfuehrung', durchfuehrung);
-      formData.append('coaching', coaching);
-      formData.append('variante', variante);
-      formData.append('tags', tags.join(','));
-      if (image) {
-        formData.append('image', image);
-      }
-
-      const response = await axiosInstance.put(`/edit-exercise/${exerciseId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data && response.data.exercise) {
-        showToastMessage('Exercise Updated Successfully');
-        getAllExercises();
-        onClose();
-      }
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
-      }
-    }
-  };
-
-  const handleSubmit = () => {
-    if (!title || !organisation || !durchfuehrung || !coaching || !variante) {
-      setError('Please fill in all fields.');
-      return;
-    }
-
-    setError(null);
-
-    if (type === 'edit') {
-      editExercise();
-    } else {
-      addNewExercise();
-    }
-  };
 
   return (
     <div className="relative mx-auto">
@@ -180,7 +181,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Describe the organisation setup..."
               value={organisation}
-              onChange={(e) => setOrganisation(e.target.value)}
+              onChange={({target}) => setOrganisation(target.value)}
             />
           </div>
 
@@ -192,7 +193,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Describe how the exercise is conducted..."
               value={durchfuehrung}
-              onChange={(e) => setDurchfuehrung(e.target.value)}
+              onChange={({target}) => setDurchfuehrung(target.value)}
             />
           </div>
 
@@ -204,7 +205,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Coaching points or instructions..."
               value={coaching}
-              onChange={(e) => setCoaching(e.target.value)}
+              onChange={({target}) => setCoaching(target.value)}
             />
           </div>
 
@@ -216,42 +217,24 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Possible variations or adjustments..."
               value={variante}
-              onChange={(e) => setVariante(e.target.value)}
+              onChange={({target}) => setVariante(target.value)}
             />
           </div>
         </div>
       </div>
 
-      {/* Tags Input */}
-      <div className="flex flex-col gap-2 mt-4">
+       {/* Tag-Eingabefeld */}
+       <div className='mt-3'>
         <label className="input-label">TAGS</label>
-        <div className="flex items-center gap-2 flex-wrap bg-slate-50 p-2 rounded">
-          {tags.map((tag) => (
-            <div key={tag} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded">
-              <span>{tag}</span>
-              <button onClick={() => handleRemoveTag(tag)} className="text-blue-600 hover:text-blue-800">
-                <MdClose className="text-sm" />
-              </button>
-            </div>
-          ))}
-          <input
-            type="text"
-            className="flex-grow outline-none bg-transparent"
-            placeholder="Add a tag and press Enter"
-            onKeyDown={handleAddTag}
-          />
-        </div>
+        <TagInput tags={tags} setTags={setTags} />  {/* Ermöglicht das Hinzufügen von Tags */}
       </div>
 
       {/* Error Message */}
       {error && <p className="text-red-500 text-xs pt-4">{error}</p>}
 
       {/* Submit Button */}
-      <button
-        className="btn-primary font-medium text-xs mt-5 p-3 w-full"
-        onClick={handleSubmit}
-      >
-        {type === 'edit' ? 'UPDATE' : 'ADD'}
+      <button className='btn-primary font-medium text-xs mt-5 p-3' onClick={handleAddExercise}>
+        {type === 'edit' ? 'UPDATE' :  'ADD'}  {/* Zeigt entweder 'UPDATE' oder 'ADD' je nach Modus */}
       </button>
     </div>
   );
