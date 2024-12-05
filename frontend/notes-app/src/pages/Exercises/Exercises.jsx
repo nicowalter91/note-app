@@ -15,12 +15,13 @@ import Toast from '../../components/ToastMessage/Toast';
 
 const Exercises = () => {
 
-   //*** Variablen ***//
+  //*** Variablen ***//
   const [allExercises, setAllExercises] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
   const [currentPage, setCurrentPage] = useState(1);
+
   const exercisesPerPage = 12;
   const navigate = useNavigate();
 
@@ -38,8 +39,8 @@ const Exercises = () => {
     data: null,
   });
 
-   //*** Toast-Nachricht anzeigen ***//
-   const showToastMessage = (message, type) => {
+  //*** Toast-Nachricht anzeigen ***//
+  const showToastMessage = (message, type) => {
     setShowToastMsg({
       isShown: true,
       message,
@@ -61,6 +62,10 @@ const Exercises = () => {
   const currentExercises = allExercises.slice(indexOfFirstExercise, indexOfLastExercise);
   const totalPages = Math.ceil(allExercises.length / exercisesPerPage);
 
+  console.log("Alle Übungen:", allExercises);
+  console.log("Aktuelle Übungen:", currentExercises);
+
+
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -73,8 +78,8 @@ const Exercises = () => {
     }
   };
 
-   //*** User-Info abrufen ***//
-   const getUserInfo = async () => {
+  //*** User-Info abrufen ***//
+  const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
       if (response.data && response.data.user) {
@@ -88,19 +93,22 @@ const Exercises = () => {
     }
   };
 
-    //*** Alle Exercises abrufen ***//
-    const getAllExercises = async () => {
-      try {
-        const response = await axiosInstance.get("/get-all-exercises");
-        if (response.data && response.data.exercises) {
-          setAllExercises(response.data.exercises);
-        }
-      } catch (error) {
-        console.log("An unexpected error occurred. Please try again.");
+  //*** Alle Exercises abrufen ***//
+  const getAllExercises = async () => {
+    try {
+      const response = await axiosInstance.get("/get-all-exercises");
+      if (response.data && response.data.exercise) {
+        console.log("Übungen:", response.data.exercise);  // Debugging
+        setAllExercises(response.data.exercise);
       }
-    };
+    } catch (error) {
+      console.log("An unexpected error occurred. Please try again.");
+    }
+  };
 
-    //*** Exercise editieren ***//
+
+
+  //*** Exercise editieren ***//
   const handleEditExercise = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
@@ -109,15 +117,19 @@ const Exercises = () => {
   const deleteExercise = async (data) => {
     const exerciseId = data._id;
     try {
-      const response = await axiosInstance.delete("/delete-note/" + exerciseId);
+      const response = await axiosInstance.delete("/delete-exercise/" + exerciseId);
       if (response.data && !response.data.error) {
+        console.log("Exercise Deleted Successfully");
         showToastMessage("Exercise Deleted Successfully", "delete");
-        getAllExercises();
+        getAllExercises(); // Alle Übungen nach dem Löschen neu laden
+      } else {
+        console.log("Fehler beim Löschen:", response.data.error);
       }
     } catch (error) {
-      console.log("An unexpected error occurred. Please try again.");
+      console.error("Fehler beim Löschen der Übung:", error);
     }
   };
+  
 
 
   //***  Suchanfrage senden ***//
@@ -132,9 +144,9 @@ const Exercises = () => {
       const response = await axiosInstance.get("/search-exercises", {
         params: { query },
       });
-      if (response.data && response.data.exercises) {
+      if (response.data && response.data.exercise) {
         setIsSearch(true);
-        setAllExercises(response.data.exercises);
+        setAllExercises(response.data.exercise);
       }
     } catch (error) {
       console.log(error);
@@ -143,28 +155,28 @@ const Exercises = () => {
 
   //*** Alle Notizen pinnen/unpinnen ***//
   const updateIsPinnedExercise
-   = async (exerciseData) => {
-    const exerciseId = exerciseData._id;
-    try {
-      const response = await axiosInstance.put(
-        "/update-exercise-pinned/" + exerciseId,
-        { isPinned: !exerciseData.isPinned }
-      );
-      if (response.data && response.data.exercise) {
-        showToastMessage("Exercise Updated Successfully");
-        getAllExercises();
+    = async (exerciseData) => {
+      const exerciseId = exerciseData._id;
+      try {
+        const response = await axiosInstance.put(
+          "/update-exercise-pinned/" + exerciseId,
+          { isPinned: !exerciseData.isPinned }
+        );
+        if (response.data && response.data.exercise) {
+          showToastMessage("Exercise Updated Successfully");
+          getAllExercises();
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-    //*** Suchabfrage zurücksetzen ***//
-    const handleClearSearch = () => {
-      setSearchQuery("");
-      setIsSearch(false);
-      getAllExercises(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
     };
+
+  //*** Suchabfrage zurücksetzen ***//
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setIsSearch(false);
+    getAllExercises(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
+  };
 
 
   //*** useEffect für initiales Laden der Exercises und Benutzerdaten ***//
@@ -175,10 +187,10 @@ const Exercises = () => {
 
   return (
     <Layout
-    userInfo={userInfo}
-    onLogout={() => { localStorage.clear(); navigate("/login"); }}
-    onSearchExercise={onSearchExercise}
-    handleClearSearch={handleClearSearch}
+      userInfo={userInfo}
+      onLogout={() => { localStorage.clear(); navigate("/login"); }}
+      onSearchExercise={onSearchExercise}
+      handleClearSearch={handleClearSearch}
     >
       <h1 className="text-4xl font-medium text-blue-500 my-6">Exercises</h1>
 
@@ -223,34 +235,36 @@ const Exercises = () => {
       </div>
 
       {/* Übungen anzeigen */}
-      {currentExercises.length > 0 ? (
-      <div className="grid grid-cols-3 gap-4 mt-8">
-        {currentExercises.map((exercise) => (
-          <ExerciseCard
-            key={exercise._id}
-            title={exercise.title}
-            date={exercise.createdOn}
-            organisation={exercise.organisation}
-            durchfuehrung={exercise.durchfuehrung}
-            coaching={exercise.coaching}
-            variante={exercise.variante}
-            onEdit={()=> handleEditExercise(exercise)}
-            onDelete={() => deleteExercise(exercise)}
-            onPinExercise={() => updateIsPinnedExercise(exercise) }
-          />
-        ))}
-      </div>
+      {Array.isArray(currentExercises) && currentExercises.length > 0 ? (
+        <div className="grid grid-cols-3 gap-4 mt-8">
+          {currentExercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise._id}
+              title={exercise.title}
+              date={exercise.createdOn}
+              organisation={exercise.organisation}
+              durchfuehrung={exercise.durchfuehrung}
+              coaching={exercise.coaching}
+              variante={exercise.variante}
+              onEdit={() => handleEditExercise(exercise)}
+              onDelete={() => deleteExercise(exercise)}
+              onPinExercise={() => updateIsPinnedExercise(exercise)}
+               
+            />
+          ))}
+        </div>
       ) : (
         <EmptyCard
-        imgSrc={isSearch ? NoDataImg : AddNotesImg}
-        message={
-          isSearch
-            ? `Oops! No Exercises found matching your search.`
-            : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`
-        }
-      />
-    )}
-      
+          imgSrc={isSearch ? NoDataImg : AddNotesImg}
+          message={
+            isSearch
+              ? `Oops! No Exercises found matching your search.`
+              : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`
+          }
+        />
+      )}
+
+
 
       {/* Add Exercise Button */}
       <button
@@ -275,7 +289,7 @@ const Exercises = () => {
           },
         }}
         contentLabel=""
-        className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
+        className="w-4/5 max-h-3/4 bg-white rounded-md mx-auto mt-5 p-5 overflow-scroll"
       >
         <AddEditExercise
           type={openAddEditModal.type}
@@ -288,8 +302,8 @@ const Exercises = () => {
         />
       </Modal>
 
-         {/* Toast-Benachrichtigung */}
-         <Toast
+      {/* Toast-Benachrichtigung */}
+      <Toast
         isShown={showToastMsg.isShown}
         message={showToastMsg.message}
         type={showToastMsg.type}

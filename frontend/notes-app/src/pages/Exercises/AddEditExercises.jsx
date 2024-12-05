@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { MdClose, MdDelete } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
-import TagInput from '../../components/Input/TagInput'  
+import TagInput from '../../components/Input/TagInput';
+import { MdCloudUpload } from 'react-icons/md';
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
-  const [title, setTitle] = useState(exerciseData?.title || '');
-  const [organisation, setOrganisation] = useState(exerciseData?.organisation || '');
-  const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || '');
-  const [coaching, setCoaching] = useState(exerciseData?.coaching || '');
-  const [variante, setVariante] = useState(exerciseData?.variante || '');
+  const [title, setTitle] = useState(exerciseData?.title || "");
+  const [organisation, setOrganisation] = useState(exerciseData?.organisation || "");
+  const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || "");
+  const [coaching, setCoaching] = useState(exerciseData?.coaching || "");
+  const [variante, setVariante] = useState(exerciseData?.variante || "");
   const [tags, setTags] = useState(exerciseData?.tags || []);
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
@@ -139,7 +140,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       <div className="grid grid-cols-2 gap-8 mt-4">
         {/* Image Upload */}
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6">
-          <label className="input-label mb-2">UPLOAD IMAGE</label>
+          
           {image ? (
             <div className="flex flex-col items-center">
               <img
@@ -164,6 +165,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
                 className="hidden"
                 id="imageUpload"
               />
+              <MdCloudUpload size={64} className="text-blue-500" />
               <label htmlFor="imageUpload" className="cursor-pointer text-blue-500 underline">
                 Choose a file
               </label>
