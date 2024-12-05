@@ -26,7 +26,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         coaching,
         variante,
       });
-      if (response.data && response.data.exercise) {
+      if (response.data && response.data.error == false) {
         showToastMessage("Exercise Added Successfully");
         getAllExercises();  // Alle Notizen erneut abrufen
         onClose();
