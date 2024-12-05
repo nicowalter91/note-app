@@ -111,8 +111,9 @@ const Exercises = () => {
 
 
   //*** Exercise editieren ***//
-  const handleEditExercise = (noteDetails) => {
-    setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
+  const handleEditExercise = (exerciseDetails) => {
+    setOpenAddEditModal({ isShown: true, data: exerciseDetails, type: "edit" });
+    console.log(exerciseDetails);
   };
 
   //*** Exercise löschen ***//
@@ -316,7 +317,7 @@ const Exercises = () => {
       >
         <AddEditExercise
           type={openAddEditModal.type}
-          ExerciseData={openAddEditModal.data}
+          exerciseData={openAddEditModal.data}
           onClose={() => {
             setOpenAddEditModal({ isShown: false, type: "add", data: null });
           }}

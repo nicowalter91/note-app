@@ -5,6 +5,7 @@ import TagInput from '../../components/Input/TagInput';
 import { MdCloudUpload } from 'react-icons/md';
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
+  console.log(exerciseData);
   const [title, setTitle] = useState(exerciseData?.title || "");
   const [organisation, setOrganisation] = useState(exerciseData?.organisation || "");
   const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || "");

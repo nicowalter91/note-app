@@ -89,6 +89,7 @@ const Notes = () => {
   //*** Notiz editieren ***//
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
+    console.log(noteDetails);
   };
 
 

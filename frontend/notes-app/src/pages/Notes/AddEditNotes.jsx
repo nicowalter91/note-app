@@ -5,6 +5,7 @@ import axiosInstance from '../../utils/axiosInstance';  // Axios-Instanz für AP
 
 const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }) => {
   // Zustand für die Notiz-Daten (Titel, Inhalt, Tags)
+  console.log(noteData);
   const [title, setTitle] = useState(noteData?.title || "");  // Initialisiert den Titel, wenn vorhanden, ansonsten leer
   const [content, setContent] = useState(noteData?.content ||"");  // Initialisiert den Inhalt
   const [tags, setTags] = useState(noteData?.tags ||[]);  // Initialisiert Tags, wenn vorhanden, ansonsten leeres Array
