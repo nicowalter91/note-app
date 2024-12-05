@@ -184,7 +184,7 @@ const Notes = () => {
       handleClearSearch={handleClearSearch}
     >
 
-      <h1 className="text-4xl font-medium text-blue-500 my-6">Notes</h1>
+   
       <div className="flex items-center justify-between mb-6">
         {/* Flexbox für SearchBar und Paginierung nebeneinander */}
         <div className="flex items-center gap-4 w-full">

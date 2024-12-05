@@ -1,11 +1,27 @@
 // *** Konfigurations- und Initialisierungsblock ***
 require("dotenv").config();
 const config = require("./config.json");
+const multer  = require('multer')
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/uploads')
+  },
+  filename: function (req, file, cb) {
+    
+    cb(null, file.originalname)
+  }
+})
+
+const upload = multer({ storage })
+
+
 
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addExercise, editExercise, getExercises, deleteExercise, searchExercise, isPinnedExercise} = require("./controllers/exercises");
+
 
 
 
@@ -30,13 +46,20 @@ const app = express();
 // *** Middleware-Setup ***
 app.use(express.json()); // Parsing von JSON-Anfragen
 app.use(cors({ origin: "*" })); // CORS für alle Ursprünge erlauben
-app.use('/uploads', express.static('uploads')); // Dateien im "uploads" Ordner öffentlich machen
+
 
 
 // *** Basisroute ***
 app.get("/", (req, res) => {
   res.json({ data: "hello" });
 });
+
+//*** Multer
+app.post('/api/upload', upload.single('file'),(req, res) => {
+  res.json(req.file);
+});
+
+
 
 // *** Benutzerverwaltungsrouten ***
 // Route zum Erstellen eines neuen Benutzerkontos

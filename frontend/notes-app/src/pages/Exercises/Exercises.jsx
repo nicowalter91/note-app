@@ -13,6 +13,7 @@ import NoDataImg from '../../assets/img/noData.png';
 import EmptyCard from '../../components/EmptyCard/EmptyCard';
 import Toast from '../../components/ToastMessage/Toast';
 
+
 const Exercises = () => {
 
   //*** Variablen ***//
@@ -21,6 +22,7 @@ const Exercises = () => {
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
   const [currentPage, setCurrentPage] = useState(1);
+
 
   const exercisesPerPage = 12;
   const navigate = useNavigate();
@@ -154,22 +156,42 @@ const Exercises = () => {
   };
 
   //*** Alle Notizen pinnen/unpinnen ***//
-  const updateIsPinnedExercise
-    = async (exerciseData) => {
-      const exerciseId = exerciseData._id;
-      try {
-        const response = await axiosInstance.put(
-          "/update-exercise-pinned/" + exerciseId,
-          { isPinned: !exerciseData.isPinned }
+  const updateIsPinnedExercise = async (exerciseData) => {
+    const exerciseId = exerciseData._id;
+    const updatedPinStatus = !exerciseData.isPinnedExercise; // Neuer Zustand lokal toggeln
+  
+    try {
+      // Aktualisiere den Status im Backend
+      const response = await axiosInstance.put(
+        `/update-exercise-pinned/${exerciseId}`,
+        { isPinnedExercise: updatedPinStatus }
+      );
+  
+      if (response.data && response.data.exercise) {
+        showToastMessage(
+          updatedPinStatus ? "Exercise Pinned Successfully" : "Exercise Unpinned Successfully"
         );
-        if (response.data && response.data.exercise) {
-          showToastMessage("Exercise Updated Successfully");
-          getAllExercises();
-        }
-      } catch (error) {
-        console.log(error);
+        // Aktualisiere die Liste, um den neuen Zustand zu reflektieren
+        setAllExercises((prevExercises) =>
+          prevExercises.map((ex) =>
+            ex._id === exerciseId ? { ...ex, isPinnedExercise: updatedPinStatus } : ex
+          )
+        );
       }
-    };
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Pin-Status:", error);
+    }
+  };
+  
+  const sortedExercises = [...currentExercises].sort((a, b) => {
+    // Pinned Übungen zuerst anzeigen
+    if (a.isPinnedExercise === b.isPinnedExercise) {
+      return new Date(b.date) - new Date(a.date); // Nach Datum sortieren, falls beide gleich gepinnt
+    }
+    return b.isPinnedExercise - a.isPinnedExercise; // Pinned Übungen nach oben
+  });
+  
+  
 
   //*** Suchabfrage zurücksetzen ***//
   const handleClearSearch = () => {
@@ -192,7 +214,7 @@ const Exercises = () => {
       onSearchExercise={onSearchExercise}
       handleClearSearch={handleClearSearch}
     >
-      <h1 className="text-4xl font-medium text-blue-500 my-6">Exercises</h1>
+      
 
       <div className="flex items-center justify-between mb-6">
         {/* Flexbox für SearchBar und Paginierung nebeneinander */}
@@ -235,9 +257,9 @@ const Exercises = () => {
       </div>
 
       {/* Übungen anzeigen */}
-      {Array.isArray(currentExercises) && currentExercises.length > 0 ? (
+      {Array.isArray(sortedExercises) && sortedExercises.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
-          {currentExercises.map((exercise) => (
+          {sortedExercises.map((exercise) => (
             <ExerciseCard
               key={exercise._id}
               title={exercise.title}
@@ -246,6 +268,7 @@ const Exercises = () => {
               durchfuehrung={exercise.durchfuehrung}
               coaching={exercise.coaching}
               variante={exercise.variante}
+              isPinnedExercise={exercise.isPinnedExercise}
               onEdit={() => handleEditExercise(exercise)}
               onDelete={() => deleteExercise(exercise)}
               onPinExercise={() => updateIsPinnedExercise(exercise)}

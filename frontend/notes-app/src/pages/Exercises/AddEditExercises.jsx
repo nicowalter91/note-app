@@ -24,13 +24,11 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         durchfuehrung,
         coaching,
         variante,
-        tags
       });
       if (response.data && response.data.exercise) {
         showToastMessage("Exercise Added Successfully");
-        onClose();
         getAllExercises();  // Alle Notizen erneut abrufen
-        
+        onClose();
       }
     } catch (error) {
       if (
@@ -55,7 +53,6 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         durchfuehrung,
         coaching,
         variante,
-        tags
         });
   
         // Erfolgsnachricht anzeigen, wenn die Notiz erfolgreich aktualisiert wurde
@@ -134,7 +131,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
           className="text-2xl text-slate-950 outline-none w-full"
           placeholder="Please insert title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={({target}) => setTitle(target.value)}
         />
       </div>
 
@@ -144,7 +141,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6">
           
           {image ? (
-            <div className="flex flex-col items-center">
+            <form action="/profile" method="post" enctype="multipart/form-data" className="flex flex-col items-center">
               <img
                 src={URL.createObjectURL(image)}
                 alt="Preview"
@@ -157,11 +154,12 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
                 <MdDelete className="text-lg" />
                 Remove Image
               </button>
-            </div>
+            </form>
           ) : (
             <>
               <input
                 type="file"
+                name="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"
