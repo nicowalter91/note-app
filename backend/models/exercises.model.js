@@ -10,7 +10,7 @@ const exerciseSchema = new Schema({
   coaching: { type: String, required: true, },
   variante: { type: String, },
   date: { type: Date, default: Date.now, },
-  image: {type: String, default: '',},
+  image: {type: String},
   tags: {type: [String], default: [],}, 
   isPinnedExercise: { type: Boolean, default: false, },
   userId: { type: String, required: true },

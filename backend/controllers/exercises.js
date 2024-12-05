@@ -5,6 +5,7 @@ const addExercise = async (req, res) => {
 
     const { title, organisation, durchfuehrung, coaching, variante, date, image, tags} = req.body;
     const { user } = req.user;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : ''; 
 
     if (!title)
         return res.status(400).json({error: true, message: "Title is required"});
@@ -27,7 +28,7 @@ const addExercise = async (req, res) => {
             durchfuehrung,
             coaching,
             variante,
-            image,
+            imageUrl,
             tags: tags || [],
             userId: user._id,
         });
@@ -53,6 +54,10 @@ const editExercise = async (req, res) => {
         return res
         .status(400)
         .json({error: true, message: "No changes provided"});
+    }
+
+    if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
     }
 
     try {

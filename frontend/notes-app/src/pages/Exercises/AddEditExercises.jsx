@@ -13,6 +13,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [tags, setTags] = useState(exerciseData?.tags || []);
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
+  
 
   //** Neue Exercise hinzufügen ***//
   const addNewExercise = async () => {
@@ -27,8 +28,9 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       });
       if (response.data && response.data.exercise) {
         showToastMessage("Exercise Added Successfully");
+        onClose();
         getAllExercises();  // Alle Notizen erneut abrufen
-        onClose();  // Schließt das Modal/Fenster
+        
       }
     } catch (error) {
       if (
@@ -43,7 +45,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
 
     //** Neue Exercise editieren ***//
     const editExercise = async () => {
-      const noteId = exerciseDataData._id 
+      const exerciseId = exerciseData._id 
   
       try {
         // API-Anfrage zum Bearbeiten der Notiz

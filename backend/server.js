@@ -2,24 +2,25 @@
 require("dotenv").config();
 const config = require("./config.json");
 
+
 const { getUser, loginUser, createUser } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addExercise, editExercise, getExercises, deleteExercise, searchExercise, isPinnedExercise} = require("./controllers/exercises");
 
 
 
-// Verbindung zur MongoDB-Datenbank herstellen
+//*** Verbindung zur MongoDB-Datenbank herstellen
 const connectDB = require("./config/db");
 connectDB();
 
 
 
-// Import von Datenbankmodellen
+//*** Import von Datenbankmodellen
 const User = require("./models/user.model");
 const Note = require("./models/note.model");
 const Exercises = require("./models/exercises.model");
 
-// Express und Middleware einrichten
+//*** Express und Middleware einrichten
 const express = require("express");
 const cors = require("cors");
 const { authenticateToken } = require("./utilities");
@@ -29,6 +30,8 @@ const app = express();
 // *** Middleware-Setup ***
 app.use(express.json()); // Parsing von JSON-Anfragen
 app.use(cors({ origin: "*" })); // CORS für alle Ursprünge erlauben
+app.use('/uploads', express.static('uploads')); // Dateien im "uploads" Ordner öffentlich machen
+
 
 // *** Basisroute ***
 app.get("/", (req, res) => {
