@@ -34,6 +34,7 @@ const Notes = () => {
     data: null,
   });
 
+  //*** Paginierung ***//
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = allNotes.slice(indexOfFirstItem, indexOfLastItem);
@@ -174,6 +175,7 @@ const Notes = () => {
             onClearSearch={handleClearSearch}
           />
 
+          {/* Paginierung rechts */}
           <div className="flex items-center gap-4 ml-auto">
             <button
               onClick={() => {
@@ -197,11 +199,10 @@ const Notes = () => {
                 nextPage();
               }}
               disabled={currentPage === totalPages || totalPages === 0}
-              className={`p-2 ${
-                currentPage === totalPages || totalPages === 0
-                  ? "text-gray-400"
-                  : "text-blue-600"
-              }`}
+              className={`p-2 ${currentPage === totalPages || totalPages === 0
+                ? "text-gray-400"
+                : "text-blue-600"
+                }`}
               style={{ zIndex: 10 }}
             >
               <MdChevronRight size={32} />
@@ -210,6 +211,7 @@ const Notes = () => {
         </div>
       </div>
 
+      {/* Übungen anzeigen */}
       {currentItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
           {currentItems.map((item) => (

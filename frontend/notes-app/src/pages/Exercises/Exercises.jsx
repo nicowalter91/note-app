@@ -24,7 +24,7 @@ const Exercises = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
 
-  const exercisesPerPage = 3;
+  const itemsPerPage = 3;
   const navigate = useNavigate();
 
   //*** Zustand Modal ***//
@@ -59,24 +59,22 @@ const Exercises = () => {
   };
 
   //*** Paginierung ***//
-  const indexOfLastExercise = currentPage * exercisesPerPage;
-  const indexOfFirstExercise = indexOfLastExercise - exercisesPerPage;
-  const currentExercises = allExercises.slice(indexOfFirstExercise, indexOfLastExercise);
-  const totalPages = Math.ceil(allExercises.length / exercisesPerPage);
-
-  console.log("Alle Übungen:", allExercises);
-  console.log("Aktuelle Übungen:", currentExercises);
-
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = allExercises.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(allExercises.length / itemsPerPage);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      console.log(`Navigating to next page: ${currentPage + 1}`);
+      setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      console.log(`Navigating to previous page: ${currentPage - 1}`);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
@@ -132,7 +130,7 @@ const Exercises = () => {
       console.error("Fehler beim Löschen der Übung:", error);
     }
   };
-  
+
 
 
   //***  Suchanfrage senden ***//
@@ -160,14 +158,14 @@ const Exercises = () => {
   const updateIsPinnedExercise = async (exerciseData) => {
     const exerciseId = exerciseData._id;
     const updatedPinStatus = !exerciseData.isPinnedExercise; // Neuer Zustand lokal toggeln
-  
+
     try {
       // Aktualisiere den Status im Backend
       const response = await axiosInstance.put(
         `/update-exercise-pinned/${exerciseId}`,
         { isPinnedExercise: updatedPinStatus }
       );
-  
+
       if (response.data && response.data.exercise) {
         showToastMessage(
           updatedPinStatus ? "Exercise Pinned Successfully" : "Exercise Unpinned Successfully"
@@ -183,16 +181,8 @@ const Exercises = () => {
       console.error("Fehler beim Aktualisieren des Pin-Status:", error);
     }
   };
-  
-  const sortedExercises = [...currentExercises].sort((a, b) => {
-    // Pinned Übungen zuerst anzeigen
-    if (a.isPinnedExercise === b.isPinnedExercise) {
-      return new Date(b.date) - new Date(a.date); // Nach Datum sortieren, falls beide gleich gepinnt
-    }
-    return b.isPinnedExercise - a.isPinnedExercise; // Pinned Übungen nach oben
-  });
-  
-  
+
+
 
   //*** Suchabfrage zurücksetzen ***//
   const handleClearSearch = () => {
@@ -215,7 +205,7 @@ const Exercises = () => {
       onSearchExercise={onSearchExercise}
       handleClearSearch={handleClearSearch}
     >
-      
+
 
       <div className="flex items-center justify-between mb-6">
         {/* Flexbox für SearchBar und Paginierung nebeneinander */}
@@ -235,21 +225,32 @@ const Exercises = () => {
           {/* Paginierung rechts */}
           <div className="flex items-center gap-4 ml-auto">
             <button
-              onClick={prevPage}
+              onClick={() => {
+                console.log("Prev button clicked");
+                prevPage();
+              }}
               disabled={currentPage === 1}
-              className="p-2 text-blue-600 disabled:text-gray-400"
+              className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
+              style={{ zIndex: 10 }}
             >
               <MdChevronLeft size={32} />
             </button>
 
             <span className="text-lg">
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {totalPages || 1}
             </span>
 
             <button
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-              className="p-2 text-blue-600 disabled:text-gray-400"
+              onClick={() => {
+                console.log("Next button clicked");
+                nextPage();
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`p-2 ${currentPage === totalPages || totalPages === 0
+                ? "text-gray-400"
+                : "text-blue-600"
+                }`}
+              style={{ zIndex: 10 }}
             >
               <MdChevronRight size={32} />
             </button>
@@ -258,9 +259,9 @@ const Exercises = () => {
       </div>
 
       {/* Übungen anzeigen */}
-      {Array.isArray(sortedExercises) && sortedExercises.length > 0 ? (
+      {currentItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
-          {sortedExercises.map((exercise) => (
+          {currentItems.map((exercise) => (
             <ExerciseCard
               key={exercise._id}
               title={exercise.title}
@@ -273,7 +274,7 @@ const Exercises = () => {
               onEdit={() => handleEditExercise(exercise)}
               onDelete={() => deleteExercise(exercise)}
               onPinExercise={() => updateIsPinnedExercise(exercise)}
-               
+
             />
           ))}
         </div>
