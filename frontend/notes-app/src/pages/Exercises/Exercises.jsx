@@ -13,72 +13,50 @@ import NoDataImg from '../../assets/img/noData.png';
 import EmptyCard from '../../components/EmptyCard/EmptyCard';
 import Toast from '../../components/ToastMessage/Toast';
 
-
 const Exercises = () => {
-
-  //*** Variablen ***//
   const [allExercises, setAllExercises] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [showPinnedOnly, setShowPinnedOnly] = useState(false); // Zustand für den Filter
 
   const itemsPerPage = 3;
   const navigate = useNavigate();
 
-  //*** Zustand Modal ***//
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
   });
 
-  //*** Zustand Toastmessage ***//
   const [showToastMsg, setShowToastMsg] = useState({
     isShown: false,
     message: "",
     data: null,
   });
 
-  //*** Toast-Nachricht anzeigen ***//
   const showToastMessage = (message, type) => {
-    setShowToastMsg({
-      isShown: true,
-      message,
-      type,
-    });
+    setShowToastMsg({ isShown: true, message, type });
   };
 
-  //*** Toast schließen ***//
   const handleCloseToast = () => {
-    setShowToastMsg({
-      isShown: false,
-      message: "",
-    });
+    setShowToastMsg({ isShown: false, message: "" });
   };
 
-  //*** Paginierung ***//
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = allExercises.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(allExercises.length / itemsPerPage);
 
   const nextPage = () => {
-    if (currentPage < totalPages) {
-      console.log(`Navigating to next page: ${currentPage + 1}`);
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const prevPage = () => {
-    if (currentPage > 1) {
-      console.log(`Navigating to previous page: ${currentPage - 1}`);
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage((prevPage) => prevPage - 1);
   };
 
-  //*** User-Info abrufen ***//
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
@@ -93,36 +71,32 @@ const Exercises = () => {
     }
   };
 
-  //*** Alle Exercises abrufen ***//
   const getAllExercises = async () => {
     try {
       const response = await axiosInstance.get("/get-all-exercises");
       if (response.data && response.data.exercise) {
-        console.log("Übungen:", response.data.exercise);  // Debugging
-        setAllExercises(response.data.exercise);
+        let exercises = response.data.exercise;
+        if (showPinnedOnly) {
+          exercises = exercises.filter(ex => ex.isPinnedExercise); // Filter gepinnte Übungen
+        }
+        setAllExercises(exercises);
       }
     } catch (error) {
       console.log("An unexpected error occurred. Please try again.");
     }
   };
 
-
-
-  //*** Exercise editieren ***//
   const handleEditExercise = (exerciseDetails) => {
     setOpenAddEditModal({ isShown: true, data: exerciseDetails, type: "edit" });
-    console.log(exerciseDetails);
   };
 
-  //*** Exercise löschen ***//
   const deleteExercise = async (data) => {
     const exerciseId = data._id;
     try {
       const response = await axiosInstance.delete("/delete-exercise/" + exerciseId);
       if (response.data && !response.data.error) {
-        console.log("Exercise Deleted Successfully");
         showToastMessage("Exercise Deleted Successfully", "delete");
-        getAllExercises(); // Alle Übungen nach dem Löschen neu laden
+        getAllExercises();
       } else {
         console.log("Fehler beim Löschen:", response.data.error);
       }
@@ -131,13 +105,10 @@ const Exercises = () => {
     }
   };
 
-
-
-  //***  Suchanfrage senden ***//
   const onSearchExercise = async (query) => {
     if (!query.trim()) {
       setIsSearch(false);
-      getAllExercises(); // Wenn die Suchanfrage leer ist, alle Übungen zurücksetzen
+      getAllExercises();
       return;
     }
 
@@ -154,23 +125,18 @@ const Exercises = () => {
     }
   };
 
-  //*** Alle Notizen pinnen/unpinnen ***//
   const updateIsPinnedExercise = async (exerciseData) => {
     const exerciseId = exerciseData._id;
-    const updatedPinStatus = !exerciseData.isPinnedExercise; // Neuer Zustand lokal toggeln
+    const updatedPinStatus = !exerciseData.isPinnedExercise;
 
     try {
-      // Aktualisiere den Status im Backend
       const response = await axiosInstance.put(
         `/update-exercise-pinned/${exerciseId}`,
         { isPinnedExercise: updatedPinStatus }
       );
 
       if (response.data && response.data.exercise) {
-        showToastMessage(
-          updatedPinStatus ? "Exercise Pinned Successfully" : "Exercise Unpinned Successfully"
-        );
-        // Aktualisiere die Liste, um den neuen Zustand zu reflektieren
+        showToastMessage(updatedPinStatus ? "Exercise Pinned Successfully" : "Exercise Unpinned Successfully");
         setAllExercises((prevExercises) =>
           prevExercises.map((ex) =>
             ex._id === exerciseId ? { ...ex, isPinnedExercise: updatedPinStatus } : ex
@@ -182,83 +148,40 @@ const Exercises = () => {
     }
   };
 
-
-
-  //*** Suchabfrage zurücksetzen ***//
   const handleClearSearch = () => {
     setSearchQuery("");
     setIsSearch(false);
-    getAllExercises(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
+    getAllExercises();
   };
 
+  const filterPinnedExercises = () => {
+    setShowPinnedOnly((prevState) => !prevState); // Filter umschalten
+  };
 
-  //*** useEffect für initiales Laden der Exercises und Benutzerdaten ***//
   useEffect(() => {
     getAllExercises();
     getUserInfo();
-  }, []);
+  }, [showPinnedOnly]); // Re-rendere, wenn der Filterstatus geändert wird
 
   return (
-    <Layout
-      userInfo={userInfo}
-      onLogout={() => { localStorage.clear(); navigate("/login"); }}
-      onSearchExercise={onSearchExercise}
-      handleClearSearch={handleClearSearch}
-    >
-
-
+    <Layout userInfo={userInfo} onLogout={() => { localStorage.clear(); navigate("/login"); }} onSearchExercise={onSearchExercise} handleClearSearch={handleClearSearch}>
       <div className="flex items-center justify-between mb-6">
-        {/* Flexbox für SearchBar und Paginierung nebeneinander */}
         <div className="flex items-center gap-4 w-full">
-          {/* Die Suchleiste */}
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
             handleSearch={() => onSearchExercise(searchQuery)}
-            onClearSearch={() => {
-              setSearchQuery("");
-              setIsSearch(false);
-              getAllExercises();
-            }}
+            onClearSearch={handleClearSearch}
           />
-
-          {/* Paginierung rechts */}
-          <div className="flex items-center gap-4 ml-auto">
-            <button
-              onClick={() => {
-                console.log("Prev button clicked");
-                prevPage();
-              }}
-              disabled={currentPage === 1}
-              className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
-              style={{ zIndex: 10 }}
-            >
-              <MdChevronLeft size={32} />
-            </button>
-
-            <span className="text-lg">
-              Page {currentPage} of {totalPages || 1}
-            </span>
-
-            <button
-              onClick={() => {
-                console.log("Next button clicked");
-                nextPage();
-              }}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className={`p-2 ${currentPage === totalPages || totalPages === 0
-                ? "text-gray-400"
-                : "text-blue-600"
-                }`}
-              style={{ zIndex: 10 }}
-            >
-              <MdChevronRight size={32} />
-            </button>
-          </div>
+          <button
+            onClick={filterPinnedExercises}
+            className={`px-4 py-2 rounded-lg ${showPinnedOnly ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+          >
+            {showPinnedOnly ? 'Show All' : 'Show Pinned'}
+          </button>
         </div>
       </div>
 
-      {/* Übungen anzeigen */}
       {currentItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
           {currentItems.map((exercise) => (
@@ -274,60 +197,32 @@ const Exercises = () => {
               onEdit={() => handleEditExercise(exercise)}
               onDelete={() => deleteExercise(exercise)}
               onPinExercise={() => updateIsPinnedExercise(exercise)}
-
             />
           ))}
         </div>
       ) : (
-        <EmptyCard
-          imgSrc={isSearch ? NoDataImg : AddNotesImg}
-          message={
-            isSearch
-              ? `Oops! No Exercises found matching your search.`
-              : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`
-          }
-        />
+        <EmptyCard imgSrc={isSearch ? NoDataImg : AddNotesImg} message={isSearch ? `Oops! No Exercises found matching your search.` : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`} />
       )}
 
-
-
-      {/* Add Exercise Button */}
-      <button
-        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
-        onClick={() => {
-          setOpenAddEditModal({ isShown: true, type: "add", data: null });
-        }}
-      >
+      <button className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10" onClick={() => { setOpenAddEditModal({ isShown: true, type: "add", data: null }); }}>
         <MdAdd className="text-[32px] text-white" />
       </button>
 
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() => { }}
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0.2)",
-            zIndex: 9999,
-          },
-          content: {
-            zIndex: 10000,
-          },
-        }}
-        contentLabel=""
+        style={{ overlay: { backgroundColor: "rgba(0,0,0,0.2)", zIndex: 9999 }, content: { zIndex: 10000 } }}
         className="w-4/5 max-h-3/4 bg-white rounded-md mx-auto mt-5 p-5 overflow-scroll"
       >
         <AddEditExercise
           type={openAddEditModal.type}
           exerciseData={openAddEditModal.data}
-          onClose={() => {
-            setOpenAddEditModal({ isShown: false, type: "add", data: null });
-          }}
+          onClose={() => { setOpenAddEditModal({ isShown: false, type: "add", data: null }); }}
           getAllExercises={getAllExercises}
           showToastMessage={showToastMessage}
         />
       </Modal>
 
-      {/* Toast-Benachrichtigung */}
       <Toast
         isShown={showToastMsg.isShown}
         message={showToastMsg.message}
