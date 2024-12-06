@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import NoteCard from '../../components/Cards/NoteCard';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import AddEditNotes from './AddEditNotes';
 import Modal from "react-modal";
 import Toast from '../../components/ToastMessage/Toast';
@@ -10,56 +10,49 @@ import EmptyCard from '../../components/EmptyCard/EmptyCard';
 import AddNotesImg from '../../assets/img/addData.png';
 import NoDataImg from '../../assets/img/noData.png';
 import Layout from '../../components/Layout/Layout';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
-import SearchBar from '../../components/SearchBar/SearchBar'; // Importiere die SearchBar
+import SearchBar from '../../components/SearchBar/SearchBar';
 
 const Notes = () => {
-
-  //*** Variablen ***//
   const [allNotes, setAllNotes] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");  // Zustand für die Suchabfrage
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const notesPerPage = 12;
+  const itemsPerPage = 3;
 
   const navigate = useNavigate();
 
-  //*** Zustand Modal ***//
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
   });
 
-  //*** Zustand Toastmessage ***//
   const [showToastMsg, setShowToastMsg] = useState({
     isShown: false,
     message: "",
     data: null,
   });
 
-  //*** Paginierung ***//
-  const indexOfLastNote = currentPage * notesPerPage;
-  const indexOfFirstNote = indexOfLastNote - notesPerPage;
-  const currentNotes = allNotes.slice(indexOfFirstNote, indexOfLastNote);
-  const totalPages = Math.ceil(allNotes.length / notesPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = allNotes.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(allNotes.length / itemsPerPage);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      console.log(`Navigating to next page: ${currentPage + 1}`);
+      setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      console.log(`Navigating to previous page: ${currentPage - 1}`);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
-  
-
-  //*** User-Info abrufen ***//
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
@@ -74,7 +67,6 @@ const Notes = () => {
     }
   };
 
-  //*** Alle Notizen abrufen ***//
   const getAllNotes = async () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
@@ -86,14 +78,11 @@ const Notes = () => {
     }
   };
 
-  //*** Notiz editieren ***//
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
     console.log(noteDetails);
   };
 
-
-  //*** Notiz löschen ***//
   const deleteNote = async (data) => {
     const noteId = data._id;
     try {
@@ -107,11 +96,10 @@ const Notes = () => {
     }
   };
 
-  //***  Suchanfrage senden ***//
   const onSearchNote = async (query) => {
     if (!query.trim()) {
       setIsSearch(false);
-      getAllNotes(); // Wenn die Suchanfrage leer ist, alle Notizen zurücksetzen
+      getAllNotes();
       return;
     }
 
@@ -128,7 +116,6 @@ const Notes = () => {
     }
   };
 
-  //*** Alle Notizen pinnen/unpinnen ***//
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
     try {
@@ -145,7 +132,6 @@ const Notes = () => {
     }
   };
 
-  //*** Toast-Nachricht anzeigen ***//
   const showToastMessage = (message, type) => {
     setShowToastMsg({
       isShown: true,
@@ -154,7 +140,6 @@ const Notes = () => {
     });
   };
 
-  //*** Toast schließen ***//
   const handleCloseToast = () => {
     setShowToastMsg({
       isShown: false,
@@ -162,20 +147,16 @@ const Notes = () => {
     });
   };
 
-  //*** Suchabfrage zurücksetzen ***//
   const handleClearSearch = () => {
     setSearchQuery("");
     setIsSearch(false);
-    getAllNotes(); // Alle Notizen zurücksetzen, wenn die Suche gelöscht wird
+    getAllNotes();
   };
 
-  //*** useEffect für initiales Laden der Notizen und Benutzerdaten ***//
   useEffect(() => {
     getAllNotes();
     getUserInfo();
   }, []);
-
- 
 
   return (
     <Layout
@@ -184,12 +165,8 @@ const Notes = () => {
       onSearchNote={onSearchNote}
       handleClearSearch={handleClearSearch}
     >
-
-   
       <div className="flex items-center justify-between mb-6">
-        {/* Flexbox für SearchBar und Paginierung nebeneinander */}
         <div className="flex items-center gap-4 w-full">
-          {/* Suchleiste links */}
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
@@ -197,24 +174,35 @@ const Notes = () => {
             onClearSearch={handleClearSearch}
           />
 
-          {/* Paginierung rechts */}
           <div className="flex items-center gap-4 ml-auto">
             <button
-              onClick={prevPage}
+              onClick={() => {
+                console.log("Prev button clicked");
+                prevPage();
+              }}
               disabled={currentPage === 1}
-              className="p-2 text-blue-600 disabled:text-gray-400"
+              className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
+              style={{ zIndex: 10 }}
             >
               <MdChevronLeft size={32} />
             </button>
 
             <span className="text-lg">
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {totalPages || 1}
             </span>
 
             <button
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-              className="p-2 text-blue-600 disabled:text-gray-400"
+              onClick={() => {
+                console.log("Next button clicked");
+                nextPage();
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`p-2 ${
+                currentPage === totalPages || totalPages === 0
+                  ? "text-gray-400"
+                  : "text-blue-600"
+              }`}
+              style={{ zIndex: 10 }}
             >
               <MdChevronRight size={32} />
             </button>
@@ -222,10 +210,9 @@ const Notes = () => {
         </div>
       </div>
 
-      {/* Notizen anzeigen */}
-      {currentNotes.length > 0 ? (
+      {currentItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
-          {currentNotes.map((item) => (
+          {currentItems.map((item) => (
             <NoteCard
               key={item._id}
               title={item.title}
@@ -250,7 +237,6 @@ const Notes = () => {
         />
       )}
 
-      {/* Button zum Hinzufügen einer neuen Notiz */}
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
         onClick={() => {
@@ -260,7 +246,6 @@ const Notes = () => {
         <MdAdd className="text-[32px] text-white" />
       </button>
 
-      {/* Modal für Notizen hinzufügen/bearbeiten */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() => { }}
@@ -287,7 +272,6 @@ const Notes = () => {
         />
       </Modal>
 
-      {/* Toast-Benachrichtigung */}
       <Toast
         isShown={showToastMsg.isShown}
         message={showToastMsg.message}

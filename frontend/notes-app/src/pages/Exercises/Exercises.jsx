@@ -24,7 +24,7 @@ const Exercises = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
 
-  const exercisesPerPage = 12;
+  const exercisesPerPage = 3;
   const navigate = useNavigate();
 
   //*** Zustand Modal ***//
