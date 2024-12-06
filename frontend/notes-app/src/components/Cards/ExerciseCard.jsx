@@ -16,7 +16,7 @@ const ExerciseCard = ({
     onDelete, 
     onPinExercise, 
     imageUrl ,
-    tags = []
+    tags
 }) => {
     return (
         <div className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-out flex flex-col justify-between h-full'>
@@ -56,8 +56,8 @@ const ExerciseCard = ({
             {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
             <div className="flex items-center justify-between mt-2">
                 {/* Tags der Notiz als Hashtags anzeigen */}
-                <div className='text-xs text-slate-500'>
-                    {tags.map((exercise) => `#${exercise}`)} {/* Tags werden durch ein Array iteriert */}
+                <div className='text-xs text-blue-500'>
+                    {tags.map((exercise) => `#${exercise}  `)} {/* Tags werden durch ein Array iteriert */}
                 </div>
 
             </div>

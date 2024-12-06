@@ -226,6 +226,7 @@ const Exercises = () => {
                 durchfuehrung={exercise.durchfuehrung}
                 coaching={exercise.coaching}
                 variante={exercise.variante}
+                tags={exercise.tags}
                 isPinnedExercise={exercise.isPinnedExercise}
                 onEdit={() => handleEditExercise(exercise)}
                 onDelete={() => deleteExercise(exercise)}

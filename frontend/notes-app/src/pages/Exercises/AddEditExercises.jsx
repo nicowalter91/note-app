@@ -25,6 +25,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         durchfuehrung,
         coaching,
         variante,
+        tags
       });
       if (response.data && response.data.error == false) {
         showToastMessage("Exercise Added Successfully");
@@ -54,6 +55,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         durchfuehrung,
         coaching,
         variante,
+        tags
         });
   
         // Erfolgsnachricht anzeigen, wenn die Notiz erfolgreich aktualisiert wurde

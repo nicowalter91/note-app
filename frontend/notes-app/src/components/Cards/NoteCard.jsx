@@ -31,8 +31,8 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
         {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
         <div className="flex items-center justify-between mt-2">
             {/* Tags der Notiz als Hashtags anzeigen */}
-            <div className='text-xs text-slate-500'>
-                {tags.map((item) => `#${item}`)} {/* Tags werden durch ein Array iteriert */}
+            <div className='text-xs text-blue-500'>
+                {tags.map((item) => `#${item}  `)} {/* Tags werden durch ein Array iteriert */}
             </div>
 
             {/* Buttons für Bearbeiten und Löschen der Notiz */}
