@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdClose, MdDelete } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
 import TagInput from '../../components/Input/TagInput';
 import { MdCloudUpload } from 'react-icons/md';
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
-  console.log(exerciseData);
   const [title, setTitle] = useState(exerciseData?.title || "");
   const [organisation, setOrganisation] = useState(exerciseData?.organisation || "");
   const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || "");
@@ -14,110 +13,128 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [tags, setTags] = useState(exerciseData?.tags || []);
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
-  
 
-  //** Neue Exercise hinzufügen ***//
+  const [imagePreview, setImagePreview] = useState(exerciseData?.image || null);
+
+  useEffect(() => {
+    // Wenn wir im "edit"-Modus sind und ein Bild bereits vorhanden ist
+    if (exerciseData?.image) {
+      setImagePreview(exerciseData.image);
+    }
+  }, [exerciseData]);
+
+  // Neue Exercise hinzufügen
   const addNewExercise = async () => {
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('organisation', organisation);
+    formData.append('durchfuehrung', durchfuehrung);
+    formData.append('coaching', coaching);
+    formData.append('variante', variante);
+    formData.append('tags', JSON.stringify(tags));
+
+    if (image) {
+      formData.append('image', image); // Bild anhängen
+    }
+
     try {
-      const response = await axiosInstance.post("/add-exercise", {
-        title,
-        organisation,
-        durchfuehrung,
-        coaching,
-        variante,
-        tags
+      const response = await axiosInstance.post("/add-exercise", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      if (response.data && response.data.error == false) {
+
+      if (response.data && response.data.error === false) {
         showToastMessage("Exercise Added Successfully");
-        getAllExercises();  // Alle Notizen erneut abrufen
+        getAllExercises();
         onClose();
       }
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message)
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
       }
     }
   };
 
-    //** Neue Exercise editieren ***//
-    const editExercise = async () => {
-      const exerciseId = exerciseData._id 
-  
-      try {
-        // API-Anfrage zum Bearbeiten der Notiz
-        const response = await axiosInstance.put("/edit-exercise/" + exerciseId, {
-        title,
-        organisation,
-        durchfuehrung,
-        coaching,
-        variante,
-        tags
-        });
-  
-        // Erfolgsnachricht anzeigen, wenn die Notiz erfolgreich aktualisiert wurde
-        if (response.data && response.data.exercise) {
-          showToastMessage("Exercise Updated Successfully");
-          getAllExercises();  // Alle Notizen erneut abrufen
-          onClose();  // Schließt das Modal/Fenster
-        }
-      } catch (error) {
-        // Fehlerbehandlung: Zeigt eine Fehlermeldung an
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          setError(error.response.data.message)
-        }
-      }
-    };
+  // Exercise bearbeiten
+  const editExercise = async () => {
+    const exerciseId = exerciseData._id;
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('organisation', organisation);
+    formData.append('durchfuehrung', durchfuehrung);
+    formData.append('coaching', coaching);
+    formData.append('variante', variante);
+    formData.append('tags', JSON.stringify(tags));
 
+    if (image) {
+      formData.append('image', image); // Bild anhängen
+    }
+
+    try {
+      const response = await axiosInstance.put(`/edit-exercise/${exerciseId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data && response.data.exercise) {
+        showToastMessage("Exercise Updated Successfully");
+        getAllExercises();
+        onClose();
+      }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      }
+    }
+  };
+
+  // Eingaben validieren und weiterleiten
   const handleAddExercise = () => {
-    if(!title) {
+    if (!title) {
       setError("Please enter the title");
       return;
     }
 
-    if(!organisation) {
+    if (!organisation) {
       setError("Please enter the organisation");
       return;
     }
 
-    if(!durchfuehrung) {
+    if (!durchfuehrung) {
       setError("Please enter the durchfuehrung");
       return;
     }
 
-    if(!coaching) {
+    if (!coaching) {
       setError("Please enter the coaching");
       return;
     }
 
     setError("");
 
-    if(type === "edit") {
+    if (type === "edit") {
       editExercise();
     } else {
       addNewExercise();
     }
   };
 
+  // Bildänderung behandeln
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
+      setImagePreview(URL.createObjectURL(file)); // Vorschau des Bildes
     }
   };
 
+  // Bild entfernen
   const handleImageRemove = () => {
     setImage(null);
+    setImagePreview(null);
   };
-
-
 
   return (
     <div className="relative mx-auto">
@@ -134,7 +151,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
           className="text-2xl text-slate-950 outline-none w-full"
           placeholder="Please insert title"
           value={title}
-          onChange={({target}) => setTitle(target.value)}
+          onChange={({ target }) => setTitle(target.value)}
         />
       </div>
 
@@ -142,13 +159,12 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       <div className="grid grid-cols-2 gap-8 mt-4">
         {/* Image Upload */}
         <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6">
-          
-          {image ? (
-            <form action="/profile" method="post" enctype="multipart/form-data" className="flex flex-col items-center">
+          {imagePreview ? (
+            <form className="flex flex-col items-center">
               <img
-                src={URL.createObjectURL(image)}
+                src={imagePreview}
                 alt="Preview"
-                className="w-full  object-cover rounded mb-4"
+                className="w-full object-cover rounded mb-4"
               />
               <button
                 className="flex items-center gap-2 text-red-500 text-sm hover:underline"
@@ -186,7 +202,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Describe the organisation setup..."
               value={organisation}
-              onChange={({target}) => setOrganisation(target.value)}
+              onChange={({ target }) => setOrganisation(target.value)}
             />
           </div>
 
@@ -198,7 +214,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Describe how the exercise is conducted..."
               value={durchfuehrung}
-              onChange={({target}) => setDurchfuehrung(target.value)}
+              onChange={({ target }) => setDurchfuehrung(target.value)}
             />
           </div>
 
@@ -210,7 +226,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Coaching points or instructions..."
               value={coaching}
-              onChange={({target}) => setCoaching(target.value)}
+              onChange={({ target }) => setCoaching(target.value)}
             />
           </div>
 
@@ -222,16 +238,16 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
               className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
               placeholder="Possible variations or adjustments..."
               value={variante}
-              onChange={({target}) => setVariante(target.value)}
+              onChange={({ target }) => setVariante(target.value)}
             />
           </div>
         </div>
       </div>
 
-       {/* Tag-Eingabefeld */}
-       <div className='mt-3'>
+      {/* Tag-Eingabefeld */}
+      <div className="mt-3">
         <label className="input-label">TAGS</label>
-        <TagInput tags={tags} setTags={setTags} />  {/* Ermöglicht das Hinzufügen von Tags */}
+        <TagInput tags={tags} setTags={setTags} />
       </div>
 
       {/* Error Message */}
@@ -239,7 +255,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
 
       {/* Submit Button */}
       <button className='btn-primary font-medium text-xs mt-5 p-3' onClick={handleAddExercise}>
-        {type === 'edit' ? 'UPDATE' :  'ADD'}  {/* Zeigt entweder 'UPDATE' oder 'ADD' je nach Modus */}
+        {type === 'edit' ? 'UPDATE' : 'ADD'}
       </button>
     </div>
   );

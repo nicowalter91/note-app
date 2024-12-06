@@ -1,139 +1,96 @@
-// *** Konfigurations- und Initialisierungsblock ***
 require("dotenv").config();
 const config = require("./config.json");
-const multer  = require('multer')
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '/uploads')
-  },
-  filename: function (req, file, cb) {
-    
-    cb(null, file.originalname)
-  }
-})
-
-const upload = multer({ storage })
-
-
-
-
-const { getUser, loginUser, createUser } = require("./controllers/user");
-const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
-const { addExercise, editExercise, getExercises, deleteExercise, searchExercise, isPinnedExercise} = require("./controllers/exercises");
-
-
-
-
-//*** Verbindung zur MongoDB-Datenbank herstellen
-const connectDB = require("./config/db");
-connectDB();
-
-
-
-//*** Import von Datenbankmodellen
-const User = require("./models/user.model");
-const Note = require("./models/note.model");
-const Exercises = require("./models/exercises.model");
-
-//*** Express und Middleware einrichten
+const multer = require("multer");
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const { authenticateToken } = require("./utilities");
 
+// ** Datenbankverbindung **
+const connectDB = require("./config/db");
+connectDB();
+
+// ** Controller-Importe **
+const { 
+    addExercise, 
+    editExercise, 
+    getExercises, 
+    deleteExercise, 
+    searchExercise, 
+    isPinnedExercise 
+} = require("./controllers/exercises");
+
+const { 
+    addNote, 
+    editNote, 
+    getNotes, 
+    deleteNote, 
+    isPinned, 
+    searchNote 
+} = require("./controllers/notes");
+
+const { 
+    getUser, 
+    loginUser, 
+    createUser 
+} = require("./controllers/user");
+
+// ** Express-Setup **
 const app = express();
+app.use(express.json());
+app.use(cors({ origin: "*" }));
+app.use(express.static("uploads"));
 
-// *** Middleware-Setup ***
-app.use(express.json()); // Parsing von JSON-Anfragen
-app.use(cors({ origin: "*" })); // CORS für alle Ursprünge erlauben
-
-
-
-// *** Basisroute ***
-app.get("/", (req, res) => {
-  res.json({ data: "hello" });
+// ** Multer-Konfiguration **
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "./uploads"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
 });
 
-//*** Multer
-app.post('/api/upload', upload.single('file'),(req, res) => {
-  res.json(req.file);
+const upload = multer({ 
+  storage, 
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png/;
+    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = fileTypes.test(file.mimetype);
+
+    if (extname && mimeType) {
+      return cb(null, true);
+    } else {
+      cb(new Error("Only .jpg, .jpeg, and .png files are allowed!"));
+    }
+  }
 });
 
+// ** Statische Route für Bildzugriff **
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
+// ** Benutzerverwaltungsrouten **
+app.post("/create-account", createUser);
+app.post("/login", loginUser);
+app.get("/get-user", authenticateToken, getUser);
 
-// *** Benutzerverwaltungsrouten ***
-// Route zum Erstellen eines neuen Benutzerkontos
-app.post("/create-account", async (req, res) => {
-  createUser(req, res);
-});
+// ** Notizverwaltungsrouten **
+app.post("/add-note", authenticateToken, addNote);
+app.put("/edit-note/:noteId", authenticateToken, editNote);
+app.get("/get-all-notes", authenticateToken, getNotes);
+app.delete("/delete-note/:noteId", authenticateToken, deleteNote);
+app.put("/update-note-pinned/:noteId", authenticateToken, isPinned);
+app.get("/search-notes", authenticateToken, searchNote);
 
-// Login-Route
-app.post("/login", async (req, res) => {
-  loginUser(req, res);
-});
+// ** Übungsverwaltungsrouten **
+app.post("/add-exercise", authenticateToken, upload.single("image"), addExercise);
+app.put("/edit-exercise/:exerciseId", authenticateToken, upload.single("image"), editExercise);
+app.get("/get-all-exercises", authenticateToken, getExercises);
+app.delete("/delete-exercise/:exerciseId", authenticateToken, deleteExercise);
+app.put("/update-exercise-pinned/:exerciseId", authenticateToken, isPinnedExercise);
+app.get("/search-exercise", authenticateToken, searchExercise);
 
-// Route zum Abrufen von Benutzerinformationen
-app.get("/get-user", authenticateToken, async (req, res) => {
-  getUser(req, res);
-});
-
-// *** Notizverwaltungsrouten ***
-// Route zum Hinzufügen einer neuen Notiz
-app.post("/add-note", authenticateToken, async (req, res) => {
-  addNote(req, res);
-});
-
-// Route zum Bearbeiten einer Notiz
-app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
-  editNote(req, res);
-});
-
-// Route zum Abrufen aller Notizen eines Benutzers
-app.get("/get-all-notes", authenticateToken, async (req, res) => {
- getNotes(req,res);
-});
-
-// Route zum Löschen einer Notiz
-app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
-  deleteNote(req,res);
-});
-
-// Route zum Aktualisieren des "isPinned"-Werts
-app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
-  isPinned(req, res);
-});
-
-// Route zur Suche nach Notizen
-app.get("/search-notes", authenticateToken, async (req, res) => {
-  searchNote(req,res);
-});
-
-// *** Übungswaltungsrouten ***
-app.post("/add-exercise", authenticateToken, async (req, res) => {
-  addExercise(req, res);
-});
-
-app.put("/edit-exercise/:exerciseId", authenticateToken, async (req, res) => {
-  editExercise(req, res); 
-});
-
-app.get("/get-all-exercises", authenticateToken, async (req, res) => {
-  getExercises(req,res);
- });
-
-app.delete("/delete-exercise/:exerciseId", authenticateToken, async (req, res) => {
-  deleteExercise(req,res);
-});
-
-app.put("/update-exercise-pinned/:exerciseId", authenticateToken, async (req, res) => {
-  isPinnedExercise(req, res);
-});
-
-app.get("/search-exercise", authenticateToken, async (req, res) => {
-  searchExercise(req,res);
-});
-
-// *** Server starten ***
+// ** Starten des Servers **
 app.listen(8000, () => console.log("Server running on port 8000"));
 
 module.exports = app;

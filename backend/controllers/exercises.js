@@ -2,89 +2,62 @@ const Exercise = require("../models/exercises.model");
 
 
 const addExercise = async (req, res) => {
+  const { title, organisation, durchfuehrung, coaching, variante, date, tags } = req.body;
+  const { user } = req.user;
 
-    const { title, organisation, durchfuehrung, coaching, variante, date, image, tags} = req.body;
-    const { user } = req.user;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : ''; 
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
 
-    if (!title)
-        return res.status(400).json({error: true, message: "Title is required"});
+  if (!title || !organisation || !durchfuehrung || !coaching) {
+      return res.status(400).json({ error: true, message: "Required fields are missing" });
+  }
 
-    if (!organisation)
-        return res.status(400).json({error: true, message: "Organisation is required"});
+  try {
+      const exercise = new Exercise({
+          title,
+          organisation,
+          durchfuehrung,
+          coaching,
+          variante,
+          date,
+          imageUrl,
+          tags: tags ? tags.split(",") : [],
+          userId: user._id,
+      });
 
-    if (!durchfuehrung)
-        return res.status(400).json({error: true, message: "Durchführung is required"});
-
-    if (!coaching)
-        return res.status(400).json({error: true, message: "Coaching is required"});
-
-
-    try {
-        const exercise = new Exercise({
-            title,
-            date,
-            organisation,
-            durchfuehrung,
-            coaching,
-            variante,
-            imageUrl,
-            tags: tags || [],
-            userId: user._id,
-        });
-
-        await exercise.save();
-        return res.json({error: false, message: "Exercise added successfully"});
-
-    } catch (error) {
-        console.error(error);
-        return res
-        .status(500)
-        .json({error: true, message: "Internal Server Error"})
-    }
+      await exercise.save();
+      return res.json({ error: false, message: "Exercise added successfully", exercise });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
 };
 
 const editExercise = async (req, res) => {
+  const { exerciseId } = req.params;
+  const { title, organisation, durchfuehrung, coaching, variante, tags } = req.body;
+  const { user } = req.user;
 
-    const { exerciseId } = req.params;
-    const { title, organisation, durchfuehrung, coaching, variante, tags, isPinnedExercise } = req.body;
-    const { user } = req.user;
+  try {
+      const exercise = await Exercise.findOne({ _id: exerciseId, userId: user._id });
 
-    if(!title && !organisation && !durchfuehrung && !coaching && !variante && !tags) {
-        return res
-        .status(400)
-        .json({error: true, message: "No changes provided"});
-    }
+      if (!exercise) {
+          return res.status(404).json({ error: true, message: "Exercise not found" });
+      }
 
-    if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
-    }
+      if (title) exercise.title = title;
+      if (organisation) exercise.organisation = organisation;
+      if (durchfuehrung) exercise.durchfuehrung = durchfuehrung;
+      if (coaching) exercise.coaching = coaching;
+      if (variante) exercise.variante = variante;
+      if (tags) exercise.tags = tags.split(",");
+      if (req.file) exercise.imageUrl = `/uploads/${req.file.filename}`;
 
-    try {
-        const exercise = await Exercise.findOne({ _id: exerciseId, userId: user._id });
-        if(!exercise)
-            return res.status(404).json({error: true, message: "Exercise not found"});
-
-        if(title) exercise.title = title;
-        if(organisation) exercise.organisation = organisation;
-        if(durchfuehrung) exercise.durchfuehrung = durchfuehrung;
-        if(coaching) exercise.coaching = coaching;
-        if(variante) exercise.variante = variante;
-        if(tags) exercise.tags = tags;
-        if(isPinnedExercise) exercise.isPinnedExercise = isPinnedExercise;
-
-        await exercise.save();
-        return res.json({
-            error: false,
-            exercise,
-            message: "Exercise updated successfully",
-        });
-    } catch (error) {
-        console.error(error);
-        return res
-        .status(500)
-        .json({error: true, message: "Internal Server Error"});
-    }
+      await exercise.save();
+      return res.json({ error: false, message: "Exercise updated successfully", exercise });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
 };
 
 const getExercises = async (req, res) => {
@@ -92,6 +65,7 @@ const getExercises = async (req, res) => {
   
     try {
       const exercise = await Exercise.find({ userId: user._id }).sort({ isPinnedExercise: -1 });
+     
       return res.json({
         error: false,
         exercise,

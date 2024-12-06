@@ -182,7 +182,7 @@ const Exercises = () => {
             />
             <button
               onClick={filterPinnedExercises}
-              className={`px-4 py-2 rounded-lg ${showPinnedOnly ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+              className={`px-4 py-2 rounded-lg ${showPinnedOnly ?   'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'}`}
             >
               {showPinnedOnly ? 'Show All' : 'Show Pinned'}
             </button>
@@ -219,18 +219,19 @@ const Exercises = () => {
           <div className="grid grid-cols-3 gap-4">
             {currentItems.map((exercise) => (
               <ExerciseCard
-                key={exercise._id}
-                title={exercise.title}
-                date={exercise.createdOn}
-                organisation={exercise.organisation}
-                durchfuehrung={exercise.durchfuehrung}
-                coaching={exercise.coaching}
-                variante={exercise.variante}
-                tags={exercise.tags}
-                isPinnedExercise={exercise.isPinnedExercise}
-                onEdit={() => handleEditExercise(exercise)}
-                onDelete={() => deleteExercise(exercise)}
-                onPinExercise={() => updateIsPinnedExercise(exercise)}
+              key={exercise._id}
+              title={exercise.title}
+              date={exercise.createdOn}
+              organisation={exercise.organisation}
+              durchfuehrung={exercise.durchfuehrung}
+              coaching={exercise.coaching}
+              variante={exercise.variante}
+              tags={exercise.tags}
+              isPinnedExercise={exercise.isPinnedExercise}
+              onEdit={() => handleEditExercise(exercise)}
+              onDelete={() => deleteExercise(exercise)}
+              onPinExercise={() => updateIsPinnedExercise(exercise)}
+              imageUrl={exercise.imageUrl} 
               />
             ))}
           </div>

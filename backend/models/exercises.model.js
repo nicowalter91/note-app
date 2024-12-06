@@ -1,23 +1,19 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
 
-// Schema für eine Übung
-const exerciseSchema = new Schema({
+const exerciseSchema = new mongoose.Schema(
+    {
+        title: { type: String, required: true },
+        organisation: { type: String, required: true },
+        durchfuehrung: { type: String, required: true },
+        coaching: { type: String, required: true },
+        variante: { type: String },
+        date: { type: Date, default: Date.now },
+        imageUrl: { type: String },
+        tags: { type: [String], default: [] },
+        isPinnedExercise: { type: Boolean, default: false },
+        userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    },
+    { timestamps: true }
+);
 
-  title: { type: String, required: true },
-  organisation: { type: String, required: true },
-  durchfuehrung: { type: String, required: true, },
-  coaching: { type: String, required: true, },
-  variante: { type: String, },
-  date: { type: Date, default: Date.now, },
-  image: {type: String},
-  tags: {type: [String], default: [],}, 
-  isPinnedExercise: { type: Boolean, default: false, },
-  userId: { type: String, required: true },
-  createdOn: { type: Date, default: new Date().getTime() },
-});
-
-// Erstelle das Modell aus dem Schema
 module.exports = mongoose.model("Exercise", exerciseSchema);
-
-

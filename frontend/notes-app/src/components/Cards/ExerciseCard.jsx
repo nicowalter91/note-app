@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { MdOutlinePushPin } from 'react-icons/md';
 import { MdCreate, MdDelete } from 'react-icons/md';
-import Image from "../../assets/img/Test.png";
+
 
 const ExerciseCard = ({ 
     title, 
@@ -15,8 +15,10 @@ const ExerciseCard = ({
     onEdit, 
     onDelete, 
     onPinExercise, 
-    imageUrl ,
+    imageUrl,
     tags
+    
+    
 }) => {
     return (
         <div className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-out flex flex-col justify-between h-full'>
@@ -38,9 +40,10 @@ const ExerciseCard = ({
                         onClick={onPinExercise}
                     />
                 </div>
-
+                
                 {/* Bild unter Titel und Datum */}
-                <img src={Image} alt={title} className="w-full h-auto rounded mt-2" />
+
+                <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2" />
 
                 {/* Vorschau des Inhalts der Notiz */}
                 <label className="input-label">ORGANISATION</label>
@@ -55,10 +58,10 @@ const ExerciseCard = ({
 
             {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
             <div className="flex items-center justify-between mt-2">
-                {/* Tags der Notiz als Hashtags anzeigen */}
-                <div className='text-xs text-blue-500'>
-                    {tags.map((exercise) => `#${exercise}  `)} {/* Tags werden durch ein Array iteriert */}
-                </div>
+            {/* Tags der Notiz als Hashtags anzeigen */}
+            <div className='text-xs text-blue-500'>
+                {tags.map((item) => `#${item}  `)} {/* Tags werden durch ein Array iteriert */}
+            </div>
 
             </div>
 
