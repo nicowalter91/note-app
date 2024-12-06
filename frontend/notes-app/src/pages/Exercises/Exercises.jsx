@@ -21,7 +21,7 @@ const Exercises = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPinnedOnly, setShowPinnedOnly] = useState(false); // Zustand für den Filter
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
   const navigate = useNavigate();
 
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -164,85 +164,89 @@ const Exercises = () => {
   }, [showPinnedOnly]); // Re-rendere, wenn der Filterstatus geändert wird
 
   return (
-    <Layout userInfo={userInfo} onLogout={() => { localStorage.clear(); navigate("/login"); }} onSearchExercise={onSearchExercise} handleClearSearch={handleClearSearch}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4 w-full">
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            handleSearch={() => onSearchExercise(searchQuery)}
-            onClearSearch={handleClearSearch}
-          />
-          <button
-            onClick={filterPinnedExercises}
-            className={`px-4 py-2 rounded-lg ${showPinnedOnly ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
-          >
-            {showPinnedOnly ? 'Show All' : 'Show Pinned'}
-          </button>
-
-          {/* Paginierung rechts */}
-          <div className="flex items-center gap-4 ml-auto">
+    <Layout
+      userInfo={userInfo}
+      onLogout={() => { localStorage.clear(); navigate("/login"); }}
+      onSearchExercise={onSearchExercise}
+      handleClearSearch={handleClearSearch}
+    >
+      {/* Obere Container mit SearchBar, Filter und Paginierung */}
+      <div className="sticky top-0 z-10 bg-white mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4 w-full">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              handleSearch={() => onSearchExercise(searchQuery)}
+              onClearSearch={handleClearSearch}
+            />
             <button
-              onClick={() => {
-                console.log("Prev button clicked");
-                prevPage();
-              }}
-              disabled={currentPage === 1}
-              className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
-              style={{ zIndex: 10 }}
+              onClick={filterPinnedExercises}
+              className={`px-4 py-2 rounded-lg ${showPinnedOnly ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
             >
-              <MdChevronLeft size={32} />
+              {showPinnedOnly ? 'Show All' : 'Show Pinned'}
             </button>
-
-            <span className="text-lg">
-              Page {currentPage} of {totalPages || 1}
-            </span>
-
-            <button
-              onClick={() => {
-                console.log("Next button clicked");
-                nextPage();
-              }}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className={`p-2 ${currentPage === totalPages || totalPages === 0
-                ? "text-gray-400"
-                : "text-blue-600"
-                }`}
-              style={{ zIndex: 10 }}
-            >
-              <MdChevronRight size={32} />
-            </button>
+  
+            {/* Paginierung rechts */}
+            <div className="flex items-center gap-4 ml-auto">
+              <button
+                onClick={() => prevPage()}
+                disabled={currentPage === 1}
+                className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
+              >
+                <MdChevronLeft size={32} />
+              </button>
+  
+              <span className="text-lg">
+                Page {currentPage} of {totalPages || 1}
+              </span>
+  
+              <button
+                onClick={() => nextPage()}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className={`p-2 ${currentPage === totalPages || totalPages === 0 ? "text-gray-400" : "text-blue-600"}`}
+              >
+                <MdChevronRight size={32} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
-
-      {currentItems.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4 mt-8">
-          {currentItems.map((exercise) => (
-            <ExerciseCard
-              key={exercise._id}
-              title={exercise.title}
-              date={exercise.createdOn}
-              organisation={exercise.organisation}
-              durchfuehrung={exercise.durchfuehrung}
-              coaching={exercise.coaching}
-              variante={exercise.variante}
-              isPinnedExercise={exercise.isPinnedExercise}
-              onEdit={() => handleEditExercise(exercise)}
-              onDelete={() => deleteExercise(exercise)}
-              onPinExercise={() => updateIsPinnedExercise(exercise)}
-            />
-          ))}
-        </div>
-      ) : (
-        <EmptyCard imgSrc={isSearch ? NoDataImg : AddNotesImg} message={isSearch ? `Oops! No Exercises found matching your search.` : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`} />
-      )}
-
-      <button className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10" onClick={() => { setOpenAddEditModal({ isShown: true, type: "add", data: null }); }}>
+  
+      {/* Unterer Container mit den Exercises (scrollbar) */}
+      <div className="mt-8 overflow-y-auto max-h-[calc(100vh-200px)]"> {/* Passe die Höhe an den verfügbaren Platz an */}
+        {currentItems.length > 0 ? (
+          <div className="grid grid-cols-3 gap-4">
+            {currentItems.map((exercise) => (
+              <ExerciseCard
+                key={exercise._id}
+                title={exercise.title}
+                date={exercise.createdOn}
+                organisation={exercise.organisation}
+                durchfuehrung={exercise.durchfuehrung}
+                coaching={exercise.coaching}
+                variante={exercise.variante}
+                isPinnedExercise={exercise.isPinnedExercise}
+                onEdit={() => handleEditExercise(exercise)}
+                onDelete={() => deleteExercise(exercise)}
+                onPinExercise={() => updateIsPinnedExercise(exercise)}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyCard imgSrc={isSearch ? NoDataImg : AddNotesImg} message={isSearch ? `Oops! No Exercises found matching your search.` : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`} />
+        )}
+      </div>
+  
+      {/* Button zum Hinzufügen einer neuen Übung */}
+      <button
+        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
+        onClick={() => { setOpenAddEditModal({ isShown: true, type: "add", data: null }); }}
+      >
         <MdAdd className="text-[32px] text-white" />
       </button>
-
+  
+      {/* Modal für das Hinzufügen/Bearbeiten einer Übung */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() => { }}
@@ -257,7 +261,8 @@ const Exercises = () => {
           showToastMessage={showToastMessage}
         />
       </Modal>
-
+  
+      {/* Toast Nachricht */}
       <Toast
         isShown={showToastMsg.isShown}
         message={showToastMsg.message}
@@ -266,6 +271,7 @@ const Exercises = () => {
       />
     </Layout>
   );
+  
 };
 
 export default Exercises;

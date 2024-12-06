@@ -18,7 +18,7 @@ const Notes = () => {
   const [isSearch, setIsSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 12;
 
   const navigate = useNavigate();
 
