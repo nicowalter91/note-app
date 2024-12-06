@@ -179,8 +179,43 @@ const Exercises = () => {
           >
             {showPinnedOnly ? 'Show All' : 'Show Pinned'}
           </button>
+
+          {/* Paginierung rechts */}
+          <div className="flex items-center gap-4 ml-auto">
+            <button
+              onClick={() => {
+                console.log("Prev button clicked");
+                prevPage();
+              }}
+              disabled={currentPage === 1}
+              className={`p-2 ${currentPage === 1 ? "text-gray-400" : "text-blue-600"}`}
+              style={{ zIndex: 10 }}
+            >
+              <MdChevronLeft size={32} />
+            </button>
+
+            <span className="text-lg">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+
+            <button
+              onClick={() => {
+                console.log("Next button clicked");
+                nextPage();
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`p-2 ${currentPage === totalPages || totalPages === 0
+                ? "text-gray-400"
+                : "text-blue-600"
+                }`}
+              style={{ zIndex: 10 }}
+            >
+              <MdChevronRight size={32} />
+            </button>
+          </div>
         </div>
       </div>
+
 
       {currentItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
