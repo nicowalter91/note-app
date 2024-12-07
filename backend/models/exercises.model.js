@@ -9,7 +9,6 @@ const exerciseSchema = new mongoose.Schema(
         variante: { type: String },
         date: { type: Date, default: Date.now },
         imageUrl: { type: String },
-        tags: { type: [String], default: [] },
         isPinnedExercise: { type: Boolean, default: false },
         userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     },

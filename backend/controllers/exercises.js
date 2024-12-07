@@ -2,7 +2,7 @@ const Exercise = require("../models/exercises.model");
 
 
 const addExercise = async (req, res) => {
-  const { title, organisation, durchfuehrung, coaching, variante, date, tags } = req.body;
+  const { title, organisation, durchfuehrung, coaching, variante, date } = req.body;
   const { user } = req.user;
 
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
@@ -20,7 +20,6 @@ const addExercise = async (req, res) => {
           variante,
           date,
           imageUrl,
-          tags: tags ? tags.split(",") : [],
           userId: user._id,
       });
 
@@ -34,7 +33,7 @@ const addExercise = async (req, res) => {
 
 const editExercise = async (req, res) => {
   const { exerciseId } = req.params;
-  const { title, organisation, durchfuehrung, coaching, variante, tags } = req.body;
+  const { title, organisation, durchfuehrung, coaching, variante } = req.body;
   const { user } = req.user;
 
   try {
@@ -49,7 +48,6 @@ const editExercise = async (req, res) => {
       if (durchfuehrung) exercise.durchfuehrung = durchfuehrung;
       if (coaching) exercise.coaching = coaching;
       if (variante) exercise.variante = variante;
-      if (tags) exercise.tags = tags.split(",");
       if (req.file) exercise.imageUrl = `/uploads/${req.file.filename}`;
 
       await exercise.save();

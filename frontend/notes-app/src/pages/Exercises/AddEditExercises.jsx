@@ -10,7 +10,6 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || "");
   const [coaching, setCoaching] = useState(exerciseData?.coaching || "");
   const [variante, setVariante] = useState(exerciseData?.variante || "");
-  const [tags, setTags] = useState(exerciseData?.tags || []);
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
 
@@ -31,7 +30,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('durchfuehrung', durchfuehrung);
     formData.append('coaching', coaching);
     formData.append('variante', variante);
-    formData.append('tags', JSON.stringify(tags));
+  
 
     if (image) {
       formData.append('image', image); // Bild anhängen
@@ -65,7 +64,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('durchfuehrung', durchfuehrung);
     formData.append('coaching', coaching);
     formData.append('variante', variante);
-    formData.append('tags', JSON.stringify(tags));
+ 
 
     if (image) {
       formData.append('image', image); // Bild anhängen
@@ -242,12 +241,6 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
             />
           </div>
         </div>
-      </div>
-
-      {/* Tag-Eingabefeld */}
-      <div className="mt-3">
-        <label className="input-label">TAGS</label>
-        <TagInput tags={tags} setTags={setTags} />
       </div>
 
       {/* Error Message */}

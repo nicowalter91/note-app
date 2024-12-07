@@ -4,21 +4,21 @@ import { MdOutlinePushPin } from 'react-icons/md';
 import { MdCreate, MdDelete } from 'react-icons/md';
 
 
-const ExerciseCard = ({ 
-    title, 
-    date, 
-    organisation, 
-    durchfuehrung, 
-    coaching, 
-    variante, 
-    isPinnedExercise, 
-    onEdit, 
-    onDelete, 
-    onPinExercise, 
+const ExerciseCard = ({
+    title,
+    date,
+    organisation,
+    durchfuehrung,
+    coaching,
+    variante,
+    isPinnedExercise,
+    onEdit,
+    onDelete,
+    onPinExercise,
     imageUrl,
-    tags
     
-    
+
+
 }) => {
     return (
         <div className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-out flex flex-col justify-between h-full'>
@@ -40,7 +40,7 @@ const ExerciseCard = ({
                         onClick={onPinExercise}
                     />
                 </div>
-                
+
                 {/* Bild unter Titel und Datum */}
 
                 <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2" />
@@ -56,16 +56,9 @@ const ExerciseCard = ({
                 <p className="text-xs text-slate-600 mt-2">{variante?.slice(0, 120)}</p>
             </div>
 
-            {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
-            <div className="flex items-center justify-between mt-2">
-            {/* Tags der Notiz als Hashtags anzeigen */}
-            <div className='text-xs text-blue-500'>
-                {tags.map((item) => `#${item}  `)} {/* Tags werden durch ein Array iteriert */}
-            </div>
+            
 
-            </div>
-
-            {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
+            {/*Buttons für Bearbeiten und Löschen */}
             <div className="flex justify-end items-end mt-auto gap-2">
                 <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
                 <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
