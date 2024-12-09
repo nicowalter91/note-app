@@ -184,7 +184,7 @@ const Exercises = () => {
               onClick={filterPinnedExercises}
               className={`px-4 py-2 rounded-lg ${showPinnedOnly ?   'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'}`}
             >
-              {showPinnedOnly ? 'Show All' : 'Show Pinned'}
+              {showPinnedOnly ? 'Show All' : 'Favorites'}
             </button>
   
             {/* Paginierung rechts */}

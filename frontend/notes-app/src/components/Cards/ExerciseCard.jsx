@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { MdOutlinePushPin } from 'react-icons/md';
 import { MdCreate, MdDelete } from 'react-icons/md';
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 
 const ExerciseCard = ({
@@ -16,7 +16,7 @@ const ExerciseCard = ({
     onDelete,
     onPinExercise,
     imageUrl,
-    
+
 
 
 }) => {
@@ -35,10 +35,20 @@ const ExerciseCard = ({
                     </div>
 
                     {/* Pin-Icon, das auf den Status "isPinned" reagiert */}
-                    <MdOutlinePushPin
-                        className={`icon-btn ${isPinnedExercise ? 'text-primary' : 'text-slate-300'}`}
-                        onClick={onPinExercise}
-                    />
+                    {isPinnedExercise ? (
+                        <FaHeart
+                            className="icon-btn text-primary"
+                            onClick={onPinExercise}
+                        />
+                    ) : (
+                        <FaRegHeart
+                            className="icon-btn text-slate-300"
+                            onClick={onPinExercise}
+                        />
+                    )}
+
+                   
+
                 </div>
 
                 {/* Bild unter Titel und Datum */}
@@ -56,7 +66,7 @@ const ExerciseCard = ({
                 <p className="text-xs text-slate-600 mt-2">{variante?.slice(0, 120)}</p>
             </div>
 
-            
+
 
             {/*Buttons für Bearbeiten und Löschen */}
             <div className="flex justify-end items-end mt-auto gap-2">

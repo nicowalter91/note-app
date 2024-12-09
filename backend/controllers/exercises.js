@@ -41,6 +41,18 @@ const editExercise = async (req, res) => {
   try {
     const exercise = await Exercise.findOne({ _id: exerciseId, userId: user._id });
 
+    const fileData = await Exercise.findById(exerciseId);
+    console.log(fileData);
+    const filePath = "." + fileData.imageUrl;
+    console.log(filePath);
+
+    fs.unlink(filePath,(error) => {
+      if(error) {
+        console.log("Error while deleting file!");
+      }
+      console.log("File delete successfully!");
+    });
+
     if (!exercise) {
       return res.status(404).json({ error: true, message: "Exercise not found" });
     }
