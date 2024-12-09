@@ -4,6 +4,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import { MdCloudUpload } from 'react-icons/md';
 import { IoMdTime } from "react-icons/io";
 import { IoPeopleOutline } from "react-icons/io5";
+import { CiShoppingTag } from "react-icons/ci";
 
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
@@ -14,6 +15,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [variante, setVariante] = useState(exerciseData?.variante || "");
   const [duration, setDuration] = useState(exerciseData?.duration || "");
   const [players, setPlayers] = useState(exerciseData?.players || "");
+  const [category, setCategory] = useState(exerciseData?.category || "");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
 
@@ -37,6 +39,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('variante', variante);
     formData.append('duration', duration);
     formData.append('players', players);
+    formData.append("category", category);
 
 
     if (image) {
@@ -73,6 +76,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('variante', variante);
     formData.append('duration', duration);
     formData.append('players', players);
+    formData.append("category", category);
 
 
     if (image) {
@@ -185,6 +189,24 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
           value={players}
           onChange={({ target }) => setPlayers(target.value)}
         />
+
+        {/* Category*/}
+        <CiShoppingTag className='text-lg text-slate-600' />
+        <select
+          className="text-sm text-slate-600 w-64"
+          value={category}
+          onChange={({ target }) => setCategory(target.value)}
+        >
+          <option value="" disabled>
+            Please select a category
+          </option>
+          <option value="Standard">Standard</option>
+          <option value="Eigener Ballbesitz">Eigener Ballbesitz</option>
+          <option value="Gegnerischer Ballbesitz">Gegnerischer Ballbesitz</option>
+          <option value="Umschalten b. Ballverlust">Umschalten b. Ballverlust</option>
+          <option value="Umschalten b. Ballgewinn">Umschalten b. Ballgewinn</option>
+        </select>
+
       </div>
 
 
@@ -279,6 +301,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         </div>
       </div>
 
+
       {/* Error Message */}
       {error && <p className="text-red-500 text-xs pt-4">{error}</p>}
 
@@ -286,6 +309,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       <button className='btn-primary font-medium text-xs mt-5 p-3' onClick={handleAddExercise}>
         {type === 'edit' ? 'UPDATE' : 'ADD'}
       </button>
+
     </div>
   );
 };

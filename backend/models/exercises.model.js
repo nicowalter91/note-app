@@ -13,6 +13,7 @@ const exerciseSchema = new mongoose.Schema(
         userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
         duration: { type: String},
         players: { type: String},
+        category: { type: String},
     },
     { timestamps: true }
 );

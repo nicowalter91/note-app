@@ -22,7 +22,8 @@ const ExerciseCard = ({
     onPinExercise,
     imageUrl,
     duration,
-    players
+    players,
+    category
 
 
 
@@ -64,9 +65,14 @@ const ExerciseCard = ({
                 </div>
 
                 {/* Bild unter Titel und Datum */}
+                <div className="relative">
+                    <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2 mb-5" />
 
-                <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2 mb-5" />
-
+                    {/* Kategorien über dem Bild (unten links) */}
+                    <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-3 py-1 rounded shadow">
+                        {category}
+                    </div>
+                </div>
 
                 {/* Vorschau des Inhalts der Notiz */}
                 <label className="input-label">ORGANISATION</label>
