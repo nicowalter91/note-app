@@ -12,6 +12,7 @@ const exerciseSchema = new mongoose.Schema(
         isPinnedExercise: { type: Boolean, default: false },
         userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
         duration: { type: String},
+        players: { type: String},
     },
     { timestamps: true }
 );

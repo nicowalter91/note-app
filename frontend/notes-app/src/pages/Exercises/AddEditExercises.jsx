@@ -3,6 +3,7 @@ import { MdClose, MdDelete } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
 import { MdCloudUpload } from 'react-icons/md';
 import { IoMdTime } from "react-icons/io";
+import { IoPeopleOutline } from "react-icons/io5";
 
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
@@ -12,6 +13,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [coaching, setCoaching] = useState(exerciseData?.coaching || "");
   const [variante, setVariante] = useState(exerciseData?.variante || "");
   const [duration, setDuration] = useState(exerciseData?.duration || "");
+  const [players, setPlayers] = useState(exerciseData?.players || "");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
 
@@ -34,6 +36,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('coaching', coaching);
     formData.append('variante', variante);
     formData.append('duration', duration);
+    formData.append('players', players);
 
 
     if (image) {
@@ -69,6 +72,7 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('coaching', coaching);
     formData.append('variante', variante);
     formData.append('duration', duration);
+    formData.append('players', players);
 
 
     if (image) {
@@ -92,6 +96,8 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         setError(error.response.data.message);
       }
     }
+
+    console.log(players);
   };
 
   // Eingaben validieren und weiterleiten
@@ -169,7 +175,18 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
           value={duration}
           onChange={({ target }) => setDuration(target.value)}
         />
+
+        {/* Number of Players */}
+        <IoPeopleOutline className='text-lg text-slate-600' />
+        <input
+          type="text"
+          className='text-sm text-slate-600 w-64'
+          placeholder='Pease insert number of Players'
+          value={players}
+          onChange={({ target }) => setPlayers(target.value)}
+        />
       </div>
+
 
 
 

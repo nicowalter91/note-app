@@ -4,7 +4,7 @@ const path = require('path');
 
 
 const addExercise = async (req, res) => {
-  const { title, organisation, durchfuehrung, coaching, variante, date, duration} = req.body;
+  const { title, organisation, durchfuehrung, coaching, variante, date, duration, players} = req.body;
   const { user } = req.user;
 
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
@@ -23,7 +23,8 @@ const addExercise = async (req, res) => {
       date,
       imageUrl,
       userId: user._id,
-      duration
+      duration,
+      players
     });
 
     await exercise.save();
@@ -36,7 +37,7 @@ const addExercise = async (req, res) => {
 
 const editExercise = async (req, res) => {
   const { exerciseId } = req.params;
-  const { title, organisation, durchfuehrung, coaching, variante, duration } = req.body;
+  const { title, organisation, durchfuehrung, coaching, variante, duration, players } = req.body;
   const { user } = req.user;
 
   try {
@@ -73,6 +74,7 @@ const editExercise = async (req, res) => {
     if (coaching) exercise.coaching = coaching;
     if (variante) exercise.variante = variante;
     if (duration) exercise.duration = duration;
+    if (players) exercise.players = players;
 
     // Speichern der aktualisierten Übung
     await exercise.save();

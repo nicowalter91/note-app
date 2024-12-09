@@ -2,6 +2,9 @@ import React from 'react';
 import { MdCreate, MdDelete } from 'react-icons/md';
 import { FaRegHeart, FaHeart, FaPlusCircle } from "react-icons/fa";
 import { IoMdTime } from "react-icons/io";
+import { IoPeopleOutline } from "react-icons/io5";
+
+
 
 
 
@@ -9,7 +12,6 @@ import { IoMdTime } from "react-icons/io";
 
 const ExerciseCard = ({
     title,
-    date,
     organisation,
     durchfuehrung,
     coaching,
@@ -19,8 +21,9 @@ const ExerciseCard = ({
     onDelete,
     onPinExercise,
     imageUrl,
-    duration
-    
+    duration,
+    players
+
 
 
 
@@ -36,9 +39,11 @@ const ExerciseCard = ({
                         <div className='flex items-center gap-1'>
                             <IoMdTime className="text-lg text-blue-600" />
                             <span className='text-xs text-slate-500'>{duration} min</span>
+                            {/* Spieleranzahl */}
+                            <IoPeopleOutline className="text-lg text-blue-600 ml-5" />
+                            <span className='text-xs text-slate-500'>{players ? `${players} Spieler` : "Keine Spieler angegeben"}</span>
+
                         </div>
-
-
                     </div>
 
                     {/* Pin-Icon, das auf den Status "isPinned" reagiert */}

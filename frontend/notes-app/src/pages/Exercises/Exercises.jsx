@@ -233,6 +233,7 @@ const Exercises = () => {
               onPinExercise={() => updateIsPinnedExercise(exercise)}
               imageUrl={exercise.imageUrl} 
               duration={exercise.duration}
+              players={exercise.players}
               />
             ))}
           </div>
