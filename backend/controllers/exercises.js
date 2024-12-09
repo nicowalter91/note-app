@@ -87,22 +87,24 @@ const deleteExercise = async (req, res) => {
 
   try {
     const exercise = await Exercise.findOne({ _id: exerciseId, userId: user._id })
+    console.log(exerciseId);
+
+    const fileData = await Exercise.findById(exerciseId);
+    console.log(fileData);
+    const filePath = "." + fileData.imageUrl;
+    console.log(filePath);
+
+    fs.unlink(filePath,(error) => {
+      if(error) {
+        console.log("Error while deleting file!");
+      }
+      console.log("File delete successfully!");
+    });
 
     if (!exercise)
       return res
         .status(404)
         .json({ error: true, message: "Exercise not found" });
-
-    const { imagePath } = req.imageUrl;
-    const fullImagePath = path.join(__dirname, imagePath);
-
-    // Schritt 4: Lösche das Bild aus dem Ordner 'backend/uploads'
-    if (fs.existsSync(fullImagePath)) {
-      fs.unlinkSync(fullImagePath);  // Bild löschen
-      console.log('Bild wurde gelöscht:', fullImagePath);
-    } else {
-      console.log('Bild nicht gefunden:', fullImagePath);
-    }
 
 
     await Exercise.deleteOne({ _id: exerciseId, userId: user._id })
