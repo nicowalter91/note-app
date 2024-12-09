@@ -40,39 +40,50 @@ const editExercise = async (req, res) => {
   const { user } = req.user;
 
   try {
+    // Suche die Übung in der Datenbank
     const exercise = await Exercise.findOne({ _id: exerciseId, userId: user._id });
-
-    const fileData = await Exercise.findById(exerciseId);
-    console.log(fileData);
-    const filePath = "." + fileData.imageUrl;
-    console.log(filePath);
-
-    fs.unlink(filePath,(error) => {
-      if(error) {
-        console.log("Error while deleting file!");
-      }
-      console.log("File delete successfully!");
-    });
 
     if (!exercise) {
       return res.status(404).json({ error: true, message: "Exercise not found" });
     }
 
+    // Wenn ein neues Bild hochgeladen wurde, lösche das alte Bild
+    if (req.file) {
+      const fileData = await Exercise.findById(exerciseId);
+      const filePath = "." + fileData.imageUrl;  // Pfad des alten Bildes
+      console.log("Deleting file:", filePath);
+
+      // Lösche die alte Bilddatei, wenn sie existiert
+      fs.unlink(filePath, (error) => {
+        if (error) {
+          console.log("Error while deleting file!");
+        } else {
+          console.log("File deleted successfully!");
+        }
+      });
+
+      // Setze das neue Bild
+      exercise.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    // Aktualisiere andere Felder
     if (title) exercise.title = title;
     if (organisation) exercise.organisation = organisation;
     if (durchfuehrung) exercise.durchfuehrung = durchfuehrung;
     if (coaching) exercise.coaching = coaching;
     if (variante) exercise.variante = variante;
     if (duration) exercise.duration = duration;
-    if (req.file) exercise.imageUrl = `/uploads/${req.file.filename}`;
 
+    // Speichern der aktualisierten Übung
     await exercise.save();
+
     return res.json({ error: false, message: "Exercise updated successfully", exercise });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: true, message: "Internal Server Error" });
   }
 };
+
 
 const getExercises = async (req, res) => {
   const { user } = req.user;
