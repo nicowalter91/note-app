@@ -1,7 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 import { MdCreate, MdDelete } from 'react-icons/md';
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaPlusCircle } from "react-icons/fa";
+
+
 
 
 const ExerciseCard = ({
@@ -47,7 +49,7 @@ const ExerciseCard = ({
                         />
                     )}
 
-                   
+
 
                 </div>
 
@@ -69,10 +71,17 @@ const ExerciseCard = ({
 
 
             {/*Buttons für Bearbeiten und Löschen */}
-            <div className="flex justify-end items-end mt-auto gap-2">
-                <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
-                <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
+            <div className="flex justify-between items-center mt-auto">
+                {/* Plus-Symbol links -- Hier soll später das hinzufügen der Übung zum Training erfolgen*/}
+                <FaPlusCircle className="icon-btn hover:text-blue-600" />  
+
+                {/* Edit- und Delete-Symbole rechts */}
+                <div className="flex gap-2">
+                    <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
+                    <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
+                </div>
             </div>
+
         </div>
     );
 }
