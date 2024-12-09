@@ -1,7 +1,8 @@
 import React from 'react';
-import moment from 'moment';
 import { MdCreate, MdDelete } from 'react-icons/md';
 import { FaRegHeart, FaHeart, FaPlusCircle } from "react-icons/fa";
+import { IoMdTime } from "react-icons/io";
+
 
 
 
@@ -18,6 +19,8 @@ const ExerciseCard = ({
     onDelete,
     onPinExercise,
     imageUrl,
+    duration
+    
 
 
 
@@ -30,10 +33,12 @@ const ExerciseCard = ({
                     <div>
                         {/* Titel der Notiz */}
                         <h6 className='text-xl font-medium'>{title}</h6>
-                        {/* Formatiertes Datum */}
-                        <span className='text-xs text-slate-500'>
-                            {moment(date).format('DD.MM.YYYY')}
-                        </span>
+                        <div className='flex items-center gap-1'>
+                            <IoMdTime className="text-lg text-blue-600" />
+                            <span className='text-xs text-slate-500'>{duration} min</span>
+                        </div>
+
+
                     </div>
 
                     {/* Pin-Icon, das auf den Status "isPinned" reagiert */}
@@ -55,7 +60,8 @@ const ExerciseCard = ({
 
                 {/* Bild unter Titel und Datum */}
 
-                <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2" />
+                <img src={`http://localhost:8000${imageUrl}`} alt={title} className="w-full h-auto rounded mt-2 mb-5" />
+
 
                 {/* Vorschau des Inhalts der Notiz */}
                 <label className="input-label">ORGANISATION</label>
@@ -73,7 +79,9 @@ const ExerciseCard = ({
             {/*Buttons für Bearbeiten und Löschen */}
             <div className="flex justify-between items-center mt-auto">
                 {/* Plus-Symbol links -- Hier soll später das hinzufügen der Übung zum Training erfolgen*/}
-                <FaPlusCircle className="icon-btn hover:text-blue-600" />  
+                <FaPlusCircle className="icon-btn hover:text-blue-600" />
+
+
 
                 {/* Edit- und Delete-Symbole rechts */}
                 <div className="flex gap-2">

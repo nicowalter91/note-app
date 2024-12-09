@@ -232,6 +232,7 @@ const Exercises = () => {
               onDelete={() => deleteExercise(exercise)}
               onPinExercise={() => updateIsPinnedExercise(exercise)}
               imageUrl={exercise.imageUrl} 
+              duration={exercise.duration}
               />
             ))}
           </div>

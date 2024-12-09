@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { MdClose, MdDelete } from 'react-icons/md';
 import axiosInstance from '../../utils/axiosInstance';
-import TagInput from '../../components/Input/TagInput';
 import { MdCloudUpload } from 'react-icons/md';
+import { IoMdTime } from "react-icons/io";
+
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
   const [title, setTitle] = useState(exerciseData?.title || "");
@@ -10,8 +11,10 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || "");
   const [coaching, setCoaching] = useState(exerciseData?.coaching || "");
   const [variante, setVariante] = useState(exerciseData?.variante || "");
+  const [duration, setDuration] = useState(exerciseData?.duration || "");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
+
 
   const [imagePreview, setImagePreview] = useState(exerciseData?.image || null);
 
@@ -30,7 +33,8 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('durchfuehrung', durchfuehrung);
     formData.append('coaching', coaching);
     formData.append('variante', variante);
-  
+    formData.append('duration', duration);
+
 
     if (image) {
       formData.append('image', image); // Bild anhängen
@@ -64,7 +68,8 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
     formData.append('durchfuehrung', durchfuehrung);
     formData.append('coaching', coaching);
     formData.append('variante', variante);
- 
+    formData.append('duration', duration);
+
 
     if (image) {
       formData.append('image', image); // Bild anhängen
@@ -153,6 +158,20 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
           onChange={({ target }) => setTitle(target.value)}
         />
       </div>
+
+      {/* Duration Input*/}
+      <div className='flex items-center gap-2 m7-2'>
+        <IoMdTime className='text-lg text-slate-600' />
+        <input
+          type="text"
+          className='text-sm text-slate-600 w-48'
+          placeholder="Please insert duration"
+          value={duration}
+          onChange={({ target }) => setDuration(target.value)}
+        />
+      </div>
+
+
 
       {/* Main Content Containers */}
       <div className="grid grid-cols-2 gap-8 mt-4">
