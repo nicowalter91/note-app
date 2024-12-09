@@ -182,13 +182,13 @@ const Exercises = () => {
             />
             <button
               onClick={filterPinnedExercises}
-              className={`px-4 py-2 rounded-lg ${showPinnedOnly ?   'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'}`}
+              className={`px-4 py-2 rounded-lg ${showPinnedOnly ? 'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'}`}
             >
               {showPinnedOnly ? 'Show All' : 'Favorites'}
             </button>
   
             {/* Paginierung rechts */}
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-4 ml-auto z-1">
               <button
                 onClick={() => prevPage()}
                 disabled={currentPage === 1}
@@ -213,27 +213,39 @@ const Exercises = () => {
         </div>
       </div>
   
+      {/* Toast Nachricht oben anzeigen */}
+      {showToastMsg.isShown && (
+        <div className="absolute top-0 left-0 right-0 z-20">
+          <Toast
+            isShown={showToastMsg.isShown}
+            message={showToastMsg.message}
+            type={showToastMsg.type}
+            onClose={handleCloseToast}
+          />
+        </div>
+      )}
+  
       {/* Unterer Container mit den Exercises (scrollbar) */}
-      <div className="mt-8 overflow-y-auto max-h-[calc(100vh-200px)]"> {/* Passe die Höhe an den verfügbaren Platz an */}
+      <div className="mt-8 overflow-y-auto max-h-[calc(100vh-200px)]">
         {currentItems.length > 0 ? (
           <div className="grid grid-cols-3 gap-4">
             {currentItems.map((exercise) => (
               <ExerciseCard
-              key={exercise._id}
-              title={exercise.title}
-              date={exercise.createdOn}
-              organisation={exercise.organisation}
-              durchfuehrung={exercise.durchfuehrung}
-              coaching={exercise.coaching}
-              variante={exercise.variante}
-              category={exercise.category}
-              isPinnedExercise={exercise.isPinnedExercise}
-              onEdit={() => handleEditExercise(exercise)}
-              onDelete={() => deleteExercise(exercise)}
-              onPinExercise={() => updateIsPinnedExercise(exercise)}
-              imageUrl={exercise.imageUrl} 
-              duration={exercise.duration}
-              players={exercise.players}
+                key={exercise._id}
+                title={exercise.title}
+                date={exercise.createdOn}
+                organisation={exercise.organisation}
+                durchfuehrung={exercise.durchfuehrung}
+                coaching={exercise.coaching}
+                variante={exercise.variante}
+                category={exercise.category}
+                isPinnedExercise={exercise.isPinnedExercise}
+                onEdit={() => handleEditExercise(exercise)}
+                onDelete={() => deleteExercise(exercise)}
+                onPinExercise={() => updateIsPinnedExercise(exercise)}
+                imageUrl={exercise.imageUrl} 
+                duration={exercise.duration}
+                players={exercise.players}
               />
             ))}
           </div>
@@ -266,15 +278,9 @@ const Exercises = () => {
         />
       </Modal>
   
-      {/* Toast Nachricht */}
-      <Toast
-        isShown={showToastMsg.isShown}
-        message={showToastMsg.message}
-        type={showToastMsg.type}
-        onClose={handleCloseToast}
-      />
     </Layout>
   );
+  
   
 };
 

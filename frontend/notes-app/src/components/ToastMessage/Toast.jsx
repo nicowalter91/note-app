@@ -37,7 +37,7 @@ const Toast = ({ isShown, message, type, onClose }) => {
   return (
     // Toast mit Transitionen für sanftes Ein- und Ausblenden
     <div 
-      className={`absolute top-20 right-6 transition-opacity duration-300 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`} 
+      className={`z-999 absolute top-20 right-6 transition-opacity duration-300 ease-in-out ${visible ? 'opacity-100' : 'opacity-0'}`} 
       onClick={handleToastClick}  // Klick-Interaktion zum Schließen des Toasts
     >
       <div className={`min-w-52 bg-white border shadow-2xl rounded-md after:w-[5px] after:h-full ${
