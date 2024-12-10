@@ -36,6 +36,11 @@ const Exercises = () => {
     data: null,
   });
 
+  const [confirmationModal, setConfirmationModal] = useState({
+    isShown: false,
+    exerciseData: null,
+  });
+
   const showToastMessage = (message, type) => {
     setShowToastMsg({ isShown: true, message, type });
   };
@@ -158,6 +163,21 @@ const Exercises = () => {
     setShowPinnedOnly((prevState) => !prevState); // Filter umschalten
   };
 
+  const confirmDeleteExercise = (exercise) => {
+    setConfirmationModal({ isShown: true, exerciseData: exercise });
+  };
+
+  const handleConfirmDelete = () => {
+    if (confirmationModal.exerciseData) {
+      deleteExercise(confirmationModal.exerciseData);
+    }
+    setConfirmationModal({ isShown: false, exerciseData: null });
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmationModal({ isShown: false, exerciseData: null });
+  };
+
   useEffect(() => {
     getAllExercises();
     getUserInfo();
@@ -186,7 +206,7 @@ const Exercises = () => {
             >
               {showPinnedOnly ? 'Show All' : 'Favorites'}
             </button>
-  
+
             {/* Paginierung rechts */}
             <div className="flex items-center gap-4 ml-auto z-1">
               <button
@@ -196,11 +216,11 @@ const Exercises = () => {
               >
                 <MdChevronLeft size={32} />
               </button>
-  
+
               <span className="text-lg">
                 Page {currentPage} of {totalPages || 1}
               </span>
-  
+
               <button
                 onClick={() => nextPage()}
                 disabled={currentPage === totalPages || totalPages === 0}
@@ -212,7 +232,7 @@ const Exercises = () => {
           </div>
         </div>
       </div>
-  
+
       {/* Toast Nachricht oben anzeigen */}
       {showToastMsg.isShown && (
         <div className="absolute top-0 left-0 right-0 z-20">
@@ -224,7 +244,7 @@ const Exercises = () => {
           />
         </div>
       )}
-  
+
       {/* Unterer Container mit den Exercises (scrollbar) */}
       <div className="mt-8 overflow-y-auto max-h-[calc(100vh-200px)]">
         {currentItems.length > 0 ? (
@@ -241,11 +261,12 @@ const Exercises = () => {
                 category={exercise.category}
                 isPinnedExercise={exercise.isPinnedExercise}
                 onEdit={() => handleEditExercise(exercise)}
-                onDelete={() => deleteExercise(exercise)}
+                onDelete={() => confirmDeleteExercise(exercise)}
                 onPinExercise={() => updateIsPinnedExercise(exercise)}
-                imageUrl={exercise.imageUrl} 
+                imageUrl={exercise.imageUrl}
                 duration={exercise.duration}
                 players={exercise.players}
+
               />
             ))}
           </div>
@@ -253,7 +274,7 @@ const Exercises = () => {
           <EmptyCard imgSrc={isSearch ? NoDataImg : AddNotesImg} message={isSearch ? `Oops! No Exercises found matching your search.` : `Start creating your first Exercise! Click the 'Add' button to join thoughts, ideas, and reminders. Let's get started!`} />
         )}
       </div>
-  
+
       {/* Button zum Hinzufügen einer neuen Übung */}
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 bottom-10"
@@ -261,7 +282,7 @@ const Exercises = () => {
       >
         <MdAdd className="text-[32px] text-white" />
       </button>
-  
+
       {/* Modal für das Hinzufügen/Bearbeiten einer Übung */}
       <Modal
         isOpen={openAddEditModal.isShown}
@@ -277,11 +298,44 @@ const Exercises = () => {
           showToastMessage={showToastMessage}
         />
       </Modal>
-  
+
+      {/* Confirmation Modal */}
+      {confirmationModal.isShown && (
+        <>
+          {/* Overlay for dark background */}
+          <div className="fixed inset-0 bg-black bg-opacity-75 z-40"></div>
+
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-md p-6">
+              <h2 className="text-lg font-medium text-center mb-4">Delete Exercise?</h2>
+              <p className="text-gray-700 text-center mb-6">
+                Are you sure you want to delete this exercise? This action cannot be undone.
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  className="px-4 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
+                  onClick={handleCancelDelete}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+                  onClick={handleConfirmDelete}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+
     </Layout>
   );
-  
-  
+
+
 };
 
 export default Exercises;

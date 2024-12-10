@@ -18,14 +18,14 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const [category, setCategory] = useState(exerciseData?.category || "");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
-
-
+  
+ 
   const [imagePreview, setImagePreview] = useState(exerciseData?.image || null);
 
   useEffect(() => {
     // Wenn wir im "edit"-Modus sind und ein Bild bereits vorhanden ist
     if (exerciseData?.image) {
-      setImagePreview(exerciseData.image);
+      setImagePreview(exerciseData.imageUrl);
     }
   }, [exerciseData]);
 
