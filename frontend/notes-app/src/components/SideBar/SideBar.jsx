@@ -47,7 +47,6 @@ const Sidebar = ({ onLogout }) => {
 
       {/* Navigation Items Bottom */}
       <div className="flex item-center flex-col mt-auto mb-12">
-        <hr className="w-10 mx-auto border-t border-gray-300 my-4" />
         <NavItem icon={<FaUser />} label="Profil" />
         <NavItem icon={<FaTools />} label="Settings" />
         {/* Logout Button */}

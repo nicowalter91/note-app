@@ -1,9 +1,11 @@
 import React from 'react'
 import Layout from '../../components/Layout/Layout'
 
+
 const Team = () => {
   return (
-    <Layout></Layout>
+    <Layout>
+    </Layout>
   )
 }
 

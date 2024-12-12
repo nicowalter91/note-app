@@ -1,5 +1,3 @@
 {
-    "connectionString": "mongodb+srv://testuser:testuser123@notesapp.omchc.mongodb.net/?retryWrites=true&w=majority&appName=notesapp",
-    
-    "comment": "connectionString: Der Verbindungsstring für die Verbindung zur MongoDB-Datenbank.Dieser enthält die Anmeldeinformationen (Benutzername und Passwort) und die Adresse des MongoDB-Clusters."
+    "connectionString": "mongodb://testuser:testuser123@127.0.0.1:27017/?retryWrites=true&w=majority&appName=notesapp"
 }

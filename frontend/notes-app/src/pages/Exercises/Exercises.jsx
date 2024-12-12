@@ -13,6 +13,7 @@ import NoDataImg from '../../assets/img/noData.png';
 import EmptyCard from '../../components/EmptyCard/EmptyCard';
 import Toast from '../../components/ToastMessage/Toast';
 
+
 const Exercises = () => {
   const [allExercises, setAllExercises] = useState([]);
   const [userInfo, setUserInfo] = useState(null);

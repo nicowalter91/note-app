@@ -5,6 +5,7 @@ import { MdCloudUpload } from 'react-icons/md';
 import { IoMdTime } from "react-icons/io";
 import { IoPeopleOutline } from "react-icons/io5";
 import { CiShoppingTag } from "react-icons/ci";
+import Dropdown from '../../components/Dropdown/Dropdown';
 
 
 const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
