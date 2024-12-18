@@ -1,10 +1,10 @@
 import React from 'react'
-import Layout from '../../components/Layout/Layout'
+import Sidebar from  '../../components/SideBar/SideBar'
 
 const Profil = () => {
   return (
     <div>
-      <Layout><div>Test</div></Layout>
+      <Sidebar />
     </div>
   )
 }
