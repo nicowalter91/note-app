@@ -12,6 +12,7 @@ import {
 import { LuChevronFirst } from 'react-icons/lu';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
+import { MdDashboard } from 'react-icons/md';
 
 const Sidebar = ({ onLogout }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -73,6 +74,7 @@ const Sidebar = ({ onLogout }) => {
 
       <nav className="flex flex-col space-y-2 mt-20 px-2 flex-grow">
         {!isCollapsed && <p className='text-xs px-2'>MENU</p>}
+        <NavItem icon={<MdDashboard />} label="Dashboard" />
         <NavItem icon={<FaPen />} label="Notes" />
         <NavItem icon={<FaDumbbell />} label="Exercises" />
         <NavItem icon={<FaUsers />} label="Team" />
