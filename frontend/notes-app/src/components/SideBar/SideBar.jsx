@@ -98,9 +98,11 @@ const Sidebar = ({ onLogout }) => {
           >
             &times;
           </button>
-          <h4 className="font-bold text-xs text-white bg-yellow-500 rounded-xl w-16 text-center mb-2 p-1">BETA V1</h4>
+          <h4 className="font-bold text-xs text-yellow-700 bg-yellow-300 rounded-sm w-10 text-center mb-2 p-1">BETA</h4>
           <p className='text-xs'>Check out the new beta version! This is an example text for the news section.</p>
-          <button className="bg-blue-600 mt-5 text-white text-sm px-2 py-1 rounded-lg mt-2">Update</button>
+          <div className='mt-2'>
+         <p className='underline text-xs text-black'>Click here</p>
+         </div>
         </div>
       )}
     </div>
