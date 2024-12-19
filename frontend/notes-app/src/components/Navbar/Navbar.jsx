@@ -12,6 +12,7 @@ const Navbar = ({ userInfo, onLogout }) => {
         <h2 className="text-xl font-medium text-black ml-5">mytacticlab</h2>
       </div>
 
+      
       {/* Willkommensnachricht, wenn der Benutzer eingeloggt ist */}
       {userInfo && userInfo.firstName && (
         <span className="text-lg text-gray-800 ml-4">
@@ -19,9 +20,9 @@ const Navbar = ({ userInfo, onLogout }) => {
         </span>
       )}
 
-
-      {/* Anzeige der Benutzerdaten und Logout-Button */}
       <ProfileInfo userInfo={userInfo} onLogout={onLogout}/>
+
+      
     </div>
   );
 };
