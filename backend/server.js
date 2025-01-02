@@ -16,7 +16,7 @@ const {
     editExercise, 
     getExercises, 
     deleteExercise, 
-    searchExercise, 
+    searchExercises, 
     isPinnedExercise 
 } = require("./controllers/exercises");
 
@@ -88,7 +88,7 @@ app.put("/edit-exercise/:exerciseId", authenticateToken, upload.single("image"),
 app.get("/get-all-exercises", authenticateToken, getExercises);
 app.delete("/delete-exercise/:exerciseId", authenticateToken, deleteExercise);
 app.put("/update-exercise-pinned/:exerciseId", authenticateToken, isPinnedExercise);
-app.get("/search-exercise", authenticateToken, searchExercise);
+app.get("/search-exercises", authenticateToken, searchExercises);
 
 // ** Starten des Servers **
 app.listen(8000, () => console.log("Server running on port 8000"));

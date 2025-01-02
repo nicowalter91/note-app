@@ -171,7 +171,7 @@ const isPinnedExercise = async (req, res) => {
   }
 };
 
-const searchExercise = async (req, res) => {
+const searchExercises = async (req, res) => {
   const { user } = req.user;
   const { query } = req.query;
 
@@ -193,7 +193,7 @@ const searchExercise = async (req, res) => {
     });
     return res.json({
       error: false,
-      notes: matchingExercises,
+      exercise: matchingExercises,
       message: "Exercise matching query retrieved",
     });
   } catch (error) {
@@ -205,4 +205,4 @@ const searchExercise = async (req, res) => {
 };
 
 
-module.exports = { addExercise, editExercise, getExercises, deleteExercise, isPinnedExercise, searchExercise };
+module.exports = { addExercise, editExercise, getExercises, deleteExercise, isPinnedExercise, searchExercises };

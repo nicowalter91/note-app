@@ -97,25 +97,22 @@ const Notes = () => {
     }
   };
 
-  const onSearchNote = async (query) => {
-    if (!query.trim()) {
-      setIsSearch(false);
-      getAllNotes();
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.get("/search-notes", {
-        params: { query },
-      });
-      if (response.data && response.data.notes) {
+  const onSetSearchResult = (response)=>{
+    if(response.data.notes){
         setIsSearch(true);
         setAllNotes(response.data.notes);
-      }
-    } catch (error) {
-      console.log(error);
     }
-  };
+    else{
+      throw new Error("Error: Reponse data doesn't contain response.data.notes Property"); 
+    }
+  }
+
+    //*** Suchabfrage zurücksetzen ***//
+    const onClearSearch = () => {
+      setSearchQuery("");
+      setIsSearch(false);
+      getAllNotes(); // Alle Notes zurücksetzen, wenn die Suche gelöscht wird
+    };
 
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
@@ -163,16 +160,20 @@ const Notes = () => {
     <Layout
       userInfo={userInfo}
       onLogout={() => { localStorage.clear(); navigate("/login"); }}
-      onSearchNote={onSearchNote}
       handleClearSearch={handleClearSearch}
     >
+
+   
       <div className="flex items-center justify-between mb-6">
+        {/* Flexbox für SearchBar und Paginierung nebeneinander */}
         <div className="flex items-center gap-4 w-full">
+          {/* Suchleiste links */}
           <SearchBar
             value={searchQuery}
             onChange={setSearchQuery}
-            handleSearch={() => onSearchNote(searchQuery)}
-            onClearSearch={handleClearSearch}
+            searchUrl="/search-notes"
+            onSetSearchResult={onSetSearchResult}
+            onClearSearch={onClearSearch}
           />
 
           {/* Paginierung rechts */}

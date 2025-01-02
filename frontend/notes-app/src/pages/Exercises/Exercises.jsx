@@ -111,25 +111,15 @@ const Exercises = () => {
     }
   };
 
-  const onSearchExercise = async (query) => {
-    if (!query.trim()) {
-      setIsSearch(false);
-      getAllExercises();
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.get("/search-exercises", {
-        params: { query },
-      });
-      if (response.data && response.data.exercise) {
+  const onSetSearchResult = (response)=>{
+    if(response.data.exercise){
         setIsSearch(true);
         setAllExercises(response.data.exercise);
-      }
-    } catch (error) {
-      console.log(error);
     }
-  };
+    else{
+      throw new Error("Error: Reponse data doesn't contain response.data.exercise Property"); 
+    }
+  }
 
   const updateIsPinnedExercise = async (exerciseData) => {
     const exerciseId = exerciseData._id;
@@ -184,22 +174,31 @@ const Exercises = () => {
     getUserInfo();
   }, [showPinnedOnly]); // Re-rendere, wenn der Filterstatus geändert wird
 
-  return (
-    <Layout
-      userInfo={userInfo}
-      onLogout={() => { localStorage.clear(); navigate("/login"); }}
-      onSearchExercise={onSearchExercise}
-      handleClearSearch={handleClearSearch}
-    >
-      {/* Obere Container mit SearchBar, Filter und Paginierung */}
-      <div className="sticky top-0 z-10 bg-white mb-6">
-        <div className="flex items-center justify-between">
+    //*** Suchabfrage zurücksetzen ***//
+    const onClearSearch = () => {
+      setSearchQuery("");
+      setIsSearch(false);
+      getAllExercises(); // Alle Exercises zurücksetzen, wenn die Suche gelöscht wird
+    };
+
+    return (
+      <Layout
+        userInfo={userInfo}
+        onLogout={() => { localStorage.clear(); navigate("/login"); }}
+        handleClearSearch={onClearSearch}
+      >
+        
+  
+        <div className="flex items-center justify-between mb-6">
+          {/* Flexbox für SearchBar und Paginierung nebeneinander */}
           <div className="flex items-center gap-4 w-full">
+            {/* Die Suchleiste */}
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
-              handleSearch={() => onSearchExercise(searchQuery)}
-              onClearSearch={handleClearSearch}
+              searchUrl="/search-exercises"
+              onSetSearchResult={onSetSearchResult}
+              onClearSearch={onClearSearch}
             />
             <button
               onClick={filterPinnedExercises}
@@ -232,7 +231,6 @@ const Exercises = () => {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Toast Nachricht oben anzeigen */}
       {showToastMsg.isShown && (
