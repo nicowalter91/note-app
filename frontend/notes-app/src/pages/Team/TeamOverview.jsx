@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout';
 import PlayerList from './components/PlayerList/PlayerList';
 import TeamStatistics from './components/Statistics/TeamStatistics';
+import Toast from '../../components/ToastMessage/Toast';
 import axiosInstance from '../../utils/axiosInstance';
 
 const TeamOverview = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statistics, setStatistics] = useState({
     totalPlayers: 0,
     availablePlayers: 0,
@@ -19,23 +22,34 @@ const TeamOverview = () => {
     midfielders: 0,
     forwards: 0,
     performanceData: []
-  });
-  const [userInfo, setUserInfo] = useState(null);
+  });  const [userInfo, setUserInfo] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  }, []);const fetchData = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Fetching team data...');
+      
       const [playersRes, userRes] = await Promise.all([
         axiosInstance.get('/get-all-players'),
         axiosInstance.get('/get-user')
       ]);
 
+      console.log('Players response:', playersRes);
+      console.log('User response:', userRes);
+
       if (playersRes.data?.players) {
         setPlayers(playersRes.data.players);
         updateStatistics(playersRes.data.players);
+      } else {
+        console.warn('Keine Spielerdaten erhalten');
+        setPlayers([]);
+        updateStatistics([]);
       }
 
       if (userRes.data?.user) {
@@ -43,6 +57,18 @@ const TeamOverview = () => {
       }
     } catch (error) {
       console.error('Fehler beim Laden der Daten:', error);
+      console.error('Error response:', error.response);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+      
+      setError('Fehler beim Laden der Team-Daten');
+      
+      if (error.response?.status === 401) {
+        localStorage.clear();
+        navigate('/login');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,11 +126,37 @@ const TeamOverview = () => {
   const handleViewPlayer = (player) => {
     navigate(`/team/player/${player._id}`);
   };
-
   const handleEditPlayer = (player) => {
     navigate(`/team/edit/${player._id}`);
   };
+  const handleDeletePlayer = async (player) => {
+    try {
+      await axiosInstance.delete(`/delete-player/${player._id}`);
+      
+      // Entferne den Spieler aus der lokalen Liste
+      const updatedPlayers = players.filter(p => p._id !== player._id);
+      setPlayers(updatedPlayers);
+      updateStatistics(updatedPlayers);
+      
+      // Zeige Erfolgs-Toast
+      setToastMessage({ 
+        type: 'success', 
+        text: `${player.name} wurde erfolgreich aus dem Team entfernt` 
+      });
+      setShowToast(true);
+    } catch (error) {
+      console.error('Fehler beim Löschen des Spielers:', error);
+      setToastMessage({ 
+        type: 'error', 
+        text: 'Fehler beim Löschen des Spielers' 
+      });
+      setShowToast(true);
+    }
+  };
 
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
   return (
     <Layout userInfo={userInfo}>
       <div className="container mx-auto px-4 py-8">
@@ -117,18 +169,59 @@ const TeamOverview = () => {
             </p>
           </div>
 
-          {/* Statistiken */}
-          <TeamStatistics statistics={statistics} />
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Lade Team-Daten...</span>
+            </div>
+          )}
 
-          {/* Spielerliste */}
-          <PlayerList
-            players={players}
-            onAddPlayer={handleAddPlayer}
-            onViewPlayer={handleViewPlayer}
-            onEditPlayer={handleEditPlayer}
-          />
-        </div>
+          {/* Error State */}
+          {error && !loading && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Fehler</h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <p>{error}</p>
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      onClick={fetchData}
+                      className="bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium py-1 px-3 rounded"
+                    >
+                      Erneut versuchen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Content */}
+          {!loading && !error && (
+            <>
+              {/* Statistiken */}
+              <TeamStatistics statistics={statistics} />              {/* Spielerliste */}
+              <PlayerList
+                players={players}
+                onAddPlayer={handleAddPlayer}
+                onViewPlayer={handleViewPlayer}
+                onEditPlayer={handleEditPlayer}
+                onDeletePlayer={handleDeletePlayer}
+              />
+            </>
+          )}        </div>
       </div>
+
+      {/* Toast Nachricht */}
+      <Toast
+        isShown={showToast}
+        message={toastMessage.text}
+        type={toastMessage.type}
+        onClose={handleCloseToast}
+      />
     </Layout>
   );
 };

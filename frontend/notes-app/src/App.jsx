@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp/SignUp';
 import Settings from './pages/Settings/Settings';
 import TeamOverview from './pages/Team/TeamOverview.jsx';
 import PlayerProfile from './pages/Team/PlayerProfile.jsx';
+import AddEditPlayer from './pages/Team/AddEditPlayer.jsx';
 import Tactic from './pages/Tactic/Tactic';
 import Video from './pages/Video/Video';
 import AddEditNotes from './pages/Notes/AddEditNotes';
@@ -33,6 +34,8 @@ const routes = (
       <Route path="/events" exact element={<Events />} />
       <Route path="/profil" exact element={<Profil />} />
       <Route path="/settings" exact element={<Settings />} />      <Route path="/team" exact element={<TeamOverview />} />
+      <Route path="/team/add" element={<AddEditPlayer />} />
+      <Route path="/team/edit/:playerId" element={<AddEditPlayer />} />
       <Route path="/team/player/:playerId" element={<PlayerProfile />} />
       <Route path="/teamcashbox" exact element={<TeamCashBox />} />
       <Route path="/video" exact element={<Video />} />

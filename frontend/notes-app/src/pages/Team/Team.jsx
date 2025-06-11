@@ -37,9 +37,7 @@ const Team = () => {
     weaknesses: []
   });
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
+  const navigate = useNavigate();  useEffect(() => {
     getPlayers();
     getUserInfo();
   }, []);
@@ -57,7 +55,6 @@ const Team = () => {
       }
     }
   };
-
   const getPlayers = async () => {
     try {
       const response = await axiosInstance.get('/get-all-players');
@@ -92,35 +89,8 @@ const Team = () => {
       setMessage({ type: 'error', text: 'Fehler beim Speichern des Spielers' });
     }
   };
-
   const handleEditPlayer = (player) => {
-    setEditingPlayer(player);
-    setFormData({
-      name: player.name,
-      position: player.position,
-      number: player.number || '',
-      birthdate: player.birthdate ? player.birthdate.split('T')[0] : '',
-      height: player.height || '',
-      weight: player.weight || '',
-      notes: player.notes || '',
-      statistics: player.statistics || {
-        gamesPlayed: 0,
-        goals: 0,
-        assists: 0,
-        yellowCards: 0,
-        redCards: 0
-      },
-      performanceMetrics: player.performanceMetrics || {
-        technicalSkills: 5,
-        tacticalUnderstanding: 5,
-        physicalFitness: 5,
-        mentalStrength: 5,
-        teamwork: 5
-      },
-      strengths: player.strengths || [],
-      weaknesses: player.weaknesses || []
-    });
-    setShowAddForm(true);
+    navigate(`/team/edit/${player._id}`);
   };
 
   const handleDeletePlayer = async (playerId) => {
@@ -223,9 +193,9 @@ const Team = () => {
                   >
                     <option value="">Bitte wählen</option>
                     <option value="Torwart">Torwart</option>
-                    <option value="Verteidiger">Verteidiger</option>
+                    <option value="Verteidigung">Verteidigung</option>
                     <option value="Mittelfeld">Mittelfeld</option>
-                    <option value="Stürmer">Stürmer</option>
+                    <option value="Sturm">Sturm</option>
                   </select>
                 </div>
 

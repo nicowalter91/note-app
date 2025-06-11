@@ -30,7 +30,18 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const PerformanceChart = ({ data }) => {
+const PerformanceChart = ({ data = [] }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-[300px] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 text-sm">Keine Performance-Daten verfügbar</p>
+          <p className="text-gray-400 text-xs mt-1">Daten werden angezeigt, sobald Spieler hinzugefügt wurden</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-[300px]">
       <ResponsiveContainer>

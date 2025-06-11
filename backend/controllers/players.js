@@ -1,4 +1,5 @@
 const Player = require('../models/player.model');
+const mongoose = require('mongoose');
 
 // Spieler hinzufügen
 const addPlayer = async (req, res) => {
@@ -7,7 +8,7 @@ const addPlayer = async (req, res) => {
         console.log('Authenticated user:', req.user);
         
         const { name, position, number, birthdate, height, weight, notes, image } = req.body;
-        const { user } = req.user;
+        const userId = req.user._id || req.user.user?._id;
 
         // Überprüfen, ob notwendige Daten vorhanden sind
         if (!name) {
@@ -27,7 +28,7 @@ const addPlayer = async (req, res) => {
             weight,
             image,
             notes,
-            userId: user._id, // Hier fügen wir die userId hinzu
+            userId: userId, // Hier fügen wir die userId hinzu
             statistics: {
                 goals: 0,
                 assists: 0,
@@ -113,17 +114,27 @@ const editPlayer = async (req, res) => {
 const deletePlayer = async (req, res) => {
     try {
         const { playerId } = req.params;
+        const userId = req.user._id || req.user.user?._id;
 
-        // Spieler finden und löschen
-        const result = await Player.findByIdAndDelete(playerId);
+        // Überprüfen, ob ID gültig ist
+        if (!mongoose.Types.ObjectId.isValid(playerId)) {
+            return res.status(400).json({ message: 'Ungültige Spieler-ID' });
+        }
+
+        // Spieler finden und löschen (nur wenn er dem authentifizierten Benutzer gehört)
+        const result = await Player.findOneAndDelete({ 
+            _id: playerId, 
+            userId: userId 
+        });
 
         if (!result) {
-            return res.status(404).json({ message: 'Spieler nicht gefunden' });
+            return res.status(404).json({ message: 'Spieler nicht gefunden oder keine Berechtigung' });
         }
 
         return res.json({
             message: 'Spieler erfolgreich gelöscht',
-            playerId
+            playerId,
+            playerName: result.name
         });
     } catch (error) {
         return res.status(500).json({
@@ -136,16 +147,42 @@ const deletePlayer = async (req, res) => {
 // Alle Spieler eines Benutzers abrufen
 const getAllPlayers = async (req, res) => {
   try {
-    const { user } = req.user;
-      // Alle Spieler finden
-    const players = await Player.find({})
+    console.log('getAllPlayers called');
+    console.log('req.user:', req.user);
+    
+    // Überprüfen, ob req.user existiert
+    if (!req.user) {
+      console.log('No user found in request');
+      return res.status(401).json({ 
+        message: "Nicht authentifiziert" 
+      });
+    }
+
+    // req.user kommt direkt aus dem JWT Token
+    const userId = req.user._id || req.user.user?._id;
+    
+    // Überprüfen, ob userId existiert
+    if (!userId) {
+      console.log('No userId found in req.user:', req.user);
+      return res.status(401).json({ 
+        message: "Ungültige Benutzerinformationen" 
+      });
+    }
+
+    console.log('Looking for players with userId:', userId);
+    
+    // Alle Spieler des authentifizierten Benutzers finden
+    const players = await Player.find({ userId: userId })
                                 .sort({ name: 1 }); // Sortieren nach Namen aufsteigend
+    
+    console.log('Found players:', players.length);
     
     return res.json({ 
       players, 
       count: players.length 
     });
   } catch (error) {
+    console.error('Error in getAllPlayers:', error);
     return res.status(500).json({ 
       message: "Interner Serverfehler", 
       error: error.message 
@@ -156,7 +193,7 @@ const getAllPlayers = async (req, res) => {
 // Einen bestimmten Spieler abrufen
 const getPlayer = async (req, res) => {
   try {
-    const { user } = req.user;
+    const userId = req.user._id || req.user.user?._id;
     const { playerId } = req.params;
 
     // Überprüfen, ob ID gültig ist
@@ -167,7 +204,7 @@ const getPlayer = async (req, res) => {
     // Spieler finden
     const player = await Player.findOne({ 
       _id: playerId, 
-      userId: user._id 
+      userId: userId 
     });
     
     if (!player) {
@@ -210,7 +247,7 @@ const updateAttendance = async (req, res) => {
 // Stärken und Schwächen aktualisieren
 const updateStrengthsAndWeaknesses = async (req, res) => {
   try {
-    const { user } = req.user;
+    const userId = req.user._id || req.user.user?._id;
     const { playerId } = req.params;
     const { strengths, weaknesses } = req.body;
 
@@ -222,7 +259,7 @@ const updateStrengthsAndWeaknesses = async (req, res) => {
     // Spieler finden
     const player = await Player.findOne({ 
       _id: playerId, 
-      userId: user._id 
+      userId: userId 
     });
     
     if (!player) {

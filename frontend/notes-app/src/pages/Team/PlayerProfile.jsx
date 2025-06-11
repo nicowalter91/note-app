@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout';
 import axiosInstance from '../../utils/axiosInstance';
-import { FaEdit, FaSave, FaTimes, FaCalendarCheck, FaChartLine, FaPlusCircle } from 'react-icons/fa';
+import { FaEdit, FaSave, FaTimes, FaCalendarCheck, FaChartLine, FaPlusCircle, FaArrowLeft } from 'react-icons/fa';
 import Toast from '../../components/ToastMessage/Toast';
 
 const PlayerProfile = () => {

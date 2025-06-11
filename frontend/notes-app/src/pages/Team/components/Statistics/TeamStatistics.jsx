@@ -23,14 +23,18 @@ const StatCard = ({ title, value, icon: Icon, change }) => (
 
 const TeamStatistics = ({ statistics }) => {
   const {
-    totalPlayers,
-    availablePlayers,
-    injuredPlayers,
-    gamesWon,
-    averagePerformance,
-    performanceData,
-    monthlyStats
-  } = statistics;
+    totalPlayers = 0,
+    availablePlayers = 0,
+    injuredPlayers = 0,
+    gamesWon = 0,
+    averagePerformance = 0,
+    performanceData = [],
+    goalkeepers = 0,
+    defenders = 0,
+    midfielders = 0,
+    forwards = 0,
+    monthlyStats = {}
+  } = statistics || {};
 
   return (
     <div className="space-y-6">
@@ -74,27 +78,26 @@ const TeamStatistics = ({ statistics }) => {
 
         {/* Team Composition */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Mannschaftsstruktur</h3>
-          <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Mannschaftsstruktur</h3>          <div className="space-y-4">
             {[
-              { position: 'Torwart', count: statistics.goalkeepers || 0 },
-              { position: 'Verteidigung', count: statistics.defenders || 0 },
-              { position: 'Mittelfeld', count: statistics.midfielders || 0 },
-              { position: 'Sturm', count: statistics.forwards || 0 }
-            ].map(({ position, count }) => (
+              { position: 'Torwart', count: goalkeepers, color: 'bg-green-600' },
+              { position: 'Verteidigung', count: defenders, color: 'bg-blue-600' },
+              { position: 'Mittelfeld', count: midfielders, color: 'bg-yellow-600' },
+              { position: 'Sturm', count: forwards, color: 'bg-red-600' }
+            ].map(({ position, count, color }) => (
               <div key={position} className="flex items-center">
                 <span className="w-32 text-sm text-gray-600">{position}</span>
                 <div className="flex-1 mx-4">
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full"
+                      className={`${color} h-2 rounded-full transition-all duration-300`}
                       style={{
-                        width: `${(count / totalPlayers) * 100}%`
+                        width: `${totalPlayers > 0 ? (count / totalPlayers) * 100 : 0}%`
                       }}
                     />
                   </div>
                 </div>
-                <span className="text-sm font-medium text-gray-800">{count}</span>
+                <span className="text-sm font-medium text-gray-800 w-8 text-right">{count}</span>
               </div>
             ))}
           </div>
