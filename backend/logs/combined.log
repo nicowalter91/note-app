@@ -402,3 +402,89 @@
 2025-06-11 23:44:53 [DEBUG] Fehlgeschlagener Anmeldeversuch: Ungültiges Passwort {
   "email": "test@example.com"
 }
+2025-06-11 23:46:04 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://***:***@127.0.0.1:27017/test?authSource=admin",
+  "database": "test?authSource=admin"
+}
+2025-06-11 23:46:04 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "test",
+  "readyState": 1
+}
+2025-06-11 23:46:28 [INFO] Benutzer erfolgreich angemeldet {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-user",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-user",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-players",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-exercises",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-notes",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-players",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-exercises",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
+2025-06-11 23:46:28 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-all-notes",
+  "ip": "::1"
+}
+2025-06-11 23:46:28 [DEBUG] Benutzer erfolgreich authentifiziert {
+  "userId": "674714eb06fa404055d3aded",
+  "email": "nbierwolf@web.de"
+}
