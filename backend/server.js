@@ -32,8 +32,40 @@ const corsOptions = {
 };
 
 // ** Datenbankverbindung **
-const connectDB = require("./config/db");
-connectDB();
+const { connectDB, getConnectionStatus } = require("./config/database");
+const { connectTempDB, getTempConnectionStatus } = require("./config/tempDatabase");
+
+// Initialisiere Datenbankverbindung mit Fallback
+const initializeDatabase = async () => {
+    try {
+        console.log('🔄 Versuche primäre Datenbankverbindung...');
+        await connectDB();
+        console.log('✅ Primäre Datenbankverbindung erfolgreich initialisiert');
+        
+        // Optional: Verbindungsstatus loggen
+        const status = getConnectionStatus();
+        console.log('📊 Datenbankstatus:', status);
+    } catch (error) {
+        console.warn('⚠️  Primäre Datenbankverbindung fehlgeschlagen:', error.message);
+        console.log('🔄 Versuche alternative Datenbankverbindung...');
+        
+        try {
+            await connectTempDB();
+            console.log('✅ Alternative Datenbankverbindung erfolgreich initialisiert');
+            
+            const status = getTempConnectionStatus();
+            console.log('📊 Alternative Datenbankstatus:', status);
+        } catch (tempError) {
+            console.error('❌ Alle Datenbankverbindungsversuche fehlgeschlagen');
+            console.error('Primär:', error.message);
+            console.error('Alternativ:', tempError.message);
+            process.exit(1);
+        }
+    }
+};
+
+// Starte Datenbankverbindung
+initializeDatabase();
 
 // ** Controller-Importe **
 const {
@@ -148,8 +180,11 @@ const { updateProfileImage } = require("./controllers/players");
 
 // ** Benutzerverwaltungsrouten **
 app.post("/create-account", createUser);
+app.post("/api/user/register", validateRequest('createUser'), createUser);
 app.post("/login", loginUser);
+app.post("/api/user/login", validateRequest('loginUser'), loginUser);
 app.get("/get-user", authenticateToken, getUser);
+app.get("/api/user", authenticateToken, getUser);
 app.post("/api/refresh", handleRefreshToken);
 app.post("/api/logout", clearRefreshToken);
 
@@ -196,25 +231,22 @@ app.use('/', clubRoutes);
 // Transaction Routes
 app.use('/transactions', transactionsRoutes);
 
+// Database Routes
+const databaseRoutes = require('./routes/database');
+app.use('/api/database', databaseRoutes);
+
 // ** Event-Management Routen **
 app.post("/events", authenticateToken, createEvent);
 app.get("/events", authenticateToken, getEvents);
 app.put("/events/:eventId", authenticateToken, updateEvent);
 app.delete("/events/:eventId", authenticateToken, deleteEvent);
 
-// User Routes
-app.get("/api/user", authenticateToken, getUser);
-app.post("/api/user/login", validateRequest('loginUser'), loginUser);
-app.post("/api/user/register", validateRequest('createUser'), createUser);
-app.post("/api/refresh", handleRefreshToken);
-app.post("/api/logout", clearRefreshToken);
-
 // Fehlerbehandlung
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Server starten
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server läuft auf Port ${PORT}`);
 });

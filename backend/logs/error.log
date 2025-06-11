@@ -1,0 +1,104 @@
+2025-06-11 22:57:22 [ERROR] Login error {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)"
+}
+2025-06-11 23:00:05 [ERROR] Login error {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)"
+}
+2025-06-11 23:26:46 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:26:51 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:26:56 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:31:42 [ERROR] Fehler beim Login-Prozess {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)",
+  "email": "test@example.com"
+}
+2025-06-11 23:32:34 [ERROR] Fehler beim Login-Prozess {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)",
+  "email": "test@example.com"
+}
+2025-06-11 23:32:49 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:32:54 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:32:59 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:33:04 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 3,
+  "maxRetries": 5
+}
+2025-06-11 23:33:09 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 4,
+  "maxRetries": 5
+}
+2025-06-11 23:33:14 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 5,
+  "maxRetries": 5
+}
+2025-06-11 23:34:37 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:34:50 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:35:01 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:35:11 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:35:21 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:35:31 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 3,
+  "maxRetries": 5
+}
+2025-06-11 23:35:41 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 4,
+  "maxRetries": 5
+}
+2025-06-11 23:35:51 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 5,
+  "maxRetries": 5
+}
+2025-06-11 23:35:51 [ERROR] Maximale Anzahl der Wiederverbindungsversuche erreicht 

@@ -70,9 +70,17 @@ const loginUser = async (req, res) => {
       message: "Login Successful",
       email,
       accessToken,
+    });  } catch (error) {
+    logError('Fehler beim Login-Prozess', { 
+      error: error.message, 
+      stack: error.stack,
+      email: req.body.email 
     });
-  } catch (error) {
-    return res.status(500).json({ error: true, message: "Internal Server Error" });
+    return res.status(500).json({ 
+      error: true, 
+      message: "Internal Server Error",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

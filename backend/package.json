@@ -1,10 +1,12 @@
 {
   "name": "notes-app-backend",
   "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+  "main": "server.js",  "scripts": {
+    "test": "jest",
+    "test:db": "node test/database.test.js",
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js",
+    "prod": "node server.js"
   },
   "author": "",
   "license": "ISC",

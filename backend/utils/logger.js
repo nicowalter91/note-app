@@ -126,10 +126,21 @@ const logHttp = (message, meta = {}) => {
     logger.http(message, sanitizedMeta);
 };
 
+const logWarn = (message, meta = {}) => {
+    const sanitizedMeta = { ...meta };
+    delete sanitizedMeta.password;
+    delete sanitizedMeta.token;
+    delete sanitizedMeta.refreshToken;
+    delete sanitizedMeta.accessToken;
+    
+    logger.warn(message, sanitizedMeta);
+};
+
 module.exports = {
     logger,
     logError,
     logInfo,
     logDebug,
-    logHttp
+    logHttp,
+    logWarn
 };

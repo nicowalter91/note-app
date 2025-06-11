@@ -1,0 +1,404 @@
+2025-06-11 22:22:37 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:23:09 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:23:16 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:23:45 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:25:30 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:27:06 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/api/user",
+  "ip": "::1"
+}
+2025-06-11 22:27:06 [DEBUG] Authentifizierung fehlgeschlagen: Kein Token vorhanden 
+2025-06-11 22:49:38 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:49:42 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:52:10 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:52:33 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:52:55 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:53:51 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:54:19 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:55:24 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:56:35 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:57:06 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:57:15 [INFO] MongoDB Connected: localhost 
+2025-06-11 22:57:22 [ERROR] Login error {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)"
+}
+2025-06-11 22:59:56 [INFO] MongoDB Connected: localhost 
+2025-06-11 23:00:05 [ERROR] Login error {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)"
+}
+2025-06-11 23:05:25 [INFO] MongoDB Connected: localhost 
+2025-06-11 23:07:19 [DEBUG] Neue Authentifizierungsanfrage {
+  "method": "GET",
+  "path": "/get-user",
+  "ip": "::1"
+}
+2025-06-11 23:07:19 [DEBUG] Authentifizierung fehlgeschlagen: Kein Token vorhanden 
+2025-06-11 23:10:58 [INFO] MongoDB Connected: 127.0.0.1 
+2025-06-11 23:17:00 [INFO] MongoDB Connected: 127.0.0.1 
+2025-06-11 23:20:47 [INFO] MongoDB Connected: 127.0.0.1 
+2025-06-11 23:24:16 [INFO] MongoDB erfolgreich verbunden: 127.0.0.1 
+2025-06-11 23:24:16 [INFO] Datenbank: note-app 
+2025-06-11 23:24:16 [INFO] Port: 27017 
+2025-06-11 23:24:36 [INFO] MongoDB erfolgreich verbunden: 127.0.0.1 
+2025-06-11 23:24:36 [INFO] Datenbank: note-app 
+2025-06-11 23:24:36 [INFO] Port: 27017 
+2025-06-11 23:26:46 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:26:46 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:26:46 [WARN] Wiederverbindungsversuch 1/5 in 5000ms 
+2025-06-11 23:26:51 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:26:51 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:26:51 [WARN] Wiederverbindungsversuch 2/5 in 5000ms 
+2025-06-11 23:26:56 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:26:56 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "option buffermaxentries is not supported",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:26:56 [WARN] Wiederverbindungsversuch 3/5 in 5000ms 
+2025-06-11 23:26:57 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:26:57 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:04 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:04 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:04 [WARN] MongoDB Verbindung unterbrochen 
+2025-06-11 23:27:15 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:15 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:21 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:21 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:31 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:31 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:37 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:37 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:27:47 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:27:47 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:28:26 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:28:26 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:28:52 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:28:52 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:29:09 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:29:09 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:29:09 [WARN] MongoDB Verbindung unterbrochen 
+2025-06-11 23:31:00 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:31:00 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:31:11 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:31:11 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:31:34 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:31:34 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:31:42 [ERROR] Fehler beim Login-Prozess {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)",
+  "email": "test@example.com"
+}
+2025-06-11 23:32:34 [ERROR] Fehler beim Login-Prozess {
+  "error": "command find requires authentication",
+  "stack": "MongoServerError: command find requires authentication\n    at Connection.sendCommand (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:299:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Connection.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:327:26)\n    at async Server.command (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:168:29)\n    at async FindOperation.execute (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\find.js:36:16)\n    at async tryOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:207:20)\n    at async executeOperation (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:75:16)\n    at async FindCursor._initialize (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:61:26)\n    at async FindCursor.cursorInit (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:633:27)\n    at async FindCursor.fetchBatch (D:\\Dev\\note-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:667:13)",
+  "email": "test@example.com"
+}
+2025-06-11 23:32:49 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:32:49 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:32:49 [WARN] Wiederverbindungsversuch 1/5 in 5000ms 
+2025-06-11 23:32:54 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:32:54 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:32:54 [WARN] Wiederverbindungsversuch 2/5 in 5000ms 
+2025-06-11 23:32:59 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:32:59 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:32:59 [WARN] Wiederverbindungsversuch 3/5 in 5000ms 
+2025-06-11 23:33:04 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:33:04 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 3,
+  "maxRetries": 5
+}
+2025-06-11 23:33:04 [WARN] Wiederverbindungsversuch 4/5 in 5000ms 
+2025-06-11 23:33:09 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:33:09 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "URI option \"authSource\" cannot be specified with no value",
+  "retryCount": 4,
+  "maxRetries": 5
+}
+2025-06-11 23:33:09 [WARN] Wiederverbindungsversuch 5/5 in 5000ms 
+2025-06-11 23:33:14 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app?authSource=",
+  "database": "note-app?authSource="
+}
+2025-06-11 23:34:32 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:34:37 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:34:37 [WARN] Wiederverbindungsversuch 1/5 in 5000ms 
+2025-06-11 23:34:42 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:34:45 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:34:50 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:34:50 [WARN] Wiederverbindungsversuch 1/5 in 5000ms 
+2025-06-11 23:34:55 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:34:56 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:01 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 0,
+  "maxRetries": 5
+}
+2025-06-11 23:35:01 [WARN] Wiederverbindungsversuch 1/5 in 5000ms 
+2025-06-11 23:35:06 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:11 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 1,
+  "maxRetries": 5
+}
+2025-06-11 23:35:11 [WARN] Wiederverbindungsversuch 2/5 in 5000ms 
+2025-06-11 23:35:16 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:21 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 2,
+  "maxRetries": 5
+}
+2025-06-11 23:35:21 [WARN] Wiederverbindungsversuch 3/5 in 5000ms 
+2025-06-11 23:35:26 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:31 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 3,
+  "maxRetries": 5
+}
+2025-06-11 23:35:31 [WARN] Wiederverbindungsversuch 4/5 in 5000ms 
+2025-06-11 23:35:36 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:41 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 4,
+  "maxRetries": 5
+}
+2025-06-11 23:35:41 [WARN] Wiederverbindungsversuch 5/5 in 5000ms 
+2025-06-11 23:35:46 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://127.0.0.1:27017/note-app",
+  "database": "note-app"
+}
+2025-06-11 23:35:51 [ERROR] Fehler beim Verbinden mit MongoDB {
+  "error": "connect ECONNREFUSED 127.0.0.1:27017",
+  "retryCount": 5,
+  "maxRetries": 5
+}
+2025-06-11 23:35:51 [ERROR] Maximale Anzahl der Wiederverbindungsversuche erreicht 
+2025-06-11 23:42:09 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://***:***@127.0.0.1:27017/note-app?authSource=admin",
+  "database": "note-app?authSource=admin"
+}
+2025-06-11 23:42:10 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:42:24 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://***:***@127.0.0.1:27017/note-app?authSource=admin",
+  "database": "note-app?authSource=admin"
+}
+2025-06-11 23:42:24 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:42:54 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://***:***@127.0.0.1:27017/note-app?authSource=admin",
+  "database": "note-app?authSource=admin"
+}
+2025-06-11 23:42:54 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:44:43 [INFO] Stelle Verbindung zur MongoDB her... {
+  "uri": "mongodb://***:***@127.0.0.1:27017/note-app?authSource=admin",
+  "database": "note-app?authSource=admin"
+}
+2025-06-11 23:44:43 [INFO] MongoDB Verbindung erfolgreich hergestellt {
+  "host": "127.0.0.1",
+  "port": 27017,
+  "database": "note-app",
+  "readyState": 1
+}
+2025-06-11 23:44:53 [DEBUG] Fehlgeschlagener Anmeldeversuch: Ungültiges Passwort {
+  "email": "test@example.com"
+}
