@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
 import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from '../../components/Input/PasswordInput';
 import axiosInstance from '../../utils/axiosInstance';
@@ -46,7 +45,7 @@ const Login = () => {
       // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
-        navigate("/notes"); // Benutzer zu den Notes weiterleiten
+        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
       }
     } catch (error) {
       // Fehlerbehandlung
@@ -67,54 +66,46 @@ const Login = () => {
 
   return (
     <>
-      <Navbar /> {/* Navbar anzeigen */}
+      <div className="flex min-h-screen bg-gray-100 items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Willkommen zurück</h2>
+          <p className="text-sm text-gray-600 mb-6">Bitte melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort an.</p>
 
-      <div className='flex min-h-screen'>
-        {/* Linke Seite: Login-Formular */}
-        <div className='flex-1 flex items-center justify-center bg-white'>
-          <div className='w-96 border rounded px-7 py-10'>
-            <form onSubmit={handleLogin}>
-              <h4 className="text-2xl mb-7 font-medium">👋 Willkommen</h4>
-              <p className='text-sm font-thin'>Enter your email address and passwort to log in</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-Mail-Adresse</label>
+              <input
+                id="email"
+                type="email"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-              <div className='mt-10'>
-                {/* Eingabefeld für E-Mail */}
-                <input
-                  type="text"
-                  placeholder='E-Mail'
-                  className='input-box'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Passwort</label>
+              <PasswordInput
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-                {/* Passwort-Eingabefeld */}
-                <PasswordInput
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              {/* Anzeige der Fehlermeldung, falls vorhanden */}
-              {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              Login
+            </button>
+          </form>
 
-              {/* Login-Button */}
-              <button type='submit' className='btn-primary'>Login</button>
-
-              {/* Link zum Erstellen eines Kontos, falls der Benutzer noch nicht registriert ist */}
-              <p className='text-sm text-center mt-4'>
-                Not yet registered?{" "}
-                <Link to="/signUp" className='font-medium text-primary underline'>
-                  Sign Up
-                </Link>
-              </p>
-
-            </form>
-          </div>
-        </div>
-
-        {/* Rechte Seite: Hintergrundbild */}
-        <div className='flex-1 bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
-          {/* Hier könnte auch optionaler Inhalt hinzugefügt werden */}
+          <p className="text-sm text-center text-gray-600 mt-4">
+            Noch kein Konto?{' '}
+            <Link to="/signUp" className="text-primary hover:underline">Registrieren</Link>
+          </p>
         </div>
       </div>
     </>

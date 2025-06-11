@@ -20,5 +20,8 @@
     },
     "peacock.color": "#42b883",
 
-    "css.customData": [".vscode/tailwind.json"]
+    "css.customData": [
+        ".vscode/tailwind.json"
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false
 }

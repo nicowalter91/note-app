@@ -9,6 +9,8 @@
     "dependencies": {
         "@heroicons/react": "^2.2.0",
         "@material-tailwind/react": "^2.1.10",
-        "multer": "^1.4.5-lts.1"
+        "date-fns": "^4.1.0",
+        "multer": "^1.4.5-lts.1",
+        "react-big-calendar": "^1.19.2"
     }
 }

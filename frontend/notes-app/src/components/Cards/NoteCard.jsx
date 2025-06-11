@@ -1,51 +1,146 @@
-// Importieren von React, Moment (für Datumsformatierung) und Icons von 'react-icons' für UI-Elemente
+// Importieren von React, date-fns (für Datumsformatierung) und Icons von 'react-icons' für UI-Elemente
 import React from 'react';
-import moment from "moment";
-import { MdOutlinePushPin } from 'react-icons/md'; // Pin-Icon
-import { MdCreate, MdDelete } from 'react-icons/md'; // Edit- und Delete-Icons
+import { MdDelete, MdEdit, MdPushPin } from 'react-icons/md';
+import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 
 // NoteCard-Komponente: Eine Komponente zur Darstellung einer Notizkarte
-const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPinNote }) => {
-  return (
-    <div className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-out'>
-        {/* Flex-Container für die obere Zeile der Notizkarte (Titel und Datum) */}
-        <div className='flex items-center justify-between'>
-            <div>
-                {/* Titel der Notiz */}
-                <h6 className='text-sm font-medium'>{title}</h6>
-                {/* Formatiertes Datum */}
-                <span className='text-xs text-slate-500'>{moment(date).format('DD.MM.YYYY')}</span>
-            </div>
+const NoteCard = ({ 
+  title, 
+  date, 
+  content, 
+  tags, 
+  isPinned, 
+  onEdit, 
+  onDelete, 
+  onPinNote,
+  viewMode = 'grid'
+}) => {
+  // Datum im gewünschten Format und mit deutscher Lokalisierung
+  const formattedDate = format(new Date(date), 'dd. MMMM yyyy', { locale: de });
 
-            {/* Pin-Icon, das auf den Status "isPinned" reagiert */}
-            <MdOutlinePushPin
-                className={`icon-btn ${isPinned ? 'text-primary' : 'text-slate-300'}`}
-                onClick={onPinNote} // Event-Handler, der das Pinnen der Notiz ermöglicht
-            />
-        </div>  
+  // Grid-Layout für die Notizkarte
+  const gridCard = (
+    <div className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 relative ${
+      isPinned ? 'border-2 border-blue-500' : ''
+    }`}>
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-xl font-semibold text-gray-800 flex-grow pr-8">{title}</h3>
+        {/* Button zum Pinnen der Notiz */}
+        <button
+          onClick={onPinNote}
+          className={`absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100 transition-colors ${
+            isPinned ? 'text-blue-500' : 'text-gray-400'
+          }`}
+        >
+          <MdPushPin size={20} />
+        </button>
+      </div>
+      
+      <div className="mb-4">
+        {/* Inhalt der Notiz (mit Begrenzung auf 3 Zeilen) */}
+        <p className="text-gray-600 line-clamp-3">{content}</p>
+      </div>
 
-        {/* Vorschau des Inhalts der Notiz (nur die ersten 60 Zeichen) */}
-        <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 120)}</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {/* Tags der Notiz als Pillen anzeigen */}
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
 
-        {/* Tags der Notiz und Buttons für Bearbeiten und Löschen */}
-        <div className="flex items-center justify-between mt-2">
-            {/* Tags der Notiz als Hashtags anzeigen */}
-            <div className='text-xs text-blue-500'>
-                {tags.map((item) => `#${item}  `)} {/* Tags werden durch ein Array iteriert */}
-            </div>
-
-            {/* Buttons für Bearbeiten und Löschen der Notiz */}
-            <div className='flex items-center gap-2'>
-                {/* Bearbeiten-Icon */}
-                <MdCreate className='icon-btn hover:text-green-600' onClick={onEdit} />
-                {/* Löschen-Icon */}
-                <MdDelete className='icon-btn hover:text-red-500' onClick={onDelete} />
-            </div>
+      <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+        {/* Formatiertes Datum */}
+        <span className="text-sm text-gray-500">{formattedDate}</span>
+        <div className="flex gap-2">
+          {/* Bearbeiten-Button */}
+          <button
+            onClick={onEdit}
+            className="p-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors"
+          >
+            <MdEdit size={20} />
+          </button>
+          {/* Löschen-Button */}
+          <button
+            onClick={onDelete}
+            className="p-2 hover:bg-red-100 rounded-full text-red-600 transition-colors"
+          >
+            <MdDelete size={20} />
+          </button>
         </div>
+      </div>
     </div>
   );
-}
+
+  // List-Layout für die Notizkarte
+  const listCard = (
+    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 relative ${
+      isPinned ? 'border-l-4 border-blue-500' : ''
+    }`}>
+      <div className="flex items-center gap-4">
+        <div className="flex-grow">
+          <div className="flex items-start justify-between">
+            {/* Titel der Notiz */}
+            <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+            <div className="flex items-center gap-2">
+              {/* Pin-Button */}
+              <button
+                onClick={onPinNote}
+                className={`p-1.5 rounded-full hover:bg-gray-100 transition-colors ${
+                  isPinned ? 'text-blue-500' : 'text-gray-400'
+                }`}
+              >
+                <MdPushPin size={18} />
+              </button>
+              {/* Bearbeiten-Button */}
+              <button
+                onClick={onEdit}
+                className="p-1.5 hover:bg-gray-100 rounded-full text-gray-600 transition-colors"
+              >
+                <MdEdit size={18} />
+              </button>
+              {/* Löschen-Button */}
+              <button
+                onClick={onDelete}
+                className="p-1.5 hover:bg-red-100 rounded-full text-red-600 transition-colors"
+              >
+                <MdDelete size={18} />
+              </button>
+            </div>
+          </div>
+          
+          {/* Inhalt der Notiz (mit Begrenzung auf 1 Zeile) */}
+          <p className="text-gray-600 line-clamp-1 mt-1">{content}</p>
+          
+          <div className="flex items-center gap-4 mt-2">
+            {/* Formatiertes Datum */}
+            <span className="text-sm text-gray-500">{formattedDate}</span>
+            <div className="flex flex-wrap gap-2">
+              {/* Tags der Notiz als Pillen anzeigen */}
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full text-sm font-medium"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Rückgabe des entsprechenden Layouts basierend auf dem viewMode
+  return viewMode === 'grid' ? gridCard : listCard;
+};
 
 // Exportiert die NoteCard-Komponente, damit sie in anderen Teilen der Anwendung verwendet werden kann
 export default NoteCard;

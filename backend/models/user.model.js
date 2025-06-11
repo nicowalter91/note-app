@@ -7,7 +7,11 @@ const userSchema = new Schema({
     fullName: {type: String},
     email: {type: String, unique: true}, // Optional: Email sollte eindeutig sein
     password: {type: String, required: true}, // Passwort ist erforderlich
-    createdOn: {type: Date, default: new Date().getTime()},
+    createdOn: {type: Date, default: () => new Date()},
+    refreshTokens: [{
+        token: { type: String },
+        createdAt: { type: Date, default: Date.now, expires: 7*24*60*60 } // Token läuft nach 7 Tagen ab
+    }]
 });
 
 // Middleware, die vor dem Speichern ausgeführt wird

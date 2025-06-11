@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
 import PasswordInput from '../../components/Input/PasswordInput';
 import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from '../../utils/helper';
@@ -68,71 +67,58 @@ const SignUp = () => {
 
   return (
     <>
-      {/* Navbar-Komponente */}
-      <Navbar />
+      <div className="flex min-h-screen bg-gray-100 items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Registrieren</h2>
+          <p className="text-sm text-gray-600 mb-6">Erstellen Sie ein Konto, um loszulegen.</p>
 
-      {/* Haupt-Layout: Flexbox für zwei Spalten */}
-      <div className='flex min-h-screen'>
-        {/* Linke Seite: SignUp-Formular */}
-        <div className='flex-1 flex items-center justify-center bg-white'>
-          <div className='w-96 border rounded px-7 py-10'>
-            <form onSubmit={handleSignUp}>
-              {/* Formularüberschrift */}
-              <h4 className="text-2xl mb-7 font-medium">SignUp</h4>
-              <p className='text-sm font-thin'>SignUp for a new experience</p>
+          <form onSubmit={handleSignUp} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                id="name"
+                type="text"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-              <div className='mt-10'>
-                {/* Eingabefeld für den Namen */}
-                <input
-                  type="text"
-                  placeholder='Name'
-                  className='input-box'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)} // Ändert den Namen im State
-                />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-Mail-Adresse</label>
+              <input
+                id="email"
+                type="email"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-                {/* Eingabefeld für die E-Mail */}
-                <input
-                  type="text"
-                  placeholder='Email'
-                  className='input-box'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)} // Ändert die E-Mail im State
-                />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Passwort</label>
+              <PasswordInput
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-                {/* Passwort-Eingabefeld, verwendet eine separate Komponente */}
-                <PasswordInput
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)} // Ändert das Passwort im State
-                />
-              </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              {/* Wenn ein Fehler existiert, wird er hier angezeigt */}
-              {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+            <button
+              type="submit"
+              className={`w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Konto wird erstellt...' : 'Konto erstellen'}
+            </button>
+          </form>
 
-              {/* Submit-Button */}
-              <button
-                type='submit'
-                className={`btn-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isSubmitting} // Verhindert das Absenden bei laufendem Upload
-              >
-                {isSubmitting ? 'Creating Account...' : 'Create Account'} {/* Textänderung des Buttons während des Ladevorgangs */}
-              </button>
-
-              {/* Link zur Login-Seite, falls der Benutzer bereits ein Konto hat */}
-              <p className='text-sm text-center mt-4'>
-                Already have an account?{" "}
-                <Link to="/login" className='font-medium text-primary underline'>
-                  Login
-                </Link>
-              </p>
-            </form>
-          </div>
-        </div>
-
-        {/* Rechte Seite: Hintergrundbild */}
-        <div className='flex-1 bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
-          {/* Optionaler Inhalt für die rechte Seite */}
+          <p className="text-sm text-center text-gray-600 mt-4">
+            Bereits registriert?{' '}
+            <Link to="/login" className="text-primary hover:underline">Login</Link>
+          </p>
         </div>
       </div>
     </>

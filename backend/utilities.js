@@ -1,21 +1,35 @@
-// Importiert das jsonwebtoken-Modul, um JSON Web Tokens (JWTs) zu verifizieren
 const jwt = require('jsonwebtoken');
+const { logDebug, logError } = require('./utils/logger');
 
-// Middleware-Funktion zur Authentifizierung von Benutzern anhand eines Tokens
 function authenticateToken(req, res, next) {
-    // Überprüft, ob ein "Authorization"-Header in der Anfrage vorhanden ist
+    // Logging der Request-Details (ohne sensitive Daten)
+    logDebug('Neue Authentifizierungsanfrage', {
+        method: req.method,
+        path: req.path,
+        ip: req.ip
+    });
+    
     const authHeader = req.headers["authorization"];
-    // Extrahiert den Token aus dem Authorization-Header, der im Format "Bearer <token>" sein sollte
-    const token = authHeader && authHeader.split(" ")[1];
+    
+    const token = authHeader && authHeader.split(" ")[1];    if (!token) {
+        logDebug('Authentifizierung fehlgeschlagen: Kein Token vorhanden');
+        return res.status(401).json({ message: 'No token provided' });
+    }
 
-    // Wenn kein Token vorhanden ist, wird der Zugriff verweigert (Status 401 Unauthorized)
-    if (!token) return res.sendStatus(401);
-
-    // Überprüft das Token mit dem SECRET-Schlüssel, der in der Umgebungsvariable gespeichert ist
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        // Wenn ein Fehler beim Verifizieren des Tokens auftritt, wird der Zugriff verweigert
-        if (err) return res.sendStatus(401);
+        if (err) {
+            logError('Token-Validierungsfehler', { 
+                error: err.name,
+                message: err.message 
+            });
+            return res.status(401).json({ message: 'Invalid token' });
+        }
 
+        logDebug('Benutzer erfolgreich authentifiziert', { 
+            userId: user._id,
+            email: user.email 
+        });
+        
         // Wenn das Token gültig ist, wird der Benutzer (user) aus dem Token extrahiert
         // und in das req.user-Objekt eingefügt, damit die nachfolgenden Routen darauf zugreifen können
         req.user = user;

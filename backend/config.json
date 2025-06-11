@@ -1,3 +1,6 @@
 {
-    "connectionString": "mongodb://testuser:testuser123@127.0.0.1:27017/?retryWrites=true&w=majority&appName=notesapp"
+    "app": {
+        "name": "Note App",
+        "version": "1.0.0"
+    }
 }

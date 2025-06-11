@@ -1,0 +1,46 @@
+.rbc-calendar {
+  min-height: 600px;
+}
+
+.rbc-toolbar {
+  margin-bottom: 1rem;
+}
+
+.rbc-toolbar button {
+  color: #4B5563;
+  background-color: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #E5E7EB;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #2563EB;
+  color: white;
+}
+
+.rbc-event {
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: none;
+}
+
+.rbc-event.event-Spiel {
+  background-color: #2563EB;
+}
+
+.rbc-event.event-Training {
+  background-color: #059669;
+}
+
+.rbc-event.event-Event {
+  background-color: #7C3AED;
+}
+
+.rbc-today {
+  background-color: #EFF6FF;
+}
