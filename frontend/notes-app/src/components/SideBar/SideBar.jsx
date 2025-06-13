@@ -52,12 +52,21 @@ const Sidebar = ({ onLogout, userInfo }) => {
         <div className="mb-6 px-4">
           <h2 className="text-sm font-semibold mb-3">HOME</h2>
           <nav className="flex flex-col space-y-2">
-            <NavItem icon={<FaHome />} label="Dashboard" />
+            <NavItem icon={<FaHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <NavItem icon={<FaPen />} label="Notes" />
             <NavItem icon={<FaDumbbell />} label="Exercises" />
-            <NavItem icon={<FaUsers />} label="Team" />
-            <NavItem icon={<FaClipboard />} label="Tactic" />
-            <NavItem icon={<FaVideo />} label="Video" />
+          </nav>
+        </div>
+
+        {/* TEAM MANAGEMENT Section */}
+        <div className="mb-6 px-4">
+          <h2 className="text-sm font-semibold mb-3">TEAM MANAGEMENT</h2>
+          <nav className="flex flex-col space-y-2">
+            <NavItem icon={<FaUsers />} label="Players" />
+            <NavItem icon={<FaClipboard />} label="Schedule" />
+            <NavItem icon={<FaClipboard />} label="Statistics" />
+            <NavItem icon={<FaClipboard />} label="Training" />
+            <NavItem icon={<FaClipboard />} label="Tactics" />
           </nav>
         </div>
 
@@ -67,7 +76,7 @@ const Sidebar = ({ onLogout, userInfo }) => {
           <nav className="flex flex-col space-y-2">
             <NavItem icon={<FaUser />} label="Profil" />
             <NavItem icon={<FaCog />} label="Settings" />
-        <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={onLogout} />
+            <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={onLogout} />
           </nav>
         </div>
       </div>

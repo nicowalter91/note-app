@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar/Navbar'; // Navbar-Komponente importieren
-import Sidebar from '../../components/SideBar/SideBar.jsx'; // Sidebar-Komponente importieren
-import Toast from '../../components/ToastMessage/Toast'; // Toast-Komponente importieren
-import { useNavigate } from 'react-router-dom'; // useNavigate für die Navigation importieren
-import axiosInstance from '../../utils/axiosInstance'; // Axios für API-Aufrufe importieren
+import Navbar from '../../components/Navbar/Navbar';
+import Sidebar from '../../components/SideBar/SideBar.jsx';
+import Toast from '../../components/ToastMessage/Toast';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../utils/axiosInstance';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'; // Corrected import for LoadingSpinner
+import Footer from '../../components/Footer/Footer'; // Import Footer component
 
 const Layout = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -12,7 +14,8 @@ const Layout = ({ children }) => {
     message: "",
     type: null,
   });
-  const [searchQuery, setSearchQuery] = useState(""); // Zustand für die Suchabfrage
+  const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState(null); // State for error handling
 
   const navigate = useNavigate();
 
@@ -24,7 +27,8 @@ const Layout = ({ children }) => {
         setUserInfo(response.data.user); // Speichert die Benutzerdaten im State
       }
     } catch (error) {
-      if (error.response.status === 401) {
+      setError("Failed to load user information."); // Set error message
+      if (error.response?.status === 401) {
         localStorage.clear();
         navigate("/login"); // Falls die Authentifizierung fehlschlägt, zum Login navigieren
       }
@@ -59,15 +63,17 @@ const Layout = ({ children }) => {
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
+        ) : error ? (
+          <div className="text-red-500 text-center mt-4">{error}</div> // Error message
         ) : (
-          <div>Loading...</div> // Ladeanzeige
+          <LoadingSpinner /> // Animated loading spinner
         )}
       </div>
 
       {/* Flex-Container für Sidebar und Hauptinhalt */}
       <div className="flex flex-1 pt-16">
         {/* Sidebar links */}
-        <div className="bg-blue-600 text-white h-full fixed top-16 left-0 bottom-0">
+        <div className="bg-blue-600 text-white h-full fixed top-16 left-0 bottom-0 md:w-64 w-16 transition-width duration-300">
           <Sidebar
             userInfo={userInfo}
             onLogout={() => {
@@ -78,7 +84,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Hauptinhalt rechts */}
-        <div className="flex-1 ml-32 p-6 overflow-y-auto mr-32">{children}</div>
+        <div className="flex-1 ml-16 md:ml-64 p-6 overflow-y-auto">{children}</div>
       </div>
 
       {/* Toast-Benachrichtigung */}
@@ -88,6 +94,9 @@ const Layout = ({ children }) => {
         type={showToastMsg.type}
         onClose={() => setShowToastMsg({ isShown: false, message: "" })}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
