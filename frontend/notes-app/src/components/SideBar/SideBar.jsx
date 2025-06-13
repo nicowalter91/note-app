@@ -1,8 +1,8 @@
 import React from 'react';
-import { FaPen, FaDumbbell, FaTools, FaSignOutAlt, FaUser, FaUsers, FaClipboard, FaVideo } from 'react-icons/fa';
+import { FaPen, FaDumbbell, FaTools, FaSignOutAlt, FaUser, FaUsers, FaClipboard, FaVideo, FaHome, FaCog, FaBell } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const Sidebar = ({ onLogout }) => {
+const Sidebar = ({ onLogout, userInfo }) => {
   const navigate = useNavigate();
   const location = useLocation();  // Zugriff auf die aktuelle URL
 
@@ -16,43 +16,64 @@ const Sidebar = ({ onLogout }) => {
     return location.pathname === `/${path.toLowerCase()}`;
   };
 
-  // NavItem-Komponente, die für alle Links verwendet wird
+  // Updated NavItem component to include hover effects and modern styling
   const NavItem = ({ icon, label, onClick }) => {
-    const active = isActive(label); // Überprüfen, ob der aktuelle Pfad mit dem Label übereinstimmt
+    const active = isActive(label);
 
     return (
       <a
-        href={label.toLowerCase() !== 'logout' ? `/${label.toLowerCase()}` : '#'} // Verhindert das Navigieren, wenn es 'logout' ist
-        onClick={onClick} // Führt die onClick Funktion aus (bei Logout: handleLogout)
-        className={`flex flex-col items-center px-4 py-3 transition duration-200
-          ${active ? 'bg-white text-blue-600' : 'hover:bg-white hover:text-blue-500'} 
+        href={label.toLowerCase() !== 'logout' ? `/${label.toLowerCase()}` : '#'}
+        onClick={onClick}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition duration-300 transform hover:scale-105
+          ${active ? 'bg-white text-blue-600 shadow-md' : 'hover:bg-white hover:text-blue-500'}
         `}
       >
-        <span className="text-xl">{icon}</span> {/* Noch kleinere Icons */}
-        <span className="text-sm mt-2">{label}</span> {/* Noch kleineres Label */}
+        <span className="text-sm">{icon}</span> {/* Reduced icon size */}
+        <span className="text-xs font-medium">{label}</span> {/* Reduced label size */}
       </a>
     );
   };
 
   return (
-    <div className="w-20 fixed left-0 h-screen bg-blue-600 text-white flex flex-col items-center py-6">
-      {/* Navigation Items */}
-      <nav className="flex flex-col space-y-4">
-        <NavItem icon={<FaPen />} label="Notes" />
-        <NavItem icon={<FaDumbbell />} label="Exercises" />
-        <NavItem icon={<FaUsers />} label="Team" />
-        <NavItem icon={<FaClipboard />} label="Tactic" />
-        <NavItem icon={<FaVideo />} label="Video" />
-      </nav>
+    <div className="w-64 h-screen bg-gradient-to-b from-blue-700 to-blue-500 text-white flex flex-col py-4 shadow-lg overflow-y-auto justify-between">
+      <div>
+        {/* User Info Section */}
+        <div className="flex items-center gap-3 px-4 mb-6">
+          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold text-sm">
+            {userInfo?.name?.[0] || 'U'}
+          </div>
+          <div>
+            <p className="text-xs font-medium">{userInfo?.name || 'Guest'}</p>
+            <p className="text-[10px] text-blue-200">{userInfo?.email || 'Not logged in'}</p>
+          </div>
+        </div>
 
-      {/* Navigation Items Bottom */}
-      <div className="flex item-center flex-col mt-auto mb-12">
-        <hr className="w-10 mx-auto border-t border-gray-300 my-4" />
-        <NavItem icon={<FaUser />} label="Profil" />
-        <NavItem icon={<FaTools />} label="Settings" />
-        {/* Logout Button */}
+        {/* HOME Section */}
+        <div className="mb-6 px-4">
+          <h2 className="text-sm font-semibold mb-3">HOME</h2>
+          <nav className="flex flex-col space-y-2">
+            <NavItem icon={<FaHome />} label="Dashboard" />
+            <NavItem icon={<FaPen />} label="Notes" />
+            <NavItem icon={<FaDumbbell />} label="Exercises" />
+            <NavItem icon={<FaUsers />} label="Team" />
+            <NavItem icon={<FaClipboard />} label="Tactic" />
+            <NavItem icon={<FaVideo />} label="Video" />
+          </nav>
+        </div>
+
+        {/* OTHER Section */}
+        <div className="px-4">
+          <h2 className="text-sm font-semibold mb-3">OTHER</h2>
+          <nav className="flex flex-col space-y-2">
+            <NavItem icon={<FaUser />} label="Profil" />
+            <NavItem icon={<FaCog />} label="Settings" />
         <NavItem icon={<FaSignOutAlt />} label="Logout" onClick={onLogout} />
+          </nav>
+        </div>
       </div>
+
+      
+      {/* Logout Section */}
     </div>
   );
 };
