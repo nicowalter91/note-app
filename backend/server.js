@@ -4,8 +4,10 @@ const config = require("./config.json");
 
 const { getUser, loginUser, createUser } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
-
-
+const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
+const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
+const upload = require("./middleware/uploadMiddleware");
+const path = require("path");
 
 
 // Verbindung zur MongoDB-Datenbank herstellen
@@ -18,6 +20,7 @@ connectDB();
 const User = require("./models/user.model");
 const Note = require("./models/note.model");
 const Exercises = require("./models/exercises.model");
+const Player = require("./models/player.model");
 
 // Express und Middleware einrichten
 const express = require("express");
@@ -29,6 +32,9 @@ const app = express();
 // *** Middleware-Setup ***
 app.use(express.json()); // Parsing von JSON-Anfragen
 app.use(cors({ origin: "*" })); // CORS für alle Ursprünge erlauben
+
+// Statische Dateien (Uploads) bereitstellen
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // *** Basisroute ***
 app.get("/", (req, res) => {
@@ -49,6 +55,32 @@ app.post("/login", async (req, res) => {
 // Route zum Abrufen von Benutzerinformationen
 app.get("/get-user", authenticateToken, async (req, res) => {
   getUser(req, res);
+});
+
+// *** Spieler-Routen ***
+// Route zum Hinzufügen eines neuen Spielers
+app.post("/players", async (req, res) => {
+  addPlayer(req, res);
+});
+
+// Route zum Bearbeiten eines Spielers
+app.put("/players/:id", async (req, res) => {
+  editPlayer(req, res);
+});
+
+// Route zum Abrufen aller Spieler
+app.get("/players", async (req, res) => {
+  getPlayers(req, res);
+});
+
+// Route zum Abrufen eines einzelnen Spielers
+app.get("/players/:id", async (req, res) => {
+  getPlayer(req, res);
+});
+
+// Route zum Löschen eines Spielers
+app.delete("/players/:id", async (req, res) => {
+  deletePlayer(req, res);
 });
 
 // *** Notizverwaltungsrouten ***
@@ -80,6 +112,22 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
 // Route zur Suche nach Notizen
 app.get("/search-notes", authenticateToken, async (req, res) => {
   searchNote(req,res);
+});
+
+// *** Profilbild-Routen ***
+// Route zum Hochladen eines Profilbilds
+app.post("/players/:id/profile-image", upload.single('profileImage'), async (req, res) => {
+  uploadProfileImage(req, res);
+});
+
+// Route zum Abrufen eines Profilbilds
+app.get("/players/:id/profile-image", async (req, res) => {
+  getProfileImage(req, res);
+});
+
+// Route zum Löschen eines Profilbilds
+app.delete("/players/:id/profile-image", async (req, res) => {
+  deleteProfileImage(req, res);
 });
 
 // *** Server starten ***

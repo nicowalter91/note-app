@@ -7,106 +7,35 @@ import {
     FaCalendarAlt, FaComment, FaDownload, FaChartBar, FaCaretUp, FaCaretDown
 } from 'react-icons/fa';
 import { calculatePlayerScore, getScoreRating } from '../../../../utils/playerScoreUtils.jsx';
+import { getPlayerById } from '../../../../utils/playerService';
+import ProfileImageUpload from '../../../../components/ProfileImageUpload/ProfileImageUpload';
 
 const PlayerProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
 
-    // Simulating data fetch - in a real app, this would come from an API or props
+    // Fetch player data from API
     useEffect(() => {
-        // Mock data - in a real application, you would fetch this from an API
-        const mockPlayers = [
-            { 
-                name: 'Barry Sanders', 
-                position: 'GK', 
-                age: 16, 
-                number: 1, 
-                status: 'Available', 
-                dob: '11.12.2006',
-                height: 185,
-                weight: 78,
-                physicalAttributes: {
-                    speed: 72,
-                    strength: 68,
-                    agility: 75,
-                    endurance: 80,
-                    fitness: 85
-                },
-                stats: {
-                    games: 24,
-                    goals: 0,
-                    assists: 0,
-                    yellowCards: 1,
-                    redCards: 0,
-                    minutesPlayed: 2160,
-                    cleanSheets: 10,
-                    saves: 87,
-                    savesPercentage: 78
-                },
-                injuries: [
-                    { type: 'Fingerverletzung', date: '03.05.2024', duration: '2 Wochen', status: 'Erholt' },
-                    { type: 'Knieprellung', date: '12.10.2023', duration: '1 Woche', status: 'Erholt' }
-                ],
-                skills: {
-                    goalkeeping: 85,
-                    passing: 70,
-                    positioning: 82,
-                    reflexes: 86,
-                    handling: 78,
-                    communication: 75,
-                    leadership: 80,
-                    decisionMaking: 79
-                },
-                development: {
-                    goals: ['Verbesserung der Strafraumbeherrschung', 'Kommunikation mit der Abwehr stärken'],
-                    recentProgress: [
-                        { skill: 'Reflexes', change: +2, date: '01.06.2025' },
-                        { skill: 'Positioning', change: +1, date: '01.06.2025' },
-                        { skill: 'Communication', change: +3, date: '01.05.2025' }
-                    ]
-                },
-                personalInfo: {
-                    email: 'barry.sanders@example.com',
-                    phone: '+49 123 456789',
-                    emergencyContact: 'John Sanders (Vater): +49 987 654321',
-                    school: 'Gymnasium Musterschule',
-                    preferredFoot: 'Rechts'
-                },
-                training: {
-                    attendance: 95,
-                    recentPerformance: [90, 85, 92, 88, 91],
-                    specialProgram: 'Reflextraining, Freitags 16:00 Uhr'
-                },
-                documents: [
-                    { name: 'Sportärztliche Untersuchung', date: '15.03.2025', type: 'medical' },
-                    { name: 'Spielervertrag', date: '01.08.2023', type: 'contract' }
-                ],
-                notes: [
-                    { author: 'Trainer Klaus', date: '05.06.2025', text: 'Zeigt große Fortschritte im Bereich der Strafraumbeherrschung.' },
-                    { author: 'Co-Trainer Schmidt', date: '20.05.2025', text: 'Muss an seiner Konzentration in den letzten 15 Minuten arbeiten.' }
-                ],
-                teamRole: {
-                    leadership: 'Vice-Captain',
-                    preferredPartners: ['Lucas Roberts', 'Marcus Sanchez'],
-                    chemistry: 'Ausgezeichnet mit der Abwehrkette'
-                }
-            },
-            // Mocking additional players with similar structure...
-            { name: 'Hugh Grant', position: 'GK', age: 16, number: 12, status: 'Injured', dob: '30.08.2007' },
-            { name: 'Ethan Brooks', position: 'DF', age: 15, number: 37, status: 'Available', dob: '05.09.2007' },
-            { name: 'Marcus Sanchez', position: 'CB', age: 17, number: 7, status: 'Away', dob: '12.06.2006' },
-            { name: 'Lucas Roberts', position: 'CB', age: 16, number: 23, status: 'Available', dob: '15.10.2006' },
-        ];
-
-        setTimeout(() => {
-            if (id && parseInt(id) < mockPlayers.length) {
-                setPlayer(mockPlayers[parseInt(id)]);
+        const fetchPlayerData = async () => {
+            try {
+                setLoading(true);
+                const playerData = await getPlayerById(id);
+                console.log('Spielerdaten von API für Player ID:', id, playerData);
+                setPlayer(playerData);
+                setError(null);
+            } catch (err) {
+                console.error('Fehler beim Laden des Spielers:', err);
+                setError('Fehler beim Laden des Spielers. Bitte versuchen Sie es später erneut.');
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
-        }, 300); // Simulate network delay
+        };
+        
+        fetchPlayerData();
     }, [id]);
 
     const getStatusColor = (status) => {
@@ -646,11 +575,14 @@ const PlayerProfile = () => {
             <div className="container mx-auto py-8 px-4 max-w-7xl">
                 {/* Header card with player info and score */}                <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
                     <div className="bg-gray-50 border-b border-gray-100 h-24"></div>
-                    <div className="px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between relative">
-                        <div className="flex items-center -mt-16 md:-mt-12">
-                            <div className="w-24 h-24 bg-white p-1 rounded-full shadow-lg mr-4">
-                                <div className="w-full h-full bg-gray-200 rounded-full"></div>
-                            </div>
+                    <div className="px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between relative">                        <div className="flex items-center -mt-16 md:-mt-12">
+                            <ProfileImageUpload 
+                                playerId={player._id}
+                                currentImage={player.profileImage}
+                                onImageUpdate={(newImagePath) => {
+                                    setPlayer({...player, profileImage: newImagePath});
+                                }}
+                            />
                             <div className="pt-2 md:pt-0">
                                 <h1 className="text-2xl font-bold text-gray-800">{player.name}</h1>
                                 <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">

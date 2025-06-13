@@ -1,148 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../../components/Layout/Layout';
 import { FaUserPlus, FaSearch, FaInfo, FaPen, FaTrashAlt, FaCheck, FaExclamation, FaFilter, FaTimes, FaStar } from 'react-icons/fa';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { calculatePlayerScore, getScoreRating } from '../../../utils/playerScoreUtils.jsx';
+import { getAllPlayers, addPlayer as addPlayerAPI, updatePlayer as updatePlayerAPI, deletePlayer as deletePlayerAPI, getProfileImageUrl } from '../../../utils/playerService';
 
 const Players = () => {
-    const [players, setPlayers] = useState([
-        { 
-            name: 'Barry Sanders', 
-            position: 'GK', 
-            age: 16, 
-            number: 1, 
-            status: 'Available', 
-            dob: '11.12.2006',
-            physicalAttributes: {
-                speed: 72,
-                strength: 68,
-                agility: 75,
-                endurance: 80,
-                fitness: 85
-            },
-            skills: {
-                goalkeeping: 85,
-                passing: 70,
-                positioning: 82,
-                reflexes: 86,
-                handling: 78
-            },
-            stats: {
-                games: 24,
-                cleanSheets: 10,
-                savesPercentage: 78
-            }
-        },
-        { 
-            name: 'Hugh Grant', 
-            position: 'GK', 
-            age: 16, 
-            number: 12, 
-            status: 'Injured', 
-            dob: '30.08.2007',
-            physicalAttributes: {
-                speed: 68,
-                strength: 65,
-                agility: 72,
-                endurance: 70,
-                fitness: 65
-            },
-            skills: {
-                goalkeeping: 75,
-                passing: 68,
-                positioning: 77,
-                reflexes: 82,
-                handling: 76
-            }
-        },
-        { 
-            name: 'Ethan Brooks', 
-            position: 'DF', 
-            age: 15, 
-            number: 37, 
-            status: 'Available', 
-            dob: '05.09.2007',
-            physicalAttributes: {
-                speed: 78,
-                strength: 72,
-                agility: 76,
-                endurance: 82,
-                fitness: 85
-            },
-            skills: {
-                tackling: 76,
-                passing: 74,
-                positioning: 75,
-                heading: 77,
-                marking: 78
-            }
-        },
-        { 
-            name: 'Marcus Sanchez', 
-            position: 'CB', 
-            age: 17, 
-            number: 7, 
-            status: 'Away', 
-            dob: '12.06.2006',
-            physicalAttributes: {
-                speed: 76,
-                strength: 83,
-                agility: 72,
-                endurance: 80,
-                fitness: 78
-            },
-            skills: {
-                tackling: 85,
-                passing: 70,
-                positioning: 84,
-                heading: 88,
-                marking: 83
-            },
-            stats: {
-                games: 22,
-                goals: 3,
-                assists: 1,
-                yellowCards: 4,
-                redCards: 0
-            }
-        },
-        { 
-            name: 'Lucas Roberts', 
-            position: 'CB', 
-            age: 16, 
-            number: 23, 
-            status: 'Available', 
-            dob: '15.10.2006',
-            physicalAttributes: {
-                speed: 75,
-                strength: 79,
-                agility: 73,
-                endurance: 81,
-                fitness: 83
-            },
-            skills: {
-                tackling: 80,
-                passing: 72,
-                positioning: 81,
-                heading: 82,
-                marking: 78
-            },
-            stats: {
-                games: 20,
-                goals: 1,
-                assists: 2,
-                yellowCards: 2,
-                redCards: 0
-            }
-        },
-    ]);
+    const [players, setPlayers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [newPlayer, setNewPlayer] = useState({ name: '', position: '', age: '', number: '', status: 'Available', dob: '' });
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlayer, setEditingPlayer] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const navigate = useNavigate();
+    const navigate = useNavigate();    // Fetch players from API
+    useEffect(() => {
+        const fetchPlayers = async () => {
+            try {
+                setLoading(true);
+                const playersData = await getAllPlayers();
+                console.log('Spielerdaten von API:', playersData);
+                setPlayers(playersData || []);
+                setError(null);
+            } catch (err) {
+                console.error('Fehler beim Laden der Spieler:', err);
+                setError('Fehler beim Laden der Spieler. Bitte versuchen Sie es später erneut.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchPlayers();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -215,52 +106,89 @@ const Players = () => {
                     positioning: 50
                 };
         }
-    };
-
-    const addPlayer = () => {
+    };    const addPlayer = async () => {
         if (newPlayer.name && newPlayer.position && newPlayer.age && newPlayer.number) {
-            // Erweitere den neuen Spieler mit Standard-Attributen basierend auf der Position
-            const playerAttributes = getDefaultPlayerAttributes();
-            const positionSkills = getPositionSkills(newPlayer.position);
-            
-            const playerWithAttributes = {
-                ...newPlayer,
-                physicalAttributes: playerAttributes.physicalAttributes,
-                skills: positionSkills
-            };
-            
-            if (isEditing && editingPlayer !== null) {
-                const updatedPlayers = [...players];
-                // Behalte vorhandene Attribute bei, falls vorhanden
-                const existingAttributes = players[editingPlayer].physicalAttributes || playerAttributes.physicalAttributes;
-                const existingSkills = players[editingPlayer].skills || positionSkills;
+            try {
+                setLoading(true);
                 
-                updatedPlayers[editingPlayer] = {
-                    ...playerWithAttributes,
-                    physicalAttributes: existingAttributes,
-                    skills: existingSkills
+                // Erweitere den neuen Spieler mit Standard-Attributen basierend auf der Position
+                const playerAttributes = getDefaultPlayerAttributes();
+                const positionSkills = getPositionSkills(newPlayer.position);
+                
+                const playerWithAttributes = {
+                    ...newPlayer,
+                    physicalAttributes: playerAttributes.physicalAttributes,
+                    skills: positionSkills
                 };
                 
-                setPlayers(updatedPlayers);
-                setIsEditing(false);
-                setEditingPlayer(null);
-            } else {
-                setPlayers([...players, playerWithAttributes]);
+                if (isEditing && editingPlayer !== null) {
+                    // Behalte vorhandene Attribute bei, falls vorhanden
+                    const currentPlayer = players[editingPlayer];
+                    const existingAttributes = currentPlayer.physicalAttributes || playerAttributes.physicalAttributes;
+                    const existingSkills = currentPlayer.skills || positionSkills;
+                    
+                    const updatedPlayer = {
+                        ...playerWithAttributes,
+                        physicalAttributes: existingAttributes,
+                        skills: existingSkills
+                    };
+                    
+                    // API-Aufruf zum Aktualisieren des Spielers
+                    const response = await updatePlayerAPI(currentPlayer._id, updatedPlayer);
+                    
+                    // Aktualisiere die lokale Spielerliste
+                    const updatedPlayers = [...players];
+                    updatedPlayers[editingPlayer] = response;
+                    setPlayers(updatedPlayers);
+                    
+                    setIsEditing(false);
+                    setEditingPlayer(null);
+                } else {
+                    // API-Aufruf zum Hinzufügen eines Spielers
+                    const response = await addPlayerAPI(playerWithAttributes);
+                    
+                    // Aktualisiere die lokale Spielerliste
+                    setPlayers([...players, response]);
+                }
+                
+                setNewPlayer({ name: '', position: '', age: '', number: '', status: 'Available', dob: '' });
+                setIsModalOpen(false);
+            } catch (err) {
+                console.error('Fehler beim Speichern des Spielers:', err);
+                alert('Fehler beim Speichern des Spielers. Bitte versuchen Sie es später erneut.');
+            } finally {
+                setLoading(false);
             }
-            setNewPlayer({ name: '', position: '', age: '', number: '', status: 'Available', dob: '' });
-            setIsModalOpen(false);
+        } else {
+            alert('Bitte füllen Sie alle Pflichtfelder aus.');
         }
-    };
-
-    const confirmDeletePlayer = (index) => {
-        if (window.confirm('Möchten Sie diesen Spieler wirklich entfernen?')) {
-            setPlayers(players.filter((_, i) => i !== index));
+    };    const confirmDeletePlayer = async (index) => {
+        try {
+            const player = players[index];
+            if (window.confirm('Möchten Sie diesen Spieler wirklich entfernen?')) {
+                setLoading(true);
+                // API-Aufruf zum Löschen des Spielers
+                await deletePlayerAPI(player._id);
+                
+                // Aktualisiere die lokale Spielerliste
+                setPlayers(players.filter((_, i) => i !== index));
+                setLoading(false);
+            }
+        } catch (err) {
+            console.error('Fehler beim Löschen des Spielers:', err);
+            alert('Fehler beim Löschen des Spielers. Bitte versuchen Sie es später erneut.');
+            setLoading(false);
         }
-    };
-
-    const editPlayer = (index) => {
+    };    const editPlayer = (index) => {
+        const player = players[index];
         setEditingPlayer(index);
-        setNewPlayer(players[index]);
+        // Stelle sicher, dass alle notwendigen Felder vorhanden sind
+        setNewPlayer({
+            ...player,
+            // Konvertiere numerische Felder für Formularfelder
+            age: player.age.toString(),
+            number: player.number.toString()
+        });
         setIsEditing(true);
         setIsModalOpen(true);
     };
@@ -287,9 +215,7 @@ const Players = () => {
             case 'Away': return <FaExclamation className="text-amber-500" />;
             default: return null;
         }
-    };
-
-    return (
+    };    return (
         <Layout>
             <div className="container mx-auto py-8 px-4 max-w-7xl">
                 <div className="flex justify-between items-center mb-8">
@@ -302,10 +228,27 @@ const Players = () => {
                             setIsModalOpen(true);
                         }}
                         className="px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+                        disabled={loading}
                     >
                         <FaUserPlus /> Spieler hinzufügen
                     </button>
                 </div>
+
+                {/* Error Display */}
+                {error && (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 flex items-center">
+                        <FaExclamation className="mr-2" />
+                        {error}
+                    </div>
+                )}
+
+                {/* Loading Indicator */}
+                {loading && (
+                    <div className="flex justify-center items-center my-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+                        <span className="ml-3 text-gray-700">Lädt Spielerdaten...</span>
+                    </div>
+                )}
 
                 {/* Search and Filter */}
                 <div className="bg-white shadow-sm rounded-xl p-4 mb-8">
@@ -350,9 +293,24 @@ const Players = () => {
                         <div 
                             key={index} 
                             className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
-                        >
-                            <div className="bg-gray-50 p-4 flex justify-center">
-                                <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
+                        >                            <div className="bg-gray-50 p-4 flex justify-center">
+                                {player.profileImage ? (
+                                    <img 
+                                        src={`${getProfileImageUrl(player._id)}?t=${new Date().getTime()}`} 
+                                        alt={player.name}
+                                        className="w-20 h-20 object-cover rounded-full"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = '/default-avatar.png';
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span className="text-gray-500 text-2xl font-bold">
+                                            {player.name.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             <div className="p-5">
                                 <h3 className="text-lg font-semibold text-gray-800 text-center mb-3">{player.name}</h3>
@@ -392,10 +350,9 @@ const Players = () => {
                                 <div className="flex items-center justify-between">
                                     <span className={`inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 border ${getStatusColor(player.status)}`}>
                                         {getStatusIcon(player.status)} {player.status}
-                                    </span>
-                                    <div className="flex gap-1">
+                                    </span>                                    <div className="flex gap-1">
                                         <button
-                                            onClick={() => navigate(`/team/players/${index}`)}
+                                            onClick={() => navigate(`/team/players/${player._id}`)}
                                             className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full"
                                             title="Profil ansehen"
                                         >

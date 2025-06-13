@@ -1,5 +1,5 @@
 {
-    "connectionString": "mongodb+srv://testuser:testuser123@notesapp.omchc.mongodb.net/?retryWrites=true&w=majority&appName=notesapp",
+    "connectionString": "mongodb://testuser:testuser123@localhost:27017/footballteamapp?authSource=admin",
     
-    "comment": "connectionString: Der Verbindungsstring für die Verbindung zur MongoDB-Datenbank.Dieser enthält die Anmeldeinformationen (Benutzername und Passwort) und die Adresse des MongoDB-Clusters."
+    "comment": "connectionString: Der Verbindungsstring für die Verbindung zur lokalen MongoDB-Datenbank im Docker-Container mit Authentifizierung."
 }

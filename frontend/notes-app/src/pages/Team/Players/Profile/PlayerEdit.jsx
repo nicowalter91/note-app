@@ -3,6 +3,8 @@ import Layout from '../../../../components/Layout/Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaSave, FaTimes, FaStar } from 'react-icons/fa';
 import { calculatePlayerScore, getScoreRating } from '../../../../utils/playerScoreUtils.jsx';
+import { getPlayerById, updatePlayer } from '../../../../utils/playerService';
+import ProfileImageUpload from '../../../../components/ProfileImageUpload/ProfileImageUpload';
 
 const PlayerEdit = () => {
     const { id } = useParams();
@@ -10,103 +12,156 @@ const PlayerEdit = () => {
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({});
-    const [activeTab, setActiveTab] = useState('basic');
-    const [isSaving, setIsSaving] = useState(false);
+    const [activeTab, setActiveTab] = useState('basic');    const [isSaving, setIsSaving] = useState(false);
 
     // Simulating data fetch - in a real app, this would come from an API or props
     useEffect(() => {
-        // Mock data - in a real application, you would fetch this from an API
-        const mockPlayers = [
-            { 
-                name: 'Barry Sanders', 
-                position: 'GK', 
-                age: 16, 
-                number: 1, 
-                status: 'Available', 
-                dob: '11.12.2006',
-                height: 185,
-                weight: 78,
-                physicalAttributes: {
-                    speed: 72,
-                    strength: 68,
-                    agility: 75,
-                    endurance: 80,
-                    fitness: 85
-                },
-                stats: {
-                    games: 24,
-                    goals: 0,
-                    assists: 0,
-                    yellowCards: 1,
-                    redCards: 0,
-                    minutesPlayed: 2160,
-                    cleanSheets: 10,
-                    saves: 87,
-                    savesPercentage: 78
-                },
-                injuries: [
-                    { type: 'Fingerverletzung', date: '03.05.2024', duration: '2 Wochen', status: 'Erholt' },
-                    { type: 'Knieprellung', date: '12.10.2023', duration: '1 Woche', status: 'Erholt' }
-                ],
-                skills: {
-                    goalkeeping: 85,
-                    passing: 70,
-                    positioning: 82,
-                    reflexes: 86,
-                    handling: 78,
-                    communication: 75,
-                    leadership: 80,
-                    decisionMaking: 79
-                },
-                development: {
-                    goals: ['Verbesserung der Strafraumbeherrschung', 'Kommunikation mit der Abwehr stärken'],
-                    recentProgress: [
-                        { skill: 'Reflexes', change: +2, date: '01.06.2025' },
-                        { skill: 'Positioning', change: +1, date: '01.06.2025' },
-                        { skill: 'Communication', change: +3, date: '01.05.2025' }
-                    ]
-                },
-                personalInfo: {
-                    email: 'barry.sanders@example.com',
-                    phone: '+49 123 456789',
-                    emergencyContact: 'John Sanders (Vater): +49 987 654321',
-                    school: 'Gymnasium Musterschule',
-                    preferredFoot: 'Rechts'
-                },
-                training: {
-                    attendance: 95,
-                    recentPerformance: [90, 85, 92, 88, 91],
-                    specialProgram: 'Reflextraining, Freitags 16:00 Uhr'
-                },
-                documents: [
-                    { name: 'Sportärztliche Untersuchung', date: '15.03.2025', type: 'medical' },
-                    { name: 'Spielervertrag', date: '01.08.2023', type: 'contract' }
-                ],
-                notes: [
-                    { author: 'Trainer Klaus', date: '05.06.2025', text: 'Zeigt große Fortschritte im Bereich der Strafraumbeherrschung.' },
-                    { author: 'Co-Trainer Schmidt', date: '20.05.2025', text: 'Muss an seiner Konzentration in den letzten 15 Minuten arbeiten.' }
-                ],
-                teamRole: {
-                    leadership: 'Vice-Captain',
-                    preferredPartners: ['Lucas Roberts', 'Marcus Sanchez'],
-                    chemistry: 'Ausgezeichnet mit der Abwehrkette'
-                }
-            },
-            // Mocking additional players with similar structure...
-            { name: 'Hugh Grant', position: 'GK', age: 16, number: 12, status: 'Injured', dob: '30.08.2007' },
-            { name: 'Ethan Brooks', position: 'DF', age: 15, number: 37, status: 'Available', dob: '05.09.2007' },
-            { name: 'Marcus Sanchez', position: 'CB', age: 17, number: 7, status: 'Away', dob: '12.06.2006' },
-            { name: 'Lucas Roberts', position: 'CB', age: 16, number: 23, status: 'Available', dob: '15.10.2006' },
-        ];
-
-        setTimeout(() => {
-            if (id && parseInt(id) < mockPlayers.length) {
-                const playerData = mockPlayers[parseInt(id)];
-                setPlayer(playerData);
-                setFormData(JSON.parse(JSON.stringify(playerData))); // Deep copy
+        const fetchPlayerData = async () => {
+            try {
+                setLoading(true);
+                const playerData = await getPlayerById(id);
+                
+                // Initialisiere Standardwerte für optionale Felder, falls sie nicht vorhanden sind
+                const initializedPlayer = {
+                    // Basis-Daten
+                    name: playerData.name || '',
+                    position: playerData.position || '',
+                    age: playerData.age || 0,
+                    number: playerData.number || 0,
+                    status: playerData.status || 'Available',
+                    dob: playerData.dob || '',
+                    height: playerData.height || 0,
+                    weight: playerData.weight || 0,
+                    
+                    // Physische Attribute
+                    physicalAttributes: playerData.physicalAttributes || {
+                        speed: 50,
+                        strength: 50,
+                        agility: 50,
+                        endurance: 50,
+                        fitness: 50
+                    },
+                    
+                    // Skills
+                    skills: playerData.skills || {},
+                    
+                    // Statistiken
+                    stats: playerData.stats || {
+                        games: 0,
+                        goals: 0,
+                        assists: 0,
+                        yellowCards: 0,
+                        redCards: 0,
+                        minutesPlayed: 0,
+                        cleanSheets: 0,
+                        saves: 0,
+                        savesPercentage: 0
+                    },
+                    
+                    // Verletzungen
+                    injuries: playerData.injuries || [],
+                    
+                    // Entwicklung
+                    development: playerData.development || {
+                        goals: [],
+                        recentProgress: []
+                    },
+                    
+                    // Persönliche Informationen
+                    personalInfo: playerData.personalInfo || {
+                        email: '',
+                        phone: '',
+                        emergencyContact: '',
+                        school: '',
+                        preferredFoot: ''
+                    },
+                    
+                    // Training
+                    training: playerData.training || {
+                        attendance: 0,
+                        recentPerformance: [],
+                        specialProgram: ''
+                    },
+                    
+                    // Dokumente
+                    documents: playerData.documents || [],
+                    
+                    // Notizen
+                    notes: playerData.notes || [],
+                    
+                    // Teamrolle
+                    teamRole: playerData.teamRole || {
+                        leadership: '',
+                        preferredPartners: [],
+                        chemistry: ''
+                    }
+                };
+                
+                setPlayer(initializedPlayer);
+                setFormData(JSON.parse(JSON.stringify(initializedPlayer))); // Deep copy
+            } catch (err) {
+                console.error('Fehler beim Laden des Spielers:', err);
+                // Fallback-Lösung bei Fehler - leeres Formular mit Standardwerten zeigen
+                setPlayer(null);
+                setFormData({
+                    name: '',
+                    position: '',
+                    age: 0,
+                    number: 0,
+                    status: 'Available',
+                    dob: '',
+                    height: 0,
+                    weight: 0,
+                    physicalAttributes: {
+                        speed: 50,
+                        strength: 50,
+                        agility: 50,
+                        endurance: 50,
+                        fitness: 50
+                    },
+                    skills: {},
+                    stats: {
+                        games: 0,
+                        goals: 0,
+                        assists: 0,
+                        yellowCards: 0,
+                        redCards: 0,
+                        minutesPlayed: 0,
+                        cleanSheets: 0,
+                        saves: 0,
+                        savesPercentage: 0
+                    },
+                    injuries: [],
+                    development: {
+                        goals: [],
+                        recentProgress: []
+                    },
+                    personalInfo: {
+                        email: '',
+                        phone: '',
+                        emergencyContact: '',
+                        school: '',
+                        preferredFoot: ''
+                    },
+                    training: {
+                        attendance: 0,
+                        recentPerformance: [],
+                        specialProgram: ''
+                    },
+                    documents: [],
+                    notes: [],
+                    teamRole: {
+                        leadership: '',
+                        preferredPartners: [],
+                        chemistry: ''
+                    }
+                });
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
-        }, 300); // Simulate network delay
+        };
+        
+        fetchPlayerData();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -259,29 +314,37 @@ const PlayerEdit = () => {
             }
         });
     };
-
-    const handleSubmit = (e) => {
+    
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
-
-        // Simulate API call to save data
-        setTimeout(() => {
-            console.log('Updated player data:', formData);
-            // In a real app, you would send this to your backend
-            // For now, let's navigate back to the player profile
-            setIsSaving(false);
+        
+        try {
+            // API-Aufruf zum Speichern der Daten
+            await updatePlayer(id, formData);
+            console.log('Spieler erfolgreich aktualisiert:', formData);
             navigate(`/team/players/${id}`);
-        }, 1000);
+        } catch (err) {
+            console.error('Fehler beim Speichern des Spielers:', err);
+            alert('Fehler beim Speichern des Spielers. Bitte versuchen Sie es später erneut.');        } finally {
+            setIsSaving(false);
+        }
     };
-
-    const savePlayer = () => {
+    
+    const savePlayer = async () => {
         setIsSaving(true);
         
-        // Hier würde normalerweise ein API-Aufruf stattfinden
-        setTimeout(() => {
-            setIsSaving(false);
+        try {
+            // API-Aufruf zum Speichern der Daten
+            await updatePlayer(id, formData);
+            console.log('Spieler erfolgreich aktualisiert:', formData);
             navigate(`/team/players/${id}`);
-        }, 800);
+        } catch (err) {
+            console.error('Fehler beim Speichern des Spielers:', err);
+            alert('Fehler beim Speichern des Spielers. Bitte versuchen Sie es später erneut.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // Berechne den aktuellen Spieler-Score basierend auf den Formular-Daten
@@ -291,30 +354,40 @@ const PlayerEdit = () => {
     const renderTabContent = () => {
         if (!formData) return null;
 
-        switch (activeTab) {
-            case 'basic':
+        switch (activeTab) {            case 'basic':
                 return (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name || ''}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Profilbild</label>
+                            <ProfileImageUpload 
+                                playerId={id}
+                                currentImage={formData.profileImage}
+                                onImageUpdate={(newImagePath) => {
+                                    setFormData({...formData, profileImage: newImagePath});
+                                }}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                            <select
-                                name="position"
-                                value={formData.position || ''}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Position auswählen</option>
-                                <option value="GK">Torhüter (GK)</option>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name || ''}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                <select
+                                    name="position"
+                                    value={formData.position || ''}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Position auswählen</option>
+                                    <option value="GK">Torhüter (GK)</option>
                                 <option value="DF">Verteidiger (DF)</option>
                                 <option value="CB">Innenverteidiger (CB)</option>
                                 <option value="LB">Linksverteidiger (LB)</option>
@@ -390,12 +463,12 @@ const PlayerEdit = () => {
                             <input
                                 type="number"
                                 name="weight"
-                                value={formData.weight || ''}
-                                onChange={handleInputChange}
+                                value={formData.weight || ''}                                onChange={handleInputChange}
                                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                     </div>
+                    </>
                 );
 
             case 'physicalAttributes':
