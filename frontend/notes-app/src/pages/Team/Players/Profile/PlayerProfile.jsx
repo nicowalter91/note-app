@@ -644,9 +644,8 @@ const PlayerProfile = () => {
     return (
         <Layout>
             <div className="container mx-auto py-8 px-4 max-w-7xl">
-                {/* Header card with player info and score */}
-                <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 h-24"></div>
+                {/* Header card with player info and score */}                <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+                    <div className="bg-gray-50 border-b border-gray-100 h-24"></div>
                     <div className="px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between relative">
                         <div className="flex items-center -mt-16 md:-mt-12">
                             <div className="w-24 h-24 bg-white p-1 rounded-full shadow-lg mr-4">
@@ -666,57 +665,54 @@ const PlayerProfile = () => {
                                     {player.status}
                                 </span>
                             </div>
+                        </div>                        <div className="flex items-center mt-4 md:mt-0 space-x-4">
+                            <div className="flex items-center bg-gray-50 rounded-lg px-4 py-2 border border-gray-100">
+                                <div className="mr-3">
+                                    <span className="text-xs font-medium text-gray-500">LEISTUNGSPROFIL</span>
+                                    <div className="flex items-center mt-1">
+                                        <span className="text-2xl font-bold text-gray-800">{playerScore}</span>
+                                        <span className={`ml-1.5 text-xs font-medium ${scoreRating.color}`}>
+                                            {scoreRating.text}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="h-10 w-px bg-gray-200 mx-1"></div>
+                                <div className="text-center">
+                                    <div className="flex items-center justify-center gap-2">
+                                        {player.physicalAttributes && (
+                                            <div className="text-center">
+                                                <p className="text-xs text-gray-500">Phys</p>
+                                                <p className="font-medium text-gray-700 text-sm">
+                                                    {Math.round(Object.values(player.physicalAttributes).reduce((a, b) => a + b, 0) / Object.values(player.physicalAttributes).length)}
+                                                </p>
+                                            </div>
+                                        )}
+                                        <div className="h-8 w-px bg-gray-200"></div>
+                                        {player.skills && (
+                                            <div className="text-center">
+                                                <p className="text-xs text-gray-500">Tech</p>
+                                                <p className="font-medium text-gray-700 text-sm">
+                                                    {Math.round(Object.values(player.skills).reduce((a, b) => a + b, 0) / Object.values(player.skills).length)}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>                            </div>
                         </div>
                         
-                        <div className="flex items-center mt-4 md:mt-0 space-x-4">
-                            <div className="flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold shadow-md"
-                                    style={{
-                                        background: `linear-gradient(135deg, 
-                                            ${playerScore >= 80 ? '#10b981, #34d399' : 
-                                            playerScore >= 70 ? '#3b82f6, #60a5fa' : 
-                                            playerScore >= 50 ? '#f59e0b, #fbbf24' : 
-                                            '#ef4444, #f87171'})`
-                                    }}
-                                >
-                                    {playerScore}
-                                </div>
-                                <span className={`text-xs font-semibold mt-1 ${scoreRating.color}`}>
-                                    {scoreRating.text}
-                                </span>
-                            </div>
-                            
+                        <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0">
                             <button
                                 onClick={() => navigate(`/team/players/edit/${id}`)}
-                                className="px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1"
+                                className="px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"
                             >
-                                <FaEdit size={12} /> Bearbeiten
+                                <FaEdit size={14} /> Bearbeiten
                             </button>
-                        </div>
-                    </div>
-                    
-                    <div className="px-6 pb-4 grid grid-cols-3 gap-3 border-t border-gray-100 pt-4 mt-2">
-                        {player.physicalAttributes && (
-                            <div className="text-center">
-                                <p className="text-xs text-gray-500 uppercase">Physik</p>
-                                <p className="font-bold text-gray-800 text-lg">
-                                    {Math.round(Object.values(player.physicalAttributes).reduce((a, b) => a + b, 0) / Object.values(player.physicalAttributes).length)}
-                                </p>
-                            </div>
-                        )}
-                        {player.skills && (
-                            <div className="text-center">
-                                <p className="text-xs text-gray-500 uppercase">Skills</p>
-                                <p className="font-bold text-gray-800 text-lg">
-                                    {Math.round(Object.values(player.skills).reduce((a, b) => a + b, 0) / Object.values(player.skills).length)}
-                                </p>
-                            </div>
-                        )}
-                        <div className="text-center">
-                            <p className="text-xs text-gray-500 uppercase">Potential</p>
-                            <p className="font-bold text-gray-800 text-lg">
-                                {player.age <= 17 ? 'Hoch' : player.age <= 19 ? 'Mittel' : 'Standard'}
-                            </p>
+                            <button
+                                onClick={() => navigate('/team/players')}
+                                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
+                            >
+                                <FaArrowLeft size={14} /> Zurück zur Übersicht
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -758,17 +754,7 @@ const PlayerProfile = () => {
                         </nav>
                     </div>
                     <div className="p-6">
-                        {renderTabContent()}
-                    </div>
-                </div>
-
-                <div className="flex justify-center mb-8">
-                    <button
-                        onClick={() => navigate('/team/players')}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
-                    >
-                        <FaArrowLeft /> Zurück zur Übersicht
-                    </button>
+                        {renderTabContent()}                    </div>
                 </div>
             </div>
         </Layout>

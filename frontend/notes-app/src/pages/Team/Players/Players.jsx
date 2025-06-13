@@ -373,24 +373,15 @@ const Players = () => {
                                         <p className="text-gray-500">Geb.</p>
                                         <p className="font-medium">{player.dob}</p>
                                     </div>
-                                </div>                                {/* Player Score - Verbessertes Design */}
+                                </div>                                {/* Player Score - Dezenteres Design */}
                                 <div className="flex justify-end mb-3">
                                     <div className="absolute top-4 right-4">
-                                        <div className="w-14 h-14 rounded-lg flex items-center justify-center shadow-md"
-                                            style={{
-                                                background: `linear-gradient(135deg, 
-                                                    ${calculatePlayerScore(player) >= 80 ? '#10b981, #34d399' : 
-                                                    calculatePlayerScore(player) >= 70 ? '#3b82f6, #60a5fa' : 
-                                                    calculatePlayerScore(player) >= 50 ? '#f59e0b, #fbbf24' : 
-                                                    '#ef4444, #f87171'})`,
-                                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                                            }}
-                                        >
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-white text-xl font-bold">
+                                        <div className="bg-white rounded-lg border border-gray-100 px-2 py-1 shadow-sm">
+                                            <div className="flex items-center">
+                                                <span className="text-gray-800 text-lg font-bold">
                                                     {calculatePlayerScore(player)}
                                                 </span>
-                                                <span className="text-white text-xs font-medium opacity-90">
+                                                <span className={`ml-1 text-xs font-medium ${getScoreRating(calculatePlayerScore(player)).color}`}>
                                                     {getScoreRating(calculatePlayerScore(player)).text.substring(0, 4)}
                                                 </span>
                                             </div>
