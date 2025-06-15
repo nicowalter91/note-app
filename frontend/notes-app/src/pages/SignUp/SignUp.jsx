@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
 import PasswordInput from '../../components/Input/PasswordInput';
 import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
 import bgImage from '../../assets/img/soccer_background.jpg'; // Hintergrundbild importieren
+import Logo from "../../assets/img/Logo.png";
 
 const SignUp = () => {
   // State-Hooks für Formularwerte
@@ -63,77 +63,161 @@ const SignUp = () => {
       setIsSubmitting(false);
     }
   }
-
   return (
-    <>
-      {/* Navbar-Komponente */}
-      <Navbar />
-
-      {/* Haupt-Layout: Flexbox für zwei Spalten */}
-      <div className='flex min-h-screen'>
-        {/* Linke Seite: SignUp-Formular */}
-        <div className='flex-1 flex items-center justify-center bg-white'>
-          <div className='w-96 border rounded px-7 py-10'>
-            <form onSubmit={handleSignUp}>
-              {/* Formularüberschrift */}
-              <h4 className="text-2xl mb-7 font-medium">SignUp</h4>
-              <p className='text-sm font-thin'>SignUp for a new experience</p>
-
-              <div className='mt-10'>
-                {/* Eingabefeld für den Namen */}
-                <input
-                  type="text"
-                  placeholder='Name'
-                  className='input-box'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)} // Ändert den Namen im State
-                />
-
-                {/* Eingabefeld für die E-Mail */}
-                <input
-                  type="text"
-                  placeholder='Email'
-                  className='input-box'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)} // Ändert die E-Mail im State
-                />
-
-                {/* Passwort-Eingabefeld, verwendet eine separate Komponente */}
-                <PasswordInput
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)} // Ändert das Passwort im State
-                />
-              </div>
-
-              {/* Wenn ein Fehler existiert, wird er hier angezeigt */}
-              {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
-
-              {/* Submit-Button */}
-              <button
-                type='submit'
-                className={`btn-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isSubmitting} // Verhindert das Absenden bei laufendem Upload
-              >
-                {isSubmitting ? 'Creating Account...' : 'Create Account'} {/* Textänderung des Buttons während des Ladevorgangs */}
-              </button>
-
-              {/* Link zur Login-Seite, falls der Benutzer bereits ein Konto hat */}
-              <p className='text-sm text-center mt-4'>
-                Already have an account?{" "}
-                <Link to="/login" className='font-medium text-primary underline'>
-                  Login
-                </Link>
-              </p>
-            </form>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Linke Seite mit Hintergrundbild */}
+      <div className="hidden lg:flex lg:w-1/2 bg-cover bg-center relative" style={{ backgroundImage: `url(${bgImage})` }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-indigo-900/40 flex flex-col justify-center items-center text-white p-12">
+          <h2 className="text-4xl font-bold mb-6">Werde Teil unserer Community</h2>
+          <p className="text-xl max-w-md text-center mb-8">
+            Registriere dich jetzt, um deine Notizen, Aufgaben und mehr zu organisieren.
+          </p>
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/20 max-w-md">
+            <p className="text-lg italic mb-4">
+              "Mit dieser App habe ich endlich meine Projekte im Griff. Einfach zu bedienen und super organisiert."
+            </p>
+            <p className="font-medium">- Neuer Benutzer</p>
           </div>
         </div>
+      </div>
 
-        {/* Rechte Seite: Hintergrundbild */}
-        <div className='flex-1 bg-cover bg-center' style={{ backgroundImage: `url(${bgImage})` }}>
-          {/* Optionaler Inhalt für die rechte Seite */}
+      {/* Rechte Seite mit SignUp-Formular */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          {/* Logo und Branding */}
+          <div className="text-center mb-10">
+            <img src={Logo} alt="Logo" className="h-12 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-800">Konto erstellen</h2>
+            <p className="text-gray-600 mt-2">Registriere dich für eine neue Erfahrung</p>
+          </div>
+
+          {/* SignUp-Formular */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <form onSubmit={handleSignUp} className="space-y-6">
+              {/* Name-Feld */}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Vollständiger Name</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <input
+                    id="name"
+                    type="text"
+                    placeholder="Max Mustermann"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Email-Feld */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-Mail Adresse</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="name@beispiel.de"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Passwort-Feld */}              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Passwort</label>
+                <div className="relative">
+                  <PasswordInput
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten.
+                </p>
+              </div>
+
+              {/* Datenschutz Checkbox */}
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="privacy"
+                    type="checkbox"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="privacy" className="font-medium text-gray-700">
+                    Ich akzeptiere die <Link to="/legal/terms-of-service" className="text-blue-600 hover:text-blue-800">Nutzungsbedingungen</Link> und <Link to="/legal/privacy-policy" className="text-blue-600 hover:text-blue-800">Datenschutzrichtlinien</Link>
+                  </label>
+                </div>
+              </div>
+
+              {/* Fehleranzeige */}
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SignUp-Button */}
+              <button
+                type="submit"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Konto wird erstellt...
+                  </>
+                ) : "Konto erstellen"}
+              </button>
+
+              {/* Login-Link */}
+              <div className="text-center mt-6">
+                <p className="text-sm text-gray-600">
+                  Bereits ein Konto?{" "}
+                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                    Jetzt anmelden
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
+          
+          {/* Footer */}
+          <div className="text-center mt-8 text-gray-500 text-xs">
+            <p>© {new Date().getFullYear()} mytacticlab. Alle Rechte vorbehalten.</p>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
