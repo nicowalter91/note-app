@@ -392,9 +392,8 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Main</p>
           </div>
-          <nav className="space-y-1">
-            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
-            <NavItem icon={<HiDocumentText />} label="Notes" onClick={() => navigate('/notes')} />
+          <nav className="space-y-1">            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
+            <NavItem icon={<HiClipboardCheck />} label="Tasks" onClick={() => navigate('/tasks')} />
             <NavItem icon={<HiOutlineClipboard />} label="Exercises" onClick={() => navigate('/exercises')} />
           </nav>
         </div>

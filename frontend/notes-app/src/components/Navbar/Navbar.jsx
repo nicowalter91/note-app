@@ -78,10 +78,9 @@ const Navbar = ({
   }, []);
   
   // Get current page title
-  const getCurrentPageTitle = () => {
-    const path = location.pathname;
+  const getCurrentPageTitle = () => {    const path = location.pathname;
     if (path.includes('/dashboard')) return 'Dashboard';
-    if (path.includes('/notes')) return 'Notes';
+    if (path.includes('/tasks')) return 'Tasks';
     if (path.includes('/exercises')) return 'Exercises';
     if (path.includes('/team') || path.includes('/players')) return 'Team';
     if (path.includes('/profil')) return 'Profile';
@@ -153,17 +152,15 @@ const Navbar = ({
       setSearchResults([]);
     }
   };
-  
-  // Recent activity for quick access (mock data)
+    // Recent activity for quick access (mock data)
   const recentActivity = [
-    { id: 1, title: 'Weekly Training Plan', type: 'note', path: '/notes/123' },
-    { id: 2, title: 'Team Meeting Notes', type: 'note', path: '/notes/456' },
+    { id: 1, title: 'Weekly Training Plan', type: 'task', path: '/tasks/123' },
+    { id: 2, title: 'Team Meeting Tasks', type: 'task', path: '/tasks/456' },
     { id: 3, title: 'Passing Exercise', type: 'exercise', path: '/exercises/789' },
   ];
-  
-  // Quick action items
+    // Quick action items
   const quickActions = [
-    { id: 1, title: 'New Note', icon: <HiDocumentText />, path: '/notes?action=new' },
+    { id: 1, title: 'New Task', icon: <HiDocumentText />, path: '/tasks?action=new' },
     { id: 2, title: 'New Exercise', icon: <HiOutlineClipboard />, path: '/exercises?action=new' },
     { id: 3, title: 'Add Player', icon: <HiUsers />, path: '/players?action=new' },
     { id: 4, title: 'Quick Actions', icon: <HiLightningBolt />, path: '/tools/quick-actions' },
@@ -218,17 +215,16 @@ const Navbar = ({
             <HiHome className="inline mr-1.5" />
             Dashboard
           </Link>
-          
-          <Link 
-            to="/notes" 
+            <Link 
+            to="/tasks" 
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-              location.pathname.includes('/notes') 
+              location.pathname.includes('/tasks') 
                 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <HiDocumentText className="inline mr-1.5" />
-            Notes
+            Tasks
           </Link>
           
           <Link 
@@ -441,15 +437,6 @@ const Navbar = ({
           >
             {isDarkMode ? <HiSun className="text-xl" /> : <HiMoon className="text-xl" />}
           </button>
-
-          {/* Language Switcher */}
-          <Link 
-            to="/settings/language" 
-            className="p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors hidden md:block"
-            aria-label="Change Language"
-          >
-            <HiGlobe className="text-xl" />
-          </Link>
 
           {/* User Profile Section */}
           <div className="relative" ref={profileRef}>

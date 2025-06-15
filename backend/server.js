@@ -19,6 +19,7 @@ connectDB();
 // Import von Datenbankmodellen
 const User = require("./models/user.model");
 const Note = require("./models/note.model");
+const Task = require("./models/task.model");
 const Exercises = require("./models/exercises.model");
 const Player = require("./models/player.model");
 
@@ -129,6 +130,10 @@ app.get("/players/:id/profile-image", async (req, res) => {
 app.delete("/players/:id/profile-image", async (req, res) => {
   deleteProfileImage(req, res);
 });
+
+// *** Task-Routen ***
+const taskRoutes = require('./routes/tasks');
+app.use(taskRoutes);
 
 // *** Server starten ***
 app.listen(8000, () => console.log("Server running on port 8000"));

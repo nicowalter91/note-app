@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Importiere benötigte Komponenten von 'react-router-dom'
-import Home from './pages/Notes/Notes';  // Importiere die Home-Seite
+import Tasks from './pages/Notes/Tasks';  // Importiere die Tasks-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
 import Exercises from './pages/Exercises/Exercises';
@@ -47,9 +47,8 @@ const routes = (
     <Routes>  {/* Routes enthält alle Routen, die der Router verwalten soll */}
       <Route path="/dashboard" exact element={<Dashboard />} />  {/* Route für die Dashboard-Seite */}
       <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}
-      <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}
-      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
-      <Route path="/notes" exact element={<Home />}/> 
+      <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
+      <Route path="/tasks" exact element={<Tasks />}/>  {/* Route für Aufgaben-Seite */}
       <Route path="/exercises" exact element={<Exercises />} />
       <Route path="/profil" exact element={<Profil />} />
       <Route path="/settings" exact element={<Settings />} />

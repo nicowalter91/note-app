@@ -1,31 +1,25 @@
 import React from 'react';
-import { FaMagnifyingGlass } from 'react-icons/fa6';  // Such-Icon (Lupe)
-import { IoMdClose } from 'react-icons/io';  // Schließen-Icon (X)
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { IoMdClose } from 'react-icons/io';
 
-const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
+const SearchBar = ({ value, onChange, handleSearch, onClearSearch, placeholder = "Search..." }) => {
   return (
-    <div className="w-80 flex items-center px-4 bg-slate-100 rounded-md">
+    <div className="w-full flex items-center border-b border-gray-200 pb-4 mb-4">
+      <FaMagnifyingGlass className="text-gray-400 mr-3" />
       <input
         type="text"
-        placeholder="Search Notes"
-        className="w-full text-xs bg-transparent py-[11px] outline-none"
+        placeholder={placeholder}
+        className="w-full focus:outline-none text-gray-700"
         value={value}
-        onChange={(e) => onChange(e.target.value)}  // Zustand aktualisieren
+        onChange={(e) => onChange(e.target.value)}
       />
       
-      {/* Wenn es einen Wert gibt, wird das Schließen-Icon angezeigt */}
       {value && (
         <IoMdClose
-          className="text-xl text-slate-500 cursor-pointer hover:text-black mr-3"
-          onClick={onClearSearch}  // Aufruf der Funktion, um die Suche zu löschen
+          className="text-gray-400 hover:text-gray-600 cursor-pointer"
+          onClick={onClearSearch}
         />
       )}
-
-      {/* Lupe als Such-Button */}
-      <FaMagnifyingGlass
-        className="text-slate-400 cursor-pointer hover:text-black"
-        onClick={handleSearch}  // Führt die Suchfunktion aus
-      />
     </div>
   );
 };
