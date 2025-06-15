@@ -32,7 +32,13 @@ const app = express();
 
 // *** Middleware-Setup ***
 app.use(express.json()); // Parsing von JSON-Anfragen
-app.use(cors({ origin: "*" })); // CORS für alle Ursprünge erlauben
+
+// Konfiguriere CORS für lokale Entwicklung und Netzwerkzugriff
+app.use(cors({
+  origin: '*', // Erlaubt alle Ursprünge
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Statische Dateien (Uploads) bereitstellen
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -136,6 +142,10 @@ const taskRoutes = require('./routes/tasks');
 app.use(taskRoutes);
 
 // *** Server starten ***
-app.listen(8000, () => console.log("Server running on port 8000"));
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server accessible on local network via http://<your-local-ip>:${PORT}`);
+});
 
 module.exports = app;
