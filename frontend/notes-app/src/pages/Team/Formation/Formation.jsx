@@ -1,9 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../../components/Layout/Layout';
 import { FaUserPlus, FaSave, FaUndo, FaRedo, FaShareAlt, FaPrint, FaArrowLeft } from 'react-icons/fa';
 import { HiOutlineSwitchHorizontal } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../utils/axiosInstance';
+
+// CSS für den Toggle-Schalter
+const toggleStyles = `
+  .toggle-checkbox:checked {
+    right: 0;
+    border-color: #3b82f6;
+  }
+  .toggle-checkbox:checked + .toggle-label {
+    background-color: #3b82f6;
+  }
+`;
 
 const Formation = () => {
     const navigate = useNavigate();
@@ -13,15 +24,42 @@ const Formation = () => {
     const [positions, setPositions] = useState([]);
     const [draggedPlayer, setDraggedPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showGrid, setShowGrid] = useState(false);
+    const [snapToGrid, setSnapToGrid] = useState(false);
+    
+    // State für das Verschieben von Spielern auf dem Feld
+    const [activePosition, setActivePosition] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    
+    // State für Undo/Redo-Funktionalität
+    const [history, setHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
+    
+    // State für gespeicherte Formationen
+    const [savedFormations, setSavedFormations] = useState([]);
+    const [formationName, setFormationName] = useState('Neue Formation');
+    
+    // State für UI-Elemente
+    const [showTooltips, setShowTooltips] = useState(true);
+    const [showFieldLabels, setShowFieldLabels] = useState(false);
+    
+    // Ref für das Spielfeld und Event-Handler
+    const fieldRef = React.useRef(null);
+    const handleMouseMoveRef = React.useRef(null);    const handleMouseUpRef = React.useRef(null);
+    
+    // Definiere Rastergröße
+    const gridSize = 10; // Abstand zwischen Rasterlinien in Prozent
 
     // Verfügbare Formationen
     const formations = [
-        { id: '4-4-2', name: '4-4-2 Standard', positions: 11 },
-        { id: '4-3-3', name: '4-3-3 Offensiv', positions: 11 },
+        { id: '4-4-2', name: '4-4-2 Standard', positions: 11 },        { id: '4-3-3', name: '4-3-3 Offensiv', positions: 11 },
         { id: '3-5-2', name: '3-5-2 Mittelfeld', positions: 11 },
         { id: '5-3-2', name: '5-3-2 Defensiv', positions: 11 },
         { id: '4-2-3-1', name: '4-2-3-1 Flexibel', positions: 11 }
-    ];    // Spielerposition basierend auf der Formation bestimmen
+    ];
+    
+    // Spielerposition basierend auf der Formation bestimmen
     useEffect(() => {
         // Hier würden wir die Positionen basierend auf der ausgewählten Formation definieren
         const getPositionsForFormation = (formationId) => {
@@ -154,21 +192,103 @@ const Formation = () => {
                 ]);
             } finally {
                 setLoading(false);
-            }
-        };
+            }        };
 
-        fetchPlayers();
-    }, []);
-
-    // Event-Handler
-    const handleFormationChange = (e) => {
-        setSelectedFormation(e.target.value);
-        setSelectedPlayers({});
-    };
-
-    const handleDragStart = (player) => {
-        setDraggedPlayer(player);
-    };
+        fetchPlayers();    }, []);
+      // Funktion zum Einrasten auf Rasterpunkte
+    const snapToGridPoint = (x, y) => {
+        if (!snapToGrid) return { x, y };
+        
+        // Berechne nächsten Rasterpunkt
+        const snappedX = Math.round(x / gridSize) * gridSize;
+        const snappedY = Math.round(y / gridSize) * gridSize;
+        
+        return { x: snappedX, y: snappedY };
+    };    // Funktion zum Speichern des aktuellen Zustands im Verlauf
+    const saveToHistory = useCallback(() => {
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push({
+            positions: JSON.parse(JSON.stringify(positions)),
+            selectedPlayers: JSON.parse(JSON.stringify(selectedPlayers))
+        });
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+    }, [history, historyIndex, positions, selectedPlayers]);
+      // Event-Handler mit useCallback für Stabilität der Referenzen
+    const handleMouseMove = useCallback((e) => {
+        if (!isDragging || !activePosition) return;
+        
+        const fieldRect = fieldRef.current.getBoundingClientRect();
+        
+        // Berechne neue Position relativ zum Spielfeld
+        let x = ((e.clientX - fieldRect.left - dragOffset.x) / fieldRect.width) * 100;
+        let y = ((e.clientY - fieldRect.top - dragOffset.y) / fieldRect.height) * 100;
+        
+        // Begrenze die Position innerhalb des Spielfelds
+        x = Math.min(Math.max(x, 0), 100);
+        y = Math.min(Math.max(y, 0), 100);
+        
+        // Wende Snap-to-Grid an, wenn aktiviert
+        if (snapToGrid) {
+            // Berechne Snap-Positionen inline statt snapToGridPoint aufzurufen
+            const snappedX = Math.round(x / gridSize) * gridSize;
+            const snappedY = Math.round(y / gridSize) * gridSize;
+            x = snappedX;
+            y = snappedY;
+        }
+        
+        // Position aktualisieren
+        setPositions(prev => 
+            prev.map(pos => 
+                pos.id === activePosition 
+                    ? { ...pos, x, y } 
+                    : pos
+            )
+        );
+    }, [isDragging, activePosition, dragOffset, snapToGrid, gridSize]);
+    
+    // Handler für das Loslassen der Maus
+    const handleMouseUp = useCallback(() => {
+        // Drag-Zustand zurücksetzen
+        setIsDragging(false);
+        setActivePosition(null);
+        
+        // Im Verlauf speichern, wenn Änderung erfolgt
+        saveToHistory();
+        
+        // Event-Listener werden bei jedem Aufruf entfernt
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }, [saveToHistory, handleMouseMove]);
+    
+    // Handler für das direkte Verschieben von Spielern mit der Maus
+    const handleMouseDown = useCallback((e, positionId) => {
+        e.stopPropagation();
+        
+        // Prüfen, ob an dieser Position ein Spieler ist
+        if (!selectedPlayers[positionId]) return;
+        
+        // Position, die verschoben wird, merken
+        setActivePosition(positionId);
+        setIsDragging(true);
+        
+        // Berechne Offset (Abstand vom Mauszeiger zum Mittelpunkt des Elements)
+        const position = positions.find(pos => pos.id === positionId);
+        if (!position) return;
+        
+        const fieldRect = fieldRef.current.getBoundingClientRect();
+        const posX = (position.x / 100) * fieldRect.width;
+        const posY = (position.y / 100) * fieldRect.height;
+        
+        const offsetX = e.clientX - (fieldRect.left + posX);
+        const offsetY = e.clientY - (fieldRect.top + posY);
+        
+        setDragOffset({ x: offsetX, y: offsetY });
+        
+        // Event-Listener für mousemove und mouseup hinzufügen
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, [selectedPlayers, positions, handleMouseMove, handleMouseUp]);
 
     const handleDrop = (positionId) => {
         if (draggedPlayer) {
@@ -176,9 +296,55 @@ const Formation = () => {
             setSelectedPlayers(prev => ({
                 ...prev,
                 [positionId]: draggedPlayer
-            }));
-            setDraggedPlayer(null);
+            }));            setDraggedPlayer(null);
         }
+    };
+      // Handler für das direkte Positionieren der Spieler auf dem Feld
+    const handleFieldClick = (e) => {
+        if (!draggedPlayer) return;
+        
+        // Berechne Position relativ zum Spielfeld
+        const field = e.currentTarget;
+        const rect = field.getBoundingClientRect();
+        let x = ((e.clientX - rect.left) / rect.width) * 100;
+        let y = ((e.clientY - rect.top) / rect.height) * 100;
+        
+        // Wende Snap-to-Grid an, wenn aktiviert
+        if (snapToGrid) {
+            // Berechne Snap-Positionen inline statt snapToGridPoint aufzurufen
+            const snappedX = Math.round(x / gridSize) * gridSize;
+            const snappedY = Math.round(y / gridSize) * gridSize;
+            x = snappedX;
+            y = snappedY;
+        }
+        
+        // Begrenze die Position innerhalb des Spielfelds
+        x = Math.min(Math.max(x, 0), 100);
+        y = Math.min(Math.max(y, 0), 100);
+        
+        // Erzeuge eine eindeutige ID für die neue Position
+        const newPositionId = `custom-${Date.now()}`;
+        
+        // Füge Spieler an der neuen Position hinzu
+        setSelectedPlayers(prev => ({
+            ...prev,
+            [newPositionId]: draggedPlayer
+        }));
+        
+        // Füge die neue Position zur Liste der Positionen hinzu
+        setPositions(prev => [
+            ...prev,
+            { 
+                id: newPositionId, 
+                name: draggedPlayer.position, 
+                x: x, 
+                y: y, 
+                playerId: draggedPlayer.id, 
+                isCustom: true 
+            }
+        ]);
+        
+        setDraggedPlayer(null);
     };
 
     const handleRemovePlayer = (positionId) => {
@@ -187,26 +353,142 @@ const Formation = () => {
             delete newSelected[positionId];
             return newSelected;
         });
+    };    const handleRemoveAllPlayers = () => {
+        setSelectedPlayers({});
+        // Entferne alle benutzerdefinierten Positionen
+        setPositions(prev => prev.filter(pos => !pos.isCustom));
     };
 
-    const handleSaveFormation = async () => {
+    const handleSaveFormation = useCallback(async () => {
         try {
-            // Hier würde der API-Aufruf erfolgen, um die Formation zu speichern
-            console.log('Formation gespeichert:', {
+            // Formationsdaten vorbereiten
+            const formationData = {
+                id: Date.now(),
+                name: formationName,
                 formation: selectedFormation,
-                players: selectedPlayers
-            });
+                players: { ...selectedPlayers },
+                positions: [...positions]
+            };
+            
+            // Zu lokalen Formationen hinzufügen
+            setSavedFormations(prev => [...prev, formationData]);
+            
+            // Hier würde der API-Aufruf erfolgen, um die Formation zu speichern
+            // Beispiel für API-Aufruf:
+            // await axiosInstance.post('/formations', formationData);
+            
+            console.log('Formation gespeichert:', formationData);
             
             // Erfolgsmeldung anzeigen
-            alert('Formation erfolgreich gespeichert!');
+            alert(`Formation "${formationName}" erfolgreich gespeichert!`);
         } catch (error) {
             console.error('Fehler beim Speichern der Formation:', error);
             alert('Fehler beim Speichern der Formation!');
         }
+    }, [formationName, selectedFormation, selectedPlayers, positions]);    // Effekt zum Entfernen der Event-Listener bei Unmount
+    useEffect(() => {
+        // Nur für Cleanup, wenn die Komponente unmounted wird
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [handleMouseMove, handleMouseUp]);
+
+    // Event-Handler
+    const handleFormationChange = (e) => {
+        setSelectedFormation(e.target.value);
+        setSelectedPlayers({});
+        // Nach Änderung der Formation Verlauf aktualisieren
+        saveToHistory();
     };
+    
+    const handleDragStart = (player) => {
+        setDraggedPlayer(player);
+    };
+    
+    // Rückgängig machen
+    const handleUndo = useCallback(() => {
+        if (historyIndex > 0) {
+            setHistoryIndex(historyIndex - 1);
+            const { positions: prevPositions, selectedPlayers: prevSelectedPlayers } = history[historyIndex - 1];
+            setPositions(prevPositions);
+            setSelectedPlayers(prevSelectedPlayers);
+        }
+    }, [history, historyIndex]);
+    
+    // Wiederherstellen
+    const handleRedo = useCallback(() => {
+        if (historyIndex < history.length - 1) {
+            setHistoryIndex(historyIndex + 1);
+            const { positions: nextPositions, selectedPlayers: nextSelectedPlayers } = history[historyIndex + 1];
+            setPositions(nextPositions);
+            setSelectedPlayers(nextSelectedPlayers);
+        }
+    }, [history, historyIndex]);
+
+    // Autofüllen-Funktion
+    const handleAutoFill = useCallback(() => {
+        // Verfügbare Spieler nach Position filtern
+        const availableGoalkeepers = players.filter(p => p.position === 'GK' || p.position.includes('TW'));
+        const availableDefenders = players.filter(p => ['CB', 'LB', 'RB', 'LWB', 'RWB', 'IV', 'LV', 'RV'].includes(p.position));
+        const availableMidfielders = players.filter(p => ['CM', 'DM', 'AM', 'LM', 'RM', 'ZM', 'ZOM', 'DM'].includes(p.position));
+        const availableForwards = players.filter(p => ['ST', 'LW', 'RW', 'CF', 'LF', 'RF'].includes(p.position));
+        
+        // Arbeitskopien für das Entfernen bereits zugewiesener Spieler
+        let gkPool = [...availableGoalkeepers];
+        let defPool = [...availableDefenders];
+        let midPool = [...availableMidfielders];
+        let fwdPool = [...availableForwards];
+        
+        // Neue Spielerauswahl initialisieren
+        const newSelectedPlayers = {};
+        
+        // Spieler nach Position zuweisen
+        positions.forEach(position => {
+            let pool;
+            if (position.name.includes('TW')) {
+                pool = gkPool;
+            } else if (['LV', 'IV', 'RV', 'LA', 'RA'].some(pos => position.name.includes(pos))) {
+                pool = defPool;
+            } else if (['ZM', 'DM', 'LM', 'RM', 'ZOM'].some(pos => position.name.includes(pos))) {
+                pool = midPool;
+            } else {
+                pool = fwdPool;
+            }
+            
+            // Verfügbaren Spieler auswählen, falls vorhanden
+            if (pool.length > 0) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                const player = pool[randomIndex];
+                
+                // Spieler aus Pool entfernen
+                if (pool === gkPool) {
+                    gkPool = gkPool.filter(p => p.id !== player.id);
+                } else if (pool === defPool) {
+                    defPool = defPool.filter(p => p.id !== player.id);
+                } else if (pool === midPool) {
+                    midPool = midPool.filter(p => p.id !== player.id);
+                } else {
+                    fwdPool = fwdPool.filter(p => p.id !== player.id);
+                }
+                
+                // Spieler der Position zuweisen
+                newSelectedPlayers[position.id] = player;
+            }
+        });
+        
+        // Neuen Zustand setzen
+        setSelectedPlayers(newSelectedPlayers);
+        
+        // Im Verlauf speichern
+        saveToHistory();
+    }, [players, positions, saveToHistory]);
 
     return (
         <Layout>
+            {/* CSS für Toggle-Schalter einfügen */}
+            <style>{toggleStyles}</style>
+            
             <div className="container mx-auto px-4 py-6">
                 {/* Header */}
                 <div className="mb-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-md">
@@ -321,10 +603,63 @@ const Formation = () => {
                             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Spielfeld</h2>
                                 <div className="flex space-x-2">
+                                    <div className="flex items-center space-x-1 mr-3">
+                                        <label className="text-sm text-gray-600 dark:text-gray-300">Raster</label>
+                                        <div className="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                            <input 
+                                                type="checkbox" 
+                                                id="toggle-grid" 
+                                                name="toggle-grid"
+                                                checked={showGrid}
+                                                onChange={() => setShowGrid(!showGrid)}
+                                                className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                                style={{
+                                                    right: showGrid ? '0' : '5px',
+                                                    border: '4px solid #cbd5e0',
+                                                    transition: 'all 0.3s'
+                                                }}
+                                            />
+                                            <label 
+                                                htmlFor="toggle-grid" 
+                                                className="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"
+                                                style={{
+                                                    backgroundColor: showGrid ? '#3b82f6' : undefined
+                                                }}
+                                            ></label>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-1 mr-3">
+                                        <label className="text-sm text-gray-600 dark:text-gray-300">Einrasten</label>
+                                        <div className="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                            <input 
+                                                type="checkbox" 
+                                                id="toggle-snap" 
+                                                name="toggle-snap"
+                                                checked={snapToGrid}
+                                                onChange={() => setSnapToGrid(!snapToGrid)}
+                                                className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                                style={{
+                                                    right: snapToGrid ? '0' : '5px',
+                                                    border: '4px solid #cbd5e0',
+                                                    transition: 'all 0.3s'
+                                                }}
+                                            />
+                                            <label 
+                                                htmlFor="toggle-snap" 
+                                                className="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"
+                                                style={{
+                                                    backgroundColor: snapToGrid ? '#3b82f6' : undefined
+                                                }}
+                                            ></label>
+                                        </div>
+                                    </div>
                                     <button className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-1 px-3 rounded-lg text-sm transition-colors">
                                         Autofüllen
                                     </button>
-                                    <button className="bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-800 dark:text-red-200 py-1 px-3 rounded-lg text-sm transition-colors">
+                                    <button 
+                                        onClick={handleRemoveAllPlayers}
+                                        className="bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-800 dark:text-red-200 py-1 px-3 rounded-lg text-sm transition-colors"
+                                    >
                                         Alle entfernen
                                     </button>
                                 </div>
@@ -337,6 +672,9 @@ const Formation = () => {
                                         backgroundColor: '#2d8a2d',
                                         position: 'relative'
                                     }}
+                                    onClick={handleFieldClick}
+                                    onDragOver={(e) => e.preventDefault()}
+                                    ref={fieldRef}
                                 >
                                     {/* Rasenmuster mit CSS */}
                                     <div className="absolute inset-0" style={{
@@ -347,7 +685,20 @@ const Formation = () => {
                                         backgroundSize: '40px 40px',
                                         opacity: 0.3
                                     }}></div>
-                                      {/* Spielfeldmarkierungen - Nach offiziellen FIFA-Maßen */}
+                                    
+                                    {/* Grid-Overlay */}
+                                    {showGrid && (
+                                        <div className="absolute inset-0" style={{
+                                            backgroundImage: `
+                                                linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+                                                linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px)
+                                            `,
+                                            backgroundSize: `${gridSize}% ${gridSize}%`,
+                                            pointerEvents: 'none'
+                                        }}></div>
+                                    )}
+                                    
+                                    {/* Spielfeldmarkierungen - Nach offiziellen FIFA-Maßen */}
                                     <div className="absolute inset-0">
                                         {/* Außenlinien */}
                                         <div className="absolute inset-0 border-2 border-white/90 rounded-lg"></div>
@@ -448,16 +799,20 @@ const Formation = () => {
                                                 color: selectedPlayers[position.id] ? 'white' : '#1f2937',
                                                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                                                 transition: 'all 0.2s',
-                                                cursor: 'pointer'
+                                                cursor: isDragging && activePosition === position.id ? 'grabbing' : 'grab'
                                             }}
                                             className="hover:scale-110"
+                                            onMouseDown={(e) => selectedPlayers[position.id] && handleMouseDown(e, position.id)}
                                         >
                                             {selectedPlayers[position.id] ? (
                                                 <>
                                                     <span className="font-bold text-xs">{selectedPlayers[position.id].number}</span>
                                                     <span className="text-xs font-medium">{selectedPlayers[position.id].name.split(' ').pop()}</span>
                                                     <button 
-                                                        onClick={() => handleRemovePlayer(position.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleRemovePlayer(position.id);
+                                                        }}
                                                         style={{
                                                             position: 'absolute',
                                                             top: '-0.25rem',

@@ -115,11 +115,11 @@ const teamRoleSchema = new mongoose.Schema({
 // Hauptschema für Spieler
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  position: { type: String, required: true },
-  age: { type: Number, required: true },
-  number: { type: Number, required: true },
+  position: { type: String },
+  age: { type: Number },
+  number: { type: Number},
   status: { type: String, default: 'Available' },
-  dob: { type: String, required: true },
+  dob: { type: String },
   height: { type: Number },
   weight: { type: Number },
   profileImage: { type: String, default: '' }, // Pfad zum Profilbild
