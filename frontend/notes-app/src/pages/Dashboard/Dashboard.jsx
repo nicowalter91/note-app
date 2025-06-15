@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
+import { useNavigate } from 'react-router-dom';
 import { 
     FaChartLine, 
     FaCalendarAlt, 
@@ -39,6 +40,7 @@ import moment from 'moment';
 import 'moment/locale/de';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
@@ -433,12 +435,14 @@ const Dashboard = () => {
                         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Schnellzugriffe</h2>
                     </div>
                 </div>
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <button className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700">
+                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">                    <button 
+                        onClick={() => navigate('/team/formation')}
+                        className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700"
+                    >
                         <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-3">
                             <FaUsers className="text-blue-600 dark:text-blue-400 text-xl" />
                         </div>
-                        <span className="font-medium text-gray-800 dark:text-white">Team verwalten</span>
+                        <span className="font-medium text-gray-800 dark:text-white">Aufstellung planen</span>
                     </button>
                     <button className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700">
                         <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mb-3">

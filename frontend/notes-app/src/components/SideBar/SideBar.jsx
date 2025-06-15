@@ -24,10 +24,10 @@ import {
   HiGlobe,
   HiBell,
   HiChatAlt2,
-  HiExclamation,
-  HiMail,
+  HiExclamation,  HiMail,
   HiAnnotation,
   HiArrowCircleDown,
+  HiUserGroup,
   HiArrowCircleUp,
   HiLightningBolt,
   HiClipboardCheck,
@@ -270,12 +270,17 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       label: 'Training', 
       path: '/team/training', 
       onClick: () => navigate('/team/training') 
-    },
-    { 
+    },    { 
       icon: <HiViewBoards />, 
       label: 'Tactics', 
       path: '/team/tactics', 
       onClick: () => navigate('/team/tactics') 
+    },
+    { 
+      icon: <HiUsers />, 
+      label: 'Formation', 
+      path: '/team/formation', 
+      onClick: () => navigate('/team/formation') 
     },
     { 
       icon: <HiVideoCamera />, 

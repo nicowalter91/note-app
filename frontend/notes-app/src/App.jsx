@@ -19,6 +19,7 @@ import Schedule from './pages/Team/Schedule/Schedule';
 import Statistics from './pages/Team/Statistics/Statistics';
 import Training from './pages/Team/Training/Training';
 import Tactics from './pages/Team/Tactics/Tactics';
+import Formation from './pages/Team/Formation/Formation';
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -59,11 +60,11 @@ const routes = (
       <Route path="/players" exact element={<Players />} />
       <Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
-      <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
-      <Route path="/team/schedule" exact element={<Schedule />} />
+      <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />      <Route path="/team/schedule" exact element={<Schedule />} />
       <Route path="/team/statistics" exact element={<Statistics />} />
       <Route path="/team/training" exact element={<Training />} />
       <Route path="/team/tactics" exact element={<Tactics />} />
+      <Route path="/team/formation" exact element={<Formation />} />
       
       {/* Legal Routes */}
       <Route path="/legal" exact element={<LegalNotice />} />
