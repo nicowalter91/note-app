@@ -2,8 +2,7 @@
 const Task = require("../models/task.model");
 
 // Create a new task
-const addTask = async (req, res) => {
-    const { 
+const addTask = async (req, res) => {    const { 
         title, 
         description, 
         dueDate, 
@@ -11,7 +10,8 @@ const addTask = async (req, res) => {
         priority, 
         status, 
         assignedTo,
-        category
+        category,
+        subtasks
     } = req.body;
     
     const { user } = req.user;
@@ -31,6 +31,7 @@ const addTask = async (req, res) => {
             status: status || 'pending',
             assignedTo: assignedTo || [],
             category: category || 'training',
+            subtasks: subtasks || [],
             userId: user._id,
         });
   
@@ -44,8 +45,7 @@ const addTask = async (req, res) => {
 
 // Edit an existing task
 const editTask = async (req, res) => {
-    const { taskId } = req.params;
-    const { 
+    const { taskId } = req.params;    const { 
         title, 
         description, 
         dueDate, 
@@ -55,7 +55,8 @@ const editTask = async (req, res) => {
         assignedTo,
         category,
         isPinned,
-        completedOn
+        completedOn,
+        subtasks
     } = req.body;
     
     const { user } = req.user;
@@ -79,11 +80,11 @@ const editTask = async (req, res) => {
             } else if (status !== 'completed') {
                 task.completedOn = null;
             }
-        }
-        if (assignedTo) task.assignedTo = assignedTo;
+        }        if (assignedTo) task.assignedTo = assignedTo;
         if (category) task.category = category;
         if (isPinned !== undefined) task.isPinned = isPinned;
         if (completedOn !== undefined) task.completedOn = completedOn;
+        if (subtasks) task.subtasks = subtasks;
   
         await task.save();
         return res.json({
@@ -303,6 +304,39 @@ const getTaskStats = async (req, res) => {
         });
     } catch (error) {
         console.error("Error getting task stats:", error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });    }
+};
+
+// Update subtask completion status
+const updateSubtaskStatus = async (req, res) => {
+    const { taskId, subtaskId } = req.params;
+    const { isCompleted } = req.body;
+    const { user } = req.user;
+
+    try {
+        const task = await Task.findOne({ _id: taskId, userId: user._id });
+        if (!task)
+            return res.status(404).json({ error: true, message: "Task not found" });
+
+        // Find the subtask
+        const subtaskIndex = task.subtasks.findIndex(
+            subtask => subtask._id.toString() === subtaskId
+        );
+
+        if (subtaskIndex === -1)
+            return res.status(404).json({ error: true, message: "Subtask not found" });
+
+        // Update the subtask's completion status
+        task.subtasks[subtaskIndex].isCompleted = isCompleted;
+
+        await task.save();
+        return res.json({
+            error: false,
+            task,
+            message: "Subtask updated successfully",
+        });
+    } catch (error) {
+        console.error("Error updating subtask:", error);
         return res.status(500).json({ error: true, message: "Internal Server Error" });
     }
 };
@@ -315,5 +349,6 @@ module.exports = {
     isPinned, 
     updateStatus,
     searchTask,
-    getTaskStats
+    getTaskStats,
+    updateSubtaskStatus
 };

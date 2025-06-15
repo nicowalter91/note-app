@@ -16,5 +16,6 @@ router.put("/update-task-pinned/:taskId", taskController.isPinned);
 router.put("/update-task-status/:taskId", taskController.updateStatus);
 router.get("/search-tasks", taskController.searchTask);
 router.get("/get-task-stats", taskController.getTaskStats);
+router.put("/update-subtask/:taskId/:subtaskId", taskController.updateSubtaskStatus);
 
 module.exports = router;

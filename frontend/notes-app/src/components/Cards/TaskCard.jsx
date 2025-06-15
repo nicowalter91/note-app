@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import moment from 'moment';
-import { MdOutlinePushPin, MdCreate, MdDelete, MdCheck, MdDateRange, MdPerson } from 'react-icons/md';
+import { MdOutlinePushPin, MdCreate, MdDelete, MdCheck, MdDateRange, MdPerson, MdExpandMore, MdExpandLess } from 'react-icons/md';
 import { 
   FaRegClock, 
   FaExclamationCircle, 
@@ -12,8 +13,10 @@ import {
   FaPen,
   FaTrashAlt,
   FaCheck,
-  FaStar
+  FaStar,
+  FaTasks
 } from 'react-icons/fa';
+import axiosInstance from '../../utils/axiosInstance';
 
 // TaskCard component with modern styling and more functionality
 const TaskCard = ({ 
@@ -23,6 +26,27 @@ const TaskCard = ({
   onPinNote, 
   onStatusChange 
 }) => {
+  const [showSubtasks, setShowSubtasks] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  
+  // Toggle subtask completion
+  const handleSubtaskToggle = async (subtaskId, isCompleted) => {
+    if (updating) return;
+    
+    setUpdating(true);
+    try {
+      await axiosInstance.put(`/update-subtask/${task._id}/${subtaskId}`, {
+        isCompleted: !isCompleted
+      });
+      
+      // Update the task in the parent component
+      onStatusChange({_id: task._id}, 'refresh');
+    } catch (error) {
+      console.error('Error toggling subtask:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
   
   // Get proper CSS class for the task's priority
   const getPriorityClass = (priority) => {
@@ -118,6 +142,39 @@ const TaskCard = ({
           {task.description?.slice(0, 100)}
           {task.description?.length > 100 ? '...' : ''}
         </p>
+        
+        {/* Subtasks */}
+        {task.subtasks && task.subtasks.length > 0 && (
+          <div className="mb-3">
+            <div
+              className="flex items-center text-sm text-blue-600 font-medium cursor-pointer mb-1"
+              onClick={() => setShowSubtasks(!showSubtasks)}
+            >
+              <FaTasks className="mr-1" />
+              <span>{task.subtasks.length} Subtask{task.subtasks.length !== 1 ? 's' : ''}</span>
+              {showSubtasks ? <MdExpandLess className="ml-1" /> : <MdExpandMore className="ml-1" />}
+            </div>
+            
+            {showSubtasks && (
+              <div className="mt-2 border border-gray-200 rounded-md divide-y bg-gray-50">
+                {task.subtasks.map((subtask) => (
+                  <div key={subtask._id} className="flex items-center p-2 hover:bg-gray-100">
+                    <input
+                      type="checkbox"
+                      checked={subtask.isCompleted}
+                      onChange={() => handleSubtaskToggle(subtask._id, subtask.isCompleted)}
+                      className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 rounded"
+                      disabled={updating}
+                    />
+                    <span className={`text-xs ${subtask.isCompleted ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                      {subtask.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Due date */}
         {dueInfo && (

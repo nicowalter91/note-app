@@ -38,12 +38,25 @@ const taskSchema = new Schema({
     },
     assignedTo: [{ 
         type: String 
-    }],
-    category: {
+    }],    category: {
         type: String,
         enum: ['training', 'match', 'administrative', 'other'],
         default: 'training'
     },
+    subtasks: [{
+        text: {
+            type: String,
+            required: true
+        },
+        isCompleted: {
+            type: Boolean,
+            default: false
+        },
+        createdOn: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     completedOn: { 
         type: Date 
     },

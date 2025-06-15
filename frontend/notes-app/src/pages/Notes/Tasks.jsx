@@ -227,6 +227,12 @@ const Tasks = () => {
 
   // Update the status of a task
   const updateTaskStatus = async (taskData, newStatus) => {
+    // If newStatus is 'refresh', just refresh the task list
+    if (newStatus === 'refresh') {
+      getAllTasks();
+      return;
+    }
+    
     const taskId = taskData._id;
     try {
       const response = await axiosInstance.put(
@@ -667,8 +673,7 @@ const Tasks = () => {
           isOpen={openAddEditModal.isShown}
           onRequestClose={() => {
             setOpenAddEditModal({ isShown: false, type: "add", data: null });
-          }}
-          style={{
+          }}          style={{
             overlay: { 
               backgroundColor: 'rgba(0, 0, 0, 0.5)',
               display: 'flex',
@@ -679,9 +684,9 @@ const Tasks = () => {
             content: {
               position: 'relative',
               width: '95%',
-              maxWidth: '650px',
+              maxWidth: '800px',
               height: 'auto',
-              maxHeight: '90vh',
+              maxHeight: '85vh',
               margin: '0 auto',
               borderRadius: '12px',
               padding: '0',

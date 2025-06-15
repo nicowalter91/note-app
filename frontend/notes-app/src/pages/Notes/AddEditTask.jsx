@@ -5,8 +5,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage }) => {
-  // Form state
+const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage }) => {  // Form state
   const [title, setTitle] = useState(taskData?.title || "");
   const [description, setDescription] = useState(taskData?.description || "");
   const [tags, setTags] = useState(taskData?.tags || []);
@@ -15,6 +14,8 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
   const [status, setStatus] = useState(taskData?.status || "pending");
   const [category, setCategory] = useState(taskData?.category || "training");
   const [assignedTo, setAssignedTo] = useState(taskData?.assignedTo || []);
+  const [subtasks, setSubtasks] = useState(taskData?.subtasks || []);
+  const [newSubtask, setNewSubtask] = useState("");
   
   // New assignee input
   const [newAssignee, setNewAssignee] = useState("");
@@ -48,10 +49,36 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
       setNewAssignee("");
     }
   };
-  
-  // Remove an assignee from the list
+    // Remove an assignee from the list
   const handleRemoveAssignee = (assignee) => {
     setAssignedTo(assignedTo.filter(a => a !== assignee));
+  };
+
+  // Add a new subtask
+  const handleAddSubtask = () => {
+    if (newSubtask.trim()) {
+      const subtask = {
+        text: newSubtask.trim(),
+        isCompleted: false,
+        createdOn: new Date()
+      };
+      setSubtasks([...subtasks, subtask]);
+      setNewSubtask("");
+    }
+  };
+
+  // Remove a subtask
+  const handleRemoveSubtask = (index) => {
+    const updatedSubtasks = [...subtasks];
+    updatedSubtasks.splice(index, 1);
+    setSubtasks(updatedSubtasks);
+  };
+
+  // Toggle subtask completion status
+  const toggleSubtaskCompletion = (index) => {
+    const updatedSubtasks = [...subtasks];
+    updatedSubtasks[index].isCompleted = !updatedSubtasks[index].isCompleted;
+    setSubtasks(updatedSubtasks);
   };
 
   // Add a new task
@@ -65,7 +92,8 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
         priority,
         status,
         category,
-        assignedTo
+        assignedTo,
+        subtasks
       });
 
       if (response.data && response.data.task) {
@@ -95,7 +123,8 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
         priority,
         status,
         category,
-        assignedTo
+        assignedTo,
+        subtasks
       });
 
       if (response.data && response.data.task) {
@@ -132,29 +161,15 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
     } else {
       addNewTask();
     }
-  };
-
-  return (
-    <div className="relative">
-      {/* Close button */}
-      <button 
-        className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-50 z-10" 
-        onClick={onClose}
-      >
-        <MdClose className="text-xl text-slate-400" />
-      </button>
-
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">
-        {type === 'edit' ? 'Edit Task' : 'Add New Task'}
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  };  return (
+    <div className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Title field */}
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">TITLE</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">TITLE</label>
           <input
             type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             placeholder="Task title"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
@@ -163,9 +178,9 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
 
         {/* Description field */}
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">DESCRIPTION</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">DESCRIPTION</label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             placeholder="Task description"
             rows={5}
             value={description}
@@ -175,11 +190,11 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
 
         {/* Due date picker */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">DUE DATE</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">DUE DATE</label>
           <DatePicker
             selected={dueDate}
             onChange={date => setDueDate(date)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             placeholderText="Select due date"
             dateFormat="dd/MM/yyyy"
             isClearable
@@ -188,9 +203,9 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
 
         {/* Priority dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">PRIORITY</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">PRIORITY</label>
           <select
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             value={priority}
             onChange={({ target }) => setPriority(target.value)}
           >
@@ -199,13 +214,11 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
             <option value="high">High</option>
             <option value="urgent">Urgent</option>
           </select>
-        </div>
-
-        {/* Status dropdown */}
+        </div>        {/* Status dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">STATUS</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">STATUS</label>
           <select
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             value={status}
             onChange={({ target }) => setStatus(target.value)}
           >
@@ -218,9 +231,9 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
 
         {/* Category dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">CATEGORY</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">CATEGORY</label>
           <select
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             value={category}
             onChange={({ target }) => setCategory(target.value)}
           >
@@ -229,12 +242,67 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
             <option value="administrative">Administrative</option>
             <option value="other">Other</option>
           </select>
-        </div>
-
-        {/* Tags */}
+        </div>{/* Tags */}
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">TAGS</label>
           <TagInput tags={tags} setTags={setTags} />
+          <p className="text-xs text-gray-500 mt-1">Enter tags and press Enter to add them</p>
+        </div>
+
+        {/* Subtasks */}
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">SUBTASKS</label>
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="text"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Add a subtask"
+              value={newSubtask}
+              onChange={({ target }) => setNewSubtask(target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddSubtask();
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              onClick={handleAddSubtask}
+            >
+              Add
+            </button>
+          </div>
+          
+          {/* Display subtasks */}
+          {subtasks.length > 0 && (
+            <div className="mt-2 border border-gray-200 rounded-md divide-y">
+              {subtasks.map((subtask, index) => (
+                <div key={index} className="flex items-center p-3 hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    checked={subtask.isCompleted}
+                    onChange={() => toggleSubtaskCompletion(index)}
+                    className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 rounded"
+                  />
+                  <span className={`flex-1 text-sm ${subtask.isCompleted ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                    {subtask.text}
+                  </span>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleRemoveSubtask(index)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {subtasks.length === 0 && (
+            <p className="text-sm text-gray-500 italic">No subtasks added yet</p>
+          )}
         </div>
 
         {/* Assignees */}
@@ -276,18 +344,29 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Error message */}
-      {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
-
+      </div>      {/* Error message */}
+      {error && (
+        <div className="bg-red-50 text-red-700 p-3 rounded-md mt-4 mb-2 flex items-center">
+          <span className="text-red-600 mr-2">⚠️</span>
+          {error}
+        </div>
+      )}
+      
       {/* Submit button */}
-      <button
-        className="mt-6 w-full px-4 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 transition-colors"
-        onClick={handleSubmit}
-      >
-        {type === 'edit' ? 'UPDATE TASK' : 'CREATE TASK'}
-      </button>
+      <div className="col-span-2 flex justify-end gap-3 mt-8 pt-4 border-t border-gray-200">
+        <button
+          className="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors"
+          onClick={onClose}
+        >
+          CANCEL
+        </button>
+        <button
+          className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+          onClick={handleSubmit}
+        >
+          {type === 'edit' ? 'UPDATE TASK' : 'CREATE TASK'}
+        </button>
+      </div>
     </div>
   );
 };
