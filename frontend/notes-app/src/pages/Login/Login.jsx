@@ -41,12 +41,10 @@ const Login = () => {
       const response = await axiosInstance.post("/login", {
         email: email,
         password: password,
-      });
-
-      // Erfolgreiche Login-Antwort
+      });      // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
-        navigate("/notes"); // Benutzer zu den Notes weiterleiten
+        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
       }
     } catch (error) {
       // Fehlerbehandlung
