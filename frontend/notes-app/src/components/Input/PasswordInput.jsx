@@ -2,20 +2,15 @@ import React, { useState } from 'react';
 
 /**
  * PasswordInput - Ein Eingabefeld für Passwörter mit einer Funktion zum Umschalten der Sichtbarkeit
- * 
- * @param {string} value - Der aktuelle Wert des Passwort-Felds
- * @param {function} onChange - Callback-Funktion, die bei Änderung des Passworts aufgerufen wird
- * @param {string} placeholder - Platzhaltertext für das Eingabefeld
- * @param {string} className - Optionale CSS-Klassen für das Eingabefeld
- * @returns {JSX.Element} Eine React-Komponente für ein Passwort-Eingabefeld
  */
 const PasswordInput = ({ value, onChange, placeholder, className }) => {
+  
   // useState-Hook zum Verwalten des Zustands, ob das Passwort sichtbar ist oder nicht
   const [isShowPassword, setIsShowPassword] = useState(false);
 
-  // Funktion zum Umschalten der Passwortsichtbarkeit
+  // Funktion zum Umschalten der Passwortsichtbarkeit (zeigt das Passwort an oder verbirgt es)
   const toggleShowPassword = () => {
-    setIsShowPassword(!isShowPassword);
+    setIsShowPassword(!isShowPassword); // Wechselt den Zustand von true/false
   };
 
   // Basis-Klassen, wenn keine className übergeben wird
@@ -83,8 +78,8 @@ const PasswordInput = ({ value, onChange, placeholder, className }) => {
           <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
         </svg>
       )}
-    </div>
-  );
+    </div>  );
 };
 
+// Export the component as default
 export default PasswordInput;

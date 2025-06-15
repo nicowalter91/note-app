@@ -126,15 +126,17 @@ const Navbar = ({
 
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
-  };
-
-  const getUserInitials = (fullName = '') => {
+  };  const getUserInitials = (fullName = '') => {
+    if (!fullName || fullName === 'User' || fullName === 'Nicht angemeldet') return '?';
     const names = fullName.split(' ');
     const initials = names.map(name => name.charAt(0)).join('').toUpperCase();
     return initials || '?';
   };
 
-  const displayName = userInfo?.fullName || userInfo?.name || 'User';
+  // Prüfen, ob wir einen gültigen Benutzernamen haben
+  // Verwende erst name (sollte bereits mit fullName oder anderen kombiniert sein),
+  // dann direkt fullName und username als Fallback
+  const displayName = userInfo?.name || userInfo?.fullName || userInfo?.username || 'Nicht angemeldet';
   
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -429,14 +431,7 @@ const Navbar = ({
             )}
           </div>
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors hidden md:block"
-            aria-label={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            {isDarkMode ? <HiSun className="text-xl" /> : <HiMoon className="text-xl" />}
-          </button>
+         
 
           {/* User Profile Section */}
           <div className="relative" ref={profileRef}>
@@ -444,8 +439,7 @@ const Navbar = ({
               onClick={toggleProfileDropdown}
               className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 py-1 px-1 md:px-2 rounded-full transition-colors ml-1"
               aria-label="User Profile"
-            >
-              {userInfo?.avatar ? (
+            >              {userInfo?.avatar ? (
                 <img
                   src={userInfo.avatar}
                   alt="User Avatar"
@@ -453,7 +447,7 @@ const Navbar = ({
                 />
               ) : (
                 <div
-                  className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold"
+                  className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-medium"
                 >
                   {getUserInitials(displayName)}
                 </div>

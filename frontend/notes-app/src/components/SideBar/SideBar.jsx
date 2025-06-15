@@ -36,7 +36,23 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
-  const navigate = useNavigate();  const location = useLocation();
+  const navigate = useNavigate();  
+  const location = useLocation();
+
+  // Helper function to get user initials
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    
+    // Split the name by spaces and get first letters
+    const nameParts = name.split(' ');
+    if (nameParts.length === 1) {
+      // If only one name, return first letter
+      return name.charAt(0).toUpperCase();
+    } else {
+      // Return first letter of first and last name
+      return (nameParts[0].charAt(0) + nameParts[nameParts.length-1].charAt(0)).toUpperCase();
+    }
+  };
 
   // State for expanded submenus
   const [expandedMenus, setExpandedMenus] = useState(() => {
@@ -373,15 +389,13 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
   ];
   return (
     <div className="h-full bg-[#1e293b] text-white flex flex-col shadow-lg overflow-y-auto">
-      {/* User Profile Section */}
-      <div className="p-4 mb-4">
-        <div className="flex items-center gap-3 p-2.5 rounded-lg bg-gradient-to-r from-blue-800/40 to-blue-600/20 hover:from-blue-700/50 hover:to-blue-500/30 transition-all duration-300">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold shadow-md">
-            {userInfo?.name?.[0] || 'U'}
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-medium truncate text-white">{userInfo?.name || 'Guest'}</p>
-            <p className="text-xs truncate text-blue-200">{userInfo?.email || 'Not logged in'}</p>
+      {/* User Profile Section */}      <div className="p-4 mb-4">
+        <div className="flex items-center gap-3 p-2.5 rounded-lg bg-gray-800/70 hover:bg-gray-700/80 transition-all duration-300">
+          <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-200 font-medium">
+            {getUserInitials(userInfo?.name)}
+          </div>          <div className="overflow-hidden">
+            <p className="text-sm font-medium truncate text-gray-200">{userInfo?.name || 'Nicht angemeldet'}</p>
+            <p className="text-xs truncate text-gray-400">{userInfo?.email || 'Keine E-Mail'}</p>
           </div>
         </div>
       </div>

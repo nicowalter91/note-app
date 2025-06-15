@@ -47,14 +47,19 @@ const Layout = ({ children }) => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
-
   // Get user info on component mount
   const getUserInfo = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/get-user");
-      if (response.data && response.data.user) {
-        setUserInfo(response.data.user);
+      const response = await axiosInstance.get("/get-user");      if (response.data && response.data.user) {
+        // Ensure we have at least basic user info
+        const user = response.data.user;
+        setUserInfo({
+          ...user,
+          // Verwende fullName als Hauptname, wenn vorhanden, sonst name als Fallback
+          name: user.fullName || user.name || 'User', // Default name if not provided
+          email: user.email || 'No email provided' // Default email if not provided
+        });
       }
     } catch (error) {
       console.error("Failed to fetch user info:", error);
