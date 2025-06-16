@@ -538,8 +538,7 @@ const Exercises = () => {
                   <p className="text-lg font-semibold">{allExercises.filter(ex => ex.tags && ex.tags.length > 0).length}</p>
                 </div>
               </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
+            </div>            <div className="bg-white p-4 rounded-lg shadow-sm border">
               <div className="flex items-center">
                 <div className="bg-purple-100 p-3 rounded-full">
                   <FaPlus className="text-purple-600" />
@@ -555,33 +554,6 @@ const Exercises = () => {
                     }).length}
                   </p>
                 </div>
-              </div>
-            </div>
-            
-            {/* Additional Category Statistics Row */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border md:col-span-4">
-              <div className="flex items-center mb-3">
-                <div className="bg-indigo-100 p-3 rounded-full">
-                  <FaFilter className="text-indigo-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-gray-500">Kategorien-Verteilung</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {(() => {
-                  const categories = ['Allgemein', 'Technik', 'Taktik', 'Kondition', 'Koordination', 'Torwart', 'Aufwärmen', 'Abschluss', 'Passspiel', 'Verteidigung', 'Angriff', 'Standards', 'Spielformen'];
-                  
-                  return categories.map(category => {
-                    const count = allExercises.filter(ex => ex.category === category).length;
-                    if (count === 0) return null;
-                    return (
-                      <span key={category} className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                        {categoryEmojis[category]} {category}: {count}
-                      </span>
-                    );
-                  }).filter(Boolean);
-                })()}
               </div>
             </div>
           </div>

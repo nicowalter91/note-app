@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { MdOutlinePushPin } from 'react-icons/md';
 import Modal from 'react-modal'; 
-import { FaPen, FaTrashAlt, FaTimes, FaStar } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaTimes, FaStar, FaPlus } from 'react-icons/fa';
 
 // ExerciseCard-Komponente: Eine Komponente zur Darstellung einer Übungskarte
 const ExerciseCard = ({ 
@@ -107,68 +107,56 @@ const ExerciseCard = ({
                                             {moment(date).format('DD.MM.YYYY')}
                                         </span>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-2">
+                                </div>                                <div className="flex items-center gap-2">
                                     {isPinned && (
                                         <MdOutlinePushPin className="text-yellow-500 w-4 h-4" />
                                     )}
-                                    {isFavorite && (
-                                        <FaStar className="text-amber-500 w-4 h-4" />
-                                    )}
-                                    <div className="flex">
-                                        <button
-                                            onClick={(e) => handleActionClick(e, onToggleFavorite)}
-                                            className={`p-1.5 transition-colors ${
-                                                isFavorite 
-                                                    ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50' 
-                                                    : 'text-gray-400 hover:text-amber-500 hover:bg-gray-50'
-                                            } rounded-full`}
-                                            title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                                        >
-                                            <FaStar className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleActionClick(e, onToggleSelect)}
-                                            className={`p-1.5 transition-colors ${
-                                                isSelected 
-                                                    ? 'text-blue-500 hover:text-blue-600 hover:bg-blue-50' 
-                                                    : 'text-gray-400 hover:text-blue-500 hover:bg-gray-50'
-                                            } rounded-full`}
-                                            title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
-                                        >
-                                            <input 
-                                                type="checkbox" 
-                                                checked={isSelected}
-                                                readOnly
-                                                className="h-3.5 w-3.5"
-                                            />
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleActionClick(e, onEdit)}
-                                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                                            title="Bearbeiten"
-                                        >
-                                            <FaPen className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleActionClick(e, onDelete)}
-                                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                            title="Löschen"
-                                        >
-                                            <FaTrashAlt className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleActionClick(e, onPinExercise)}
-                                            className={`p-1.5 rounded-full transition-colors ${
-                                                isPinned 
-                                                    ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50' 
-                                                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                                            }`}
-                                            title={isPinned ? "Loslösen" : "Anpinnen"}
-                                        >
-                                            <MdOutlinePushPin className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
+                                </div>
+                                <div className="flex">
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onEdit)}
+                                        className="p-1.5 text-gray-500 hover:text-blue-600 rounded-full transition-colors"
+                                        title="Bearbeiten"
+                                    >
+                                        <FaPen className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onDelete)}
+                                        className="p-1.5 text-gray-500 hover:text-red-600 rounded-full transition-colors"
+                                        title="Löschen"
+                                    >
+                                        <FaTrashAlt className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onToggleFavorite)}
+                                        className={`p-1.5 transition-colors ${
+                                            isFavorite                                                    ? 'text-amber-500 hover:text-amber-600' 
+                                                : 'text-gray-400 hover:text-amber-500'
+                                        } rounded-full`}
+                                        title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                    >
+                                        <FaStar className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onToggleSelect)}
+                                        className={`p-1.5 transition-colors ${
+                                            isSelected                                                    ? 'text-blue-500 hover:text-blue-600' 
+                                                : 'text-gray-400 hover:text-blue-500'
+                                        } rounded-full`}
+                                        title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
+                                    >
+                                        <FaPlus className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onPinExercise)}
+                                        className={`p-1.5 rounded-full transition-colors ${
+                                            isPinned                                                    ? 'text-yellow-500 hover:text-yellow-600' 
+                                                : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                        title={isPinned ? "Loslösen" : "Anpinnen"}
+                                    >
+                                        <MdOutlinePushPin className="w-3.5 h-3.5" />
+                                    </button>
                                 </div>
                             </div>
                             
@@ -197,9 +185,7 @@ const ExerciseCard = ({
                             )}
                         </div>
                     </div>
-                </div>
-
-                {/* Modal für Exercise Details - gleich wie in der Gridansicht */}
+                </div>                {/* Modal für Exercise Details - gleich wie in der Gridansicht */}
                 <Modal
                     isOpen={isModalOpen}
                     onRequestClose={closeModal}
@@ -218,11 +204,11 @@ const ExerciseCard = ({
                             width: '800px',
                             maxHeight: '90vh',
                             overflow: 'auto',
-                            borderRadius: '16px',
+                            borderRadius: '12px',
                             border: 'none',
                             padding: '0',
                             backgroundColor: 'white',
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                             zIndex: 1000
                         },
                         overlay: {
@@ -238,10 +224,9 @@ const ExerciseCard = ({
                             justifyContent: 'center'
                         }
                     }}
-                >
-                    {/* Modal Content - gleich wie in der Gridansicht */}
-                    <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                        <h2 className="text-2xl font-bold text-gray-800">
+                >                    {/* Modal Content - gleich wie in der Gridansicht */}
+                    <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-white">
+                        <h2 className="text-xl font-bold text-gray-800">
                             {title || 'Übung Details'}
                         </h2>
                         <button
@@ -250,12 +235,11 @@ const ExerciseCard = ({
                         >
                             <FaTimes className="w-5 h-5 text-gray-500" />
                         </button>
-                    </div>
-                    <div className="p-4 sm:p-6">
+                    </div>                    <div className="p-4 sm:p-6">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                             {/* Left Column - Image */}
                             <div className="space-y-4 order-2 xl:order-1">
-                                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                                     {image ? (
                                         <img 
                                             src={`http://localhost:8000/uploads/exercises/${image}`} 
@@ -263,8 +247,8 @@ const ExerciseCard = ({
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                            <span className="text-blue-500 text-6xl sm:text-8xl font-bold">
+                                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-500 text-6xl sm:text-8xl font-bold">
                                                 {title ? title.charAt(0).toUpperCase() : 'Ü'}
                                             </span>
                                         </div>
@@ -273,13 +257,13 @@ const ExerciseCard = ({
 
                                 {/* Tags Section */}
                                 {tags && tags.length > 0 && (
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-700 mb-2">🏷️ Tags:</h4>
+                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Tags</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {tags.map((tag, index) => (
                                                 <span
                                                     key={index}
-                                                    className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                                                    className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
                                                 >
                                                     {tag}
                                                 </span>
@@ -304,39 +288,39 @@ const ExerciseCard = ({
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                            📋 Organisation
+                                <div className="space-y-4">
+                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                            Organisation
                                         </h4>
-                                        <p className="text-gray-700 leading-relaxed">
+                                        <p className="text-gray-700 leading-relaxed text-sm">
                                             {organisation || 'Nicht angegeben'}
                                         </p>
                                     </div>
 
-                                    <div className="bg-blue-50 p-4 rounded-lg">
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                            ⚽ Durchführung
+                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                            Durchführung
                                         </h4>
-                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                             {durchfuehrung || 'Nicht angegeben'}
                                         </p>
                                     </div>
 
-                                    <div className="bg-green-50 p-4 rounded-lg">
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                            🎯 Coaching
+                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                            Coaching
                                         </h4>
-                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                             {coaching || 'Nicht angegeben'}
                                         </p>
                                     </div>
 
-                                    <div className="bg-yellow-50 p-4 rounded-lg">
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                            🔄 Variante
+                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                            Variante
                                         </h4>
-                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                             {variante || 'Nicht angegeben'}
                                         </p>
                                     </div>
@@ -349,7 +333,7 @@ const ExerciseCard = ({
                                             closeModal();
                                             onEdit();
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                     >
                                         <FaPen className="w-4 h-4" />
                                         Bearbeiten
@@ -359,7 +343,7 @@ const ExerciseCard = ({
                                             closeModal();
                                             onDelete();
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-red-600 rounded-lg transition-colors"
                                     >
                                         <FaTrashAlt className="w-4 h-4" />
                                         Löschen
@@ -376,8 +360,7 @@ const ExerciseCard = ({
         <div className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden w-full h-[400px] flex flex-col ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
             <div className="cursor-pointer flex-1 flex flex-col" onClick={openModal}>
                 {/* Card Layout */}
-                <div className="flex flex-col h-full">
-                    {/* Image Section - Top */}
+                <div className="flex flex-col h-full">                    {/* Image Section - Top */}
                     <div className="h-40 bg-gray-100 overflow-hidden relative">
                         {image ? (
                             <img 
@@ -392,34 +375,10 @@ const ExerciseCard = ({
                                 </span>
                             </div>
                         )}
-                        
-                        {/* Selection and Favorite Buttons */}
-                        <div className="absolute top-2 right-2 flex space-x-1">
-                            <button
-                                onClick={(e) => handleActionClick(e, onToggleFavorite)}
-                                className={`p-1 rounded-full ${isFavorite ? 'bg-amber-500 text-white' : 'bg-white/80 text-gray-600 hover:bg-white'}`}
-                                title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                            >
-                                <FaStar className="w-3 h-3" />
-                            </button>
-                            <button
-                                onClick={(e) => handleActionClick(e, onToggleSelect)}
-                                className={`p-1 rounded-full ${isSelected ? 'bg-blue-500 text-white' : 'bg-white/80 text-gray-600 hover:bg-white'}`}
-                                title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
-                            >
-                                <input 
-                                    type="checkbox" 
-                                    checked={isSelected}
-                                    readOnly
-                                    className="h-3 w-3"
-                                />
-                            </button>
-                        </div>
                     </div>
 
                     {/* Content Section */}
-                    <div className="flex-1 p-3 flex flex-col">
-                        <div>
+                    <div className="flex-1 p-3 flex flex-col">                        <div>
                             <div className="flex items-start justify-between mb-2">
                                 <div className="flex-1 pr-2">
                                     <h3 className="text-base font-semibold text-gray-800 mb-1.5 line-clamp-2 leading-tight min-h-[40px]">
@@ -433,17 +392,6 @@ const ExerciseCard = ({
                                         </span>
                                     </div>
                                 </div>
-                                
-                                <button
-                                    onClick={(e) => handleActionClick(e, onPinExercise)}
-                                    className={`ml-1 p-1 rounded-full transition-colors ${
-                                        isPinned 
-                                            ? 'text-yellow-500 hover:text-yellow-600 bg-yellow-50' 
-                                            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    <MdOutlinePushPin className="w-3.5 h-3.5" />
-                                </button>
                             </div>
 
                             <div className="space-y-2">
@@ -481,8 +429,7 @@ const ExerciseCard = ({
                                 </div>
                             )}
 
-                            {/* Date and Action Buttons */}
-                            <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                            {/* Date and Action Buttons */}                            <div className="flex items-center justify-between pt-1 border-t border-gray-100">
                                 <p className="text-[10px] text-gray-500 font-medium">
                                     {moment(date).format('DD.MM.YYYY')}
                                 </p>
@@ -490,26 +437,46 @@ const ExerciseCard = ({
                                 <div className="flex gap-1">
                                     <button
                                         onClick={(e) => handleActionClick(e, onEdit)}
-                                        className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                        className="p-1 text-gray-500 hover:text-blue-600 rounded-full transition-colors"
                                         title="Bearbeiten"
                                     >
                                         <FaPen className="w-3 h-3" />
                                     </button>
                                     <button
                                         onClick={(e) => handleActionClick(e, onDelete)}
-                                        className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                        className="p-1 text-gray-500 hover:text-red-600 rounded-full transition-colors"
                                         title="Löschen"
                                     >
                                         <FaTrashAlt className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onToggleFavorite)}
+                                        className={`p-1 transition-colors ${
+                                            isFavorite 
+                                                ? 'text-amber-500 hover:text-amber-600' 
+                                                : 'text-gray-500 hover:text-amber-500'
+                                        } rounded-full`}
+                                        title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                    >
+                                        <FaStar className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onToggleSelect)}
+                                        className={`p-1 transition-colors ${
+                                            isSelected 
+                                                ? 'text-blue-500 hover:text-blue-600' 
+                                                : 'text-gray-500 hover:text-blue-500'
+                                        } rounded-full`}
+                                        title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
+                                    >
+                                        <FaPlus className="w-3 h-3" />
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Modal für Exercise Details */}
+            </div>            {/* Modal für Exercise Details */}
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
@@ -528,11 +495,11 @@ const ExerciseCard = ({
                         width: '800px',
                         maxHeight: '90vh',
                         overflow: 'auto',
-                        borderRadius: '16px',
+                        borderRadius: '12px',
                         border: 'none',
                         padding: '0',
                         backgroundColor: 'white',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                         zIndex: 1000
                     },
                     overlay: {
@@ -548,46 +515,38 @@ const ExerciseCard = ({
                         justifyContent: 'center'
                     }
                 }}
-            >
-                {/* Modal Header */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-800">
+            >                {/* Modal Header */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-white">
+                    <h2 className="text-xl font-bold text-gray-800">
                         {title || 'Übung Details'}
                     </h2>
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleFavorite();
-                            }}
-                            className={`p-2 rounded-full ${
-                                isFavorite 
-                                    ? 'text-amber-500 hover:text-amber-600 bg-amber-50' 
-                                    : 'text-gray-400 hover:text-amber-500 hover:bg-gray-50'
-                            }`}
-                            title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                        >
-                            <FaStar className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleSelect();
-                            }}
-                            className={`p-2 rounded-full ${
-                                isSelected 
-                                    ? 'text-blue-500 hover:text-blue-600 bg-blue-50' 
-                                    : 'text-gray-400 hover:text-blue-500 hover:bg-gray-50'
-                            }`}
-                            title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
-                        >
-                            <input 
-                                type="checkbox" 
-                                checked={isSelected}
-                                readOnly
-                                className="h-5 w-5"
-                            />
-                        </button>
+                    <div className="flex items-center gap-3">                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onToggleFavorite();
+                                    }}
+                                    className={`p-1.5 transition-colors ${
+                                        isFavorite 
+                                            ? 'text-amber-500 hover:text-amber-600' 
+                                            : 'text-gray-400 hover:text-amber-500'
+                                    }`}
+                                    title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                >
+                                    <FaStar className="w-3.5 h-3.5" />
+                                </button>                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onToggleSelect();
+                                    }}
+                                    className={`p-1.5 transition-colors ${
+                                        isSelected 
+                                            ? 'text-blue-500 hover:text-blue-600' 
+                                            : 'text-gray-400 hover:text-blue-500'
+                                    }`}
+                                    title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
+                                >
+                                    <FaPlus className="w-3.5 h-3.5" />
+                                </button>
                         <button
                             onClick={closeModal}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -597,12 +556,11 @@ const ExerciseCard = ({
                     </div>
                 </div>
                 
-                {/* Modal Content */}
-                <div className="p-4 sm:p-6">
+                {/* Modal Content */}                <div className="p-4 sm:p-6">
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                         {/* Left Column - Image */}
                         <div className="space-y-4 order-2 xl:order-1">
-                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                                 {image ? (
                                     <img 
                                         src={`http://localhost:8000/uploads/exercises/${image}`} 
@@ -610,8 +568,8 @@ const ExerciseCard = ({
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                        <span className="text-blue-500 text-6xl sm:text-8xl font-bold">
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                        <span className="text-gray-500 text-6xl sm:text-8xl font-bold">
                                             {title ? title.charAt(0).toUpperCase() : 'Ü'}
                                         </span>
                                     </div>
@@ -620,13 +578,13 @@ const ExerciseCard = ({
 
                             {/* Tags Section */}
                             {tags && tags.length > 0 && (
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-2">🏷️ Tags:</h4>
+                                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <h4 className="text-sm font-medium text-gray-700 mb-2">Tags</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {tags.map((tag, index) => (
                                             <span
                                                 key={index}
-                                                className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                                                className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
                                             >
                                                 {tag}
                                             </span>
@@ -649,52 +607,50 @@ const ExerciseCard = ({
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                        📋 Organisation
+                            <div className="space-y-4">
+                                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Organisation
                                     </h4>
-                                    <p className="text-gray-700 leading-relaxed">
+                                    <p className="text-gray-700 leading-relaxed text-sm">
                                         {organisation || 'Nicht angegeben'}
                                     </p>
                                 </div>
 
-                                <div className="bg-blue-50 p-4 rounded-lg">
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                        ⚽ Durchführung
+                                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Durchführung
                                     </h4>
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                         {durchfuehrung || 'Nicht angegeben'}
                                     </p>
                                 </div>
 
-                                <div className="bg-green-50 p-4 rounded-lg">
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                        🎯 Coaching
+                                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Coaching
                                     </h4>
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                         {coaching || 'Nicht angegeben'}
                                     </p>
                                 </div>
 
-                                <div className="bg-yellow-50 p-4 rounded-lg">
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                        🔄 Variante
+                                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Variante
                                     </h4>
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                         {variante || 'Nicht angegeben'}
                                     </p>
                                 </div>
-                            </div>
-
-                            {/* Action Buttons in Modal */}
+                            </div>                            {/* Action Buttons in Modal */}
                             <div className="flex gap-3 pt-4 border-t border-gray-200">
                                 <button
                                     onClick={() => {
                                         closeModal();
                                         onEdit();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                 >
                                     <FaPen className="w-4 h-4" />
                                     Bearbeiten
@@ -704,7 +660,7 @@ const ExerciseCard = ({
                                         closeModal();
                                         onDelete();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-red-600 rounded-lg transition-colors"
                                 >
                                     <FaTrashAlt className="w-4 h-4" />
                                     Löschen
