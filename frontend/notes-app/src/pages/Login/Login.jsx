@@ -83,8 +83,13 @@ const Login = () => {  const [email, setEmail] = useState(""); // Zustand für E
         password: password,
       });      // Erfolgreiche Login-Antwort
       if (response.data && response.data.accessToken) {
+        console.log("Login successful, saving token:", response.data.accessToken);
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
+        console.log("Token saved, navigating to dashboard");
         navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
+      } else {
+        console.log("Login response missing token:", response.data);
+        setError("Login erfolgreich, aber kein Token erhalten.");
       }
     } catch (error) {
       // Fehlerbehandlung

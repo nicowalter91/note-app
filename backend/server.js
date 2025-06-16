@@ -8,6 +8,7 @@ const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
 const { addExercise, editExercise, getAllExercises, deleteExercise, updateExercisePinned, searchExercises } = require("./controllers/exercises");
 const { addEvent, editEvent, getAllEvents, getEvent, deleteEvent, updatePlayerAttendance, getEventStats, addRecurringTraining } = require("./controllers/events");
+const { addContact, editContact, getAllContacts, getContact, deleteContact, updateContactPinned, updateLastContactDate } = require("./controllers/contacts");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -25,6 +26,7 @@ const Task = require("./models/task.model");
 const Exercises = require("./models/exercises.model");
 const Player = require("./models/player.model");
 const Event = require("./models/event.model");
+const Contact = require("./models/contact.model");
 
 // Express und Middleware einrichten
 const express = require("express");
@@ -224,6 +226,42 @@ app.put("/update-attendance/:eventId", authenticateToken, async (req, res) => {
 // Route für Event-Statistiken
 app.get("/event-stats", authenticateToken, async (req, res) => {
   getEventStats(req, res);
+});
+
+// *** CONTACTS API ROUTES ***
+// Route zum Hinzufügen eines neuen Kontakts
+app.post("/add-contact", authenticateToken, async (req, res) => {
+  addContact(req, res);
+});
+
+// Route zum Bearbeiten eines Kontakts
+app.put("/edit-contact/:contactId", authenticateToken, async (req, res) => {
+  editContact(req, res);
+});
+
+// Route zum Abrufen aller Kontakte
+app.get("/contacts", authenticateToken, async (req, res) => {
+  getAllContacts(req, res);
+});
+
+// Route zum Abrufen eines einzelnen Kontakts
+app.get("/contacts/:contactId", authenticateToken, async (req, res) => {
+  getContact(req, res);
+});
+
+// Route zum Löschen eines Kontakts
+app.delete("/delete-contact/:contactId", authenticateToken, async (req, res) => {
+  deleteContact(req, res);
+});
+
+// Route zum Aktualisieren des Pin-Status eines Kontakts
+app.put("/update-contact-pinned/:contactId", authenticateToken, async (req, res) => {
+  updateContactPinned(req, res);
+});
+
+// Route zum Aktualisieren des letzten Kontaktdatums
+app.put("/update-last-contact/:contactId", authenticateToken, async (req, res) => {
+  updateLastContactDate(req, res);
 });
 
 // *** Server starten ***

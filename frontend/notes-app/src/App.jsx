@@ -46,6 +46,7 @@ import ExportTemplates from './pages/Tools/ExportTemplates';
 import DrawingDemo from './pages/Tools/DrawingDemo'; // Importiere die Zeichenfunktion-Demo-Seite
 import DrawingToolPage from './pages/Tools/DrawingToolPage'; // Importiere die standalone Zeichenfunktion-Seite
 import FootballExerciseToolPage from './pages/Tools/FootballExerciseToolPage'; // Importiere die Fußballübungs-Seite
+import Contacts from './pages/Contacts/Contacts'; // Importiere die Kontakte-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -94,6 +95,7 @@ const routes = (
       <Route path="/tools/drawing-demo" exact element={<DrawingDemo />} />
       <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
       <Route path="/tools/football-exercise" exact element={<FootballExerciseToolPage />} />
+      <Route path="/contacts" exact element={<Contacts />} />
       
       <Route exact path="/" element={<Navigate to="/login" />}/>
     </Routes>

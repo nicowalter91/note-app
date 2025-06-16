@@ -436,6 +436,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           <nav className="space-y-1">            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <NavItem icon={<HiClipboardCheck />} label="Tasks" onClick={() => navigate('/tasks')} />
             <NavItem icon={<HiOutlineClipboard />} label="Exercises" onClick={() => navigate('/exercises')} />
+            <NavItem icon={<HiUserGroup />} label="Contacts" onClick={() => navigate('/contacts')} />
           </nav>
         </div>
 
