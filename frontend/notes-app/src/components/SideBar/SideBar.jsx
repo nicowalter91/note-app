@@ -268,8 +268,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       onClick: () => navigate('/team/finance')
     }
   ];
-  
-  // Training submenu
+    // Training submenu
   const trainingSubmenu = [
     { 
       icon: <HiOutlineClipboard />, 
@@ -282,6 +281,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       label: 'Training planen', 
       path: '/team/training', 
       onClick: () => navigate('/team/training') 
+    },
+    { 
+      icon: <HiCalendar />, 
+      label: 'Spielplan', 
+      path: '/team/schedule', 
+      onClick: () => navigate('/team/schedule') 
     },
     { 
       icon: <HiPencilAlt />, 
