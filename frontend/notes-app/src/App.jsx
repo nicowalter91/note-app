@@ -22,6 +22,7 @@ import Tactics from './pages/Team/Tactics/Tactics';
 import Formation from './pages/Team/Formation/Formation';
 import TeamFinance from './pages/Team/Finance/TeamFinance';
 import SeasonPlanning from './pages/Team/Planning/SeasonPlanning';
+import EventDetail from './pages/Team/EventDetail/EventDetail';
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -58,13 +59,13 @@ const routes = (
       <Route path="/settings" exact element={<Settings />} />
       <Route path="/exercises" exact element={<Exercises />} />
       <Route path="/team" exact element={<Team />} />
-      <Route path="/video" exact element={<Video />} />
-      {/* Team Management Routes */}
+      <Route path="/video" exact element={<Video />} />      {/* Team Management Routes */}
       <Route path="/players" exact element={<Players />} />
       <Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
       <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
       <Route path="/team/schedule" exact element={<Schedule />} />
+      <Route path="/team/event/:id" exact element={<EventDetail />} />
       <Route path="/team/statistics" exact element={<Statistics />} />
       <Route path="/team/training" exact element={<Training />} />
       <Route path="/team/tactics" exact element={<Tactics />} />

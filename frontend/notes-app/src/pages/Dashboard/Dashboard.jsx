@@ -17,9 +17,24 @@ import {
     FaTasks,
     FaPlusCircle,
     FaUserPlus,
-    FaDumbbell
+    FaDumbbell,
+    FaMapMarkerAlt,
+    FaFire,
+    FaRunning,
+    FaTrophy
 } from 'react-icons/fa';
-import { HiLightningBolt, HiTrendingUp, HiCollection, HiStatusOnline, HiHome, HiChartBar, HiUsers } from 'react-icons/hi';
+import { 
+    HiLightningBolt, 
+    HiTrendingUp, 
+    HiCollection, 
+    HiStatusOnline, 
+    HiHome, 
+    HiChartBar, 
+    HiUsers,
+    HiLocationMarker,
+    HiClock,
+    HiCalendar
+} from 'react-icons/hi';
 import { 
     PieChart,
     Pie,
@@ -245,97 +260,179 @@ const Dashboard = () => {
                 </div>
                 <h1 className="text-3xl font-bold mb-2">{getGreeting()}, {userInfo?.name || 'Trainer'}!</h1>
                 <p className="opacity-90">Hier ist ein Überblick über dein Team und anstehende Aufgaben.</p>
-            </div>            {/* Nächste wichtige Termine */}
+            </div>            {/* Nächste wichtige Termine - Konsistent mit App-Design */}
             {(dashboardData.events.nextTraining || dashboardData.events.nextGame) && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Nächste Termine</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Nächstes Training */}
                         {dashboardData.events.nextTraining && (
-                            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center">
-                                        <FaDumbbell className="text-2xl mr-3" />
-                                        <h3 className="text-xl font-semibold">Nächstes Training</h3>
-                                    </div>
-                                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                                        Training
-                                    </span>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-lg font-medium">{dashboardData.events.nextTraining.title}</h4>
-                                    <div className="flex items-center text-green-100">
-                                        <FaCalendarAlt className="mr-2" />
-                                        <span>{moment(dashboardData.events.nextTraining.date).format('dddd, DD. MMMM YYYY')}</span>
-                                    </div>
-                                    <div className="flex items-center text-green-100">
-                                        <FaRegClock className="mr-2" />
-                                        <span>{dashboardData.events.nextTraining.time} Uhr</span>
-                                    </div>
-                                    {dashboardData.events.nextTraining.location && (
-                                        <div className="flex items-center text-green-100">
-                                            <FaUserAlt className="mr-2" />
-                                            <span>{dashboardData.events.nextTraining.location}</span>
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
+                                <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                                <FaRunning className="text-2xl text-white" />
+                                            </div>
+                                            <div className="ml-3">
+                                                <h3 className="text-xl font-semibold text-white">Nächstes Training</h3>
+                                                <p className="text-green-100 text-sm">Vorbereitung ist der Schlüssel</p>
+                                            </div>
                                         </div>
-                                    )}
+                                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+                                            Training
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="mt-4 text-right">
-                                    <span className="text-sm text-green-100">
-                                        {moment(dashboardData.events.nextTraining.date).fromNow()}
-                                    </span>
+                                <div className="p-6">
+                                    <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                        {dashboardData.events.nextTraining.title}
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                                                <HiCalendar className="text-xl text-blue-600 dark:text-blue-400" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800 dark:text-white">
+                                                    {moment(dashboardData.events.nextTraining.date).format('dddd, DD. MMMM YYYY')}
+                                                </p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    {moment(dashboardData.events.nextTraining.date).fromNow()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3">
+                                                <HiClock className="text-xl text-purple-600 dark:text-purple-400" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800 dark:text-white">
+                                                    {dashboardData.events.nextTraining.time} Uhr
+                                                </p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    {dashboardData.events.nextTraining.duration || 90} Minuten
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {dashboardData.events.nextTraining.location && (
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center mr-3">
+                                                    <HiLocationMarker className="text-xl text-orange-600 dark:text-orange-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-800 dark:text-white">
+                                                        {dashboardData.events.nextTraining.location}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">Trainingsort</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>                                    <button 
+                                        onClick={() => {
+                                            if (dashboardData.events.nextTraining._id) {
+                                                navigate(`/team/event/${dashboardData.events.nextTraining._id}`);
+                                            } else {
+                                                navigate('/team/training');
+                                            }
+                                        }}
+                                        className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                                    >
+                                        <FaDumbbell className="mr-2" />
+                                        Training ansehen
+                                    </button>
                                 </div>
                             </div>
                         )}
 
                         {/* Nächstes Spiel */}
                         {dashboardData.events.nextGame && (
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center">
-                                        <FaUsers className="text-2xl mr-3" />
-                                        <h3 className="text-xl font-semibold">Nächstes Spiel</h3>
-                                    </div>
-                                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                                        Spiel
-                                    </span>
-                                </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-lg font-medium">
-                                        {dashboardData.events.nextGame.gameData?.opponent 
-                                            ? `vs ${dashboardData.events.nextGame.gameData.opponent}`
-                                            : dashboardData.events.nextGame.title
-                                        }
-                                    </h4>
-                                    <div className="flex items-center text-blue-100">
-                                        <FaCalendarAlt className="mr-2" />
-                                        <span>{moment(dashboardData.events.nextGame.date).format('dddd, DD. MMMM YYYY')}</span>
-                                    </div>
-                                    <div className="flex items-center text-blue-100">
-                                        <FaRegClock className="mr-2" />
-                                        <span>{dashboardData.events.nextGame.time} Uhr</span>
-                                    </div>
-                                    {dashboardData.events.nextGame.location && (
-                                        <div className="flex items-center text-blue-100">
-                                            <FaUserAlt className="mr-2" />
-                                            <span>{dashboardData.events.nextGame.location}</span>
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
+                                <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                                <FaTrophy className="text-2xl text-white" />
+                                            </div>
+                                            <div className="ml-3">
+                                                <h3 className="text-xl font-semibold text-white">Nächstes Spiel</h3>
+                                                <p className="text-blue-100 text-sm">Zeit zu glänzen</p>
+                                            </div>
                                         </div>
-                                    )}
-                                    {dashboardData.events.nextGame.gameData?.isHome !== undefined && (
-                                        <div className="flex items-center text-blue-100">
-                                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+                                            Spiel
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-white">
+                                            {dashboardData.events.nextGame.gameData?.opponent 
+                                                ? `vs ${dashboardData.events.nextGame.gameData.opponent}`
+                                                : dashboardData.events.nextGame.title
+                                            }
+                                        </h4>
+                                        {dashboardData.events.nextGame.gameData?.isHome !== undefined && (
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                                 dashboardData.events.nextGame.gameData.isHome 
-                                                    ? 'bg-green-500/20 text-green-100' 
-                                                    : 'bg-orange-500/20 text-orange-100'
+                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+                                                    : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
                                             }`}>
-                                                {dashboardData.events.nextGame.gameData.isHome ? 'Heimspiel' : 'Auswärtsspiel'}
+                                                {dashboardData.events.nextGame.gameData.isHome ? 'Heimspiel' : 'Auswärts'}
                                             </span>
+                                        )}
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                                                <HiCalendar className="text-xl text-blue-600 dark:text-blue-400" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800 dark:text-white">
+                                                    {moment(dashboardData.events.nextGame.date).format('dddd, DD. MMMM YYYY')}
+                                                </p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    {moment(dashboardData.events.nextGame.date).fromNow()}
+                                                </p>
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                                <div className="mt-4 text-right">
-                                    <span className="text-sm text-blue-100">
-                                        {moment(dashboardData.events.nextGame.date).fromNow()}
-                                    </span>
+                                        <div className="flex items-center">
+                                            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3">
+                                                <HiClock className="text-xl text-purple-600 dark:text-purple-400" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800 dark:text-white">
+                                                    {dashboardData.events.nextGame.time} Uhr
+                                                </p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">Anpfiff</p>
+                                            </div>
+                                        </div>
+                                        {dashboardData.events.nextGame.location && (
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center mr-3">
+                                                    <HiLocationMarker className="text-xl text-orange-600 dark:text-orange-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-800 dark:text-white">
+                                                        {dashboardData.events.nextGame.location}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">Spielort</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>                                    <button 
+                                        onClick={() => {
+                                            if (dashboardData.events.nextGame._id) {
+                                                navigate(`/team/event/${dashboardData.events.nextGame._id}`);
+                                            } else {
+                                                navigate('/team/schedule');
+                                            }
+                                        }}
+                                        className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                                    >
+                                        <FaTrophy className="mr-2" />
+                                        Spiel ansehen
+                                    </button>
                                 </div>
                             </div>
                         )}
