@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { MdOutlinePushPin } from 'react-icons/md';
 import Modal from 'react-modal'; 
-import { FaPen, FaTrashAlt, FaTimes, FaStar, FaPlus } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaTimes, FaStar, FaPlus, FaExpand } from 'react-icons/fa';
 
 // ExerciseCard-Komponente: Eine Komponente zur Darstellung einer Übungskarte
 const ExerciseCard = ({ 
@@ -18,6 +18,8 @@ const ExerciseCard = ({
 }) => {
     // Zustand für das Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // Zustand für das Image Modal (Vollbildansicht)
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     // Extrahiere Exercise-Daten
     const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, date, isPinned } = exerciseData || {};
 
@@ -39,9 +41,7 @@ const ExerciseCard = ({
             'Allgemein': 'bg-slate-100 text-slate-800'
         };
         return colors[category] || 'bg-gray-100 text-gray-800';
-    };
-
-    // Öffnet das Modal mit dem gesamten Inhalt der Karte
+    };    // Öffnet das Modal mit dem gesamten Inhalt der Karte
     const openModal = () => {
         console.log('Opening modal for exercise:', exerciseData);
         setIsModalOpen(true);
@@ -51,14 +51,23 @@ const ExerciseCard = ({
     const closeModal = () => {
         setIsModalOpen(false);
     };
+    
+    // Öffnet das Bild-Modal für die Vollbildansicht
+    const openImageModal = (e) => {
+        e.stopPropagation(); // Verhindert, dass das Haupt-Modal geöffnet wird
+        setIsImageModalOpen(true);
+    };
+
+    // Schließt das Bild-Modal
+    const closeImageModal = () => {
+        setIsImageModalOpen(false);
+    };
 
     // Prevent event propagation when clicking on action buttons
     const handleActionClick = (e, action) => {
         e.stopPropagation();
         action();
-    };
-
-    // Kategorie-Emoji-Mapping
+    };    // Kategorie-Emoji-Mapping
     const getCategoryEmoji = (category) => {
         const emojis = {
             'Allgemein': '📋', 'Technik': '⚽', 'Taktik': '🧠', 'Kondition': '💪', 'Koordination': '🤸',
@@ -241,11 +250,19 @@ const ExerciseCard = ({
                             <div className="space-y-4 order-2 xl:order-1">
                                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                                     {image ? (
-                                        <img 
-                                            src={`http://localhost:8000/uploads/exercises/${image}`} 
-                                            alt={title}
-                                            className="w-full h-full object-cover"
-                                        />
+                                        <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
+                                            e.stopPropagation();
+                                            openImageModal(e);
+                                        }}>
+                                            <img 
+                                                src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                                alt={title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all duration-200">
+                                                <FaExpand className="text-white opacity-0 group-hover:opacity-100 w-6 h-6 transition-opacity duration-200" />
+                                            </div>
+                                        </div>
                                     ) : (
                                         <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                             <span className="text-gray-500 text-6xl sm:text-8xl font-bold">
@@ -360,14 +377,21 @@ const ExerciseCard = ({
         <div className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden w-full h-[400px] flex flex-col ${isSelected ? 'ring-2 ring-blue-500' : ''}`}>
             <div className="cursor-pointer flex-1 flex flex-col" onClick={openModal}>
                 {/* Card Layout */}
-                <div className="flex flex-col h-full">                    {/* Image Section - Top */}
-                    <div className="h-40 bg-gray-100 overflow-hidden relative">
+                <div className="flex flex-col h-full">                    {/* Image Section - Top */}                    <div className="h-40 bg-gray-100 overflow-hidden relative">
                         {image ? (
-                            <img 
-                                src={`http://localhost:8000/uploads/exercises/${image}`} 
-                                alt={title}
-                                className="w-full h-full object-cover"
-                            />
+                            <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
+                                e.stopPropagation(); // Verhindert, dass das Haupt-Modal geöffnet wird
+                                openImageModal(e);
+                            }}>
+                                <img 
+                                    src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                    alt={title}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all duration-200">
+                                    <FaExpand className="text-white opacity-0 group-hover:opacity-100 w-6 h-6 transition-opacity duration-200" />
+                                </div>
+                            </div>
                         ) : (
                             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                 <span className="text-blue-500 text-4xl font-bold">
@@ -562,11 +586,19 @@ const ExerciseCard = ({
                         <div className="space-y-4 order-2 xl:order-1">
                             <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                                 {image ? (
-                                    <img 
-                                        src={`http://localhost:8000/uploads/exercises/${image}`} 
-                                        alt={title}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
+                                        e.stopPropagation();
+                                        openImageModal(e);
+                                    }}>
+                                        <img 
+                                            src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                            alt={title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all duration-200">
+                                            <FaExpand className="text-white opacity-0 group-hover:opacity-100 w-6 h-6 transition-opacity duration-200" />
+                                        </div>
+                                    </div>
                                 ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                         <span className="text-gray-500 text-6xl sm:text-8xl font-bold">
@@ -667,7 +699,65 @@ const ExerciseCard = ({
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>                </div>
+            </Modal>
+            
+            {/* Fullscreen Image Modal */}
+            <Modal
+                isOpen={isImageModalOpen}
+                onRequestClose={closeImageModal}
+                shouldCloseOnOverlayClick={true}
+                shouldCloseOnEsc={true}                style={{
+                    content: {
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '95vw',
+                        maxHeight: '95vh',
+                        width: 'auto',
+                        height: 'auto',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        backgroundColor: 'rgba(30, 30, 30, 0.95)',
+                        overflow: 'hidden',
+                        zIndex: 1100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    },
+                    overlay: {
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        zIndex: 1100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }
+                }}
+            >                <div className="relative flex items-center justify-center w-full h-full">
+                    {image && (
+                        <img 
+                            src={`http://localhost:8000/uploads/exercises/${image}`} 
+                            alt={title}
+                            className="max-w-[90vw] max-h-[85vh] object-contain rounded shadow-lg"
+                            style={{ objectFit: 'contain' }}
+                        />
+                    )}
+                    <button
+                        onClick={closeImageModal}
+                        className="absolute top-2 right-2 p-2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-colors"
+                    >
+                        <FaTimes className="w-5 h-5" />
+                    </button>
                 </div>
             </Modal>
         </div>
