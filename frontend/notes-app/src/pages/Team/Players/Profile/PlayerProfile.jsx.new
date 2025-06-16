@@ -4,10 +4,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
     FaArrowLeft, FaEdit, FaUser, FaRunning, FaMedal, FaChartLine, 
     FaBandAid, FaNotesMedical, FaTrophy, FaClipboardList, FaUserFriends, 
-    FaCalendarAlt, FaComment, FaDownload, FaChartBar, FaCaretUp, FaCaretDown
+    FaCalendarAlt, FaComment, FaDownload, FaChartBar, FaCaretUp, FaCaretDown,
+    FaFilePdf, FaCheck, FaExclamation, FaStar
 } from 'react-icons/fa';
 import { calculatePlayerScore, getScoreRating } from '../../../../utils/playerScoreUtils.jsx';
 import { getPlayerById } from '../../../../utils/playerService';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const PlayerProfile = () => {
     const { id } = useParams();
@@ -16,6 +19,140 @@ const PlayerProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
+
+    // Funktion zum Exportieren des Profils als PDF
+    const exportToPDF = () => {
+        if (!player) return;
+
+        // Create PDF document
+        const doc = new jsPDF();
+        
+        // Helper function to add section headings
+        const addSectionTitle = (title, y) => {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(44, 62, 80);
+            doc.text(title, 20, y);
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(52, 152, 219);
+            doc.line(20, y + 1, 190, y + 1);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            return y + 10;
+        };
+
+        // Add header with logo and title
+        let y = 20;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(20);
+        doc.setTextColor(52, 152, 219);
+        doc.text('SPIELERPROFIL', 20, y);
+        y += 10;
+
+        // Basic player information
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        y = addSectionTitle('Persönliche Daten', y + 10);
+        doc.text([
+            `Name: ${player.name}`,
+            `Position: ${player.position}`,
+            `Trikotnummer: #${player.number}`,
+            `Alter: ${player.age} Jahre`,
+            `Geburtsdatum: ${player.dob}`,
+            `Status: ${player.status}`
+        ], 25, y);
+        y += 40;
+
+        // Physical attributes
+        if (player.physicalAttributes) {
+            y = addSectionTitle('Körperliche Attribute', y);
+            const physicalStats = [
+                ['Größe', `${player.height || '-'} cm`],
+                ['Gewicht', `${player.weight || '-'} kg`],
+                ['Geschwindigkeit', `${player.physicalAttributes.speed || '-'}/100`],
+                ['Kraft', `${player.physicalAttributes.strength || '-'}/100`],
+                ['Beweglichkeit', `${player.physicalAttributes.agility || '-'}/100`],
+                ['Ausdauer', `${player.physicalAttributes.endurance || '-'}/100`],
+                ['Fitness', `${player.physicalAttributes.fitness || '-'}/100`],
+            ];
+            doc.autoTable({
+                startY: y + 5,
+                head: [['Attribut', 'Wert']],
+                body: physicalStats,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                columnStyles: { 0: { cellWidth: 80 } },
+                headStyles: { fillColor: [52, 152, 219] }
+            });
+            y = doc.lastAutoTable.finalY + 10;
+        }
+
+        // Skills section
+        if (player.skills) {
+            y = addSectionTitle('Fähigkeiten', y);
+            const skillsData = Object.entries(player.skills).map(([skill, value]) => [
+                skill.charAt(0).toUpperCase() + skill.slice(1),
+                `${value}/100`
+            ]);
+            doc.autoTable({
+                startY: y + 5,
+                head: [['Fähigkeit', 'Bewertung']],
+                body: skillsData,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                columnStyles: { 0: { cellWidth: 80 } },
+                headStyles: { fillColor: [52, 152, 219] }
+            });
+            y = doc.lastAutoTable.finalY + 10;
+        }
+
+        // Statistics
+        if (player.stats) {
+            y = addSectionTitle('Statistiken', y);
+            const statsData = [];
+            statsData.push(['Spiele', player.stats.games]);
+            statsData.push(['Spielminuten', player.stats.minutesPlayed]);
+            if (player.position === 'GK') {
+                statsData.push(['Zu-Null-Spiele', player.stats.cleanSheets]);
+                statsData.push(['Parade-Quote', `${player.stats.savesPercentage}%`]);
+            } else {
+                statsData.push(['Tore', player.stats.goals || 0]);
+                statsData.push(['Vorlagen', player.stats.assists || 0]);
+            }
+            statsData.push(['Gelbe Karten', player.stats.yellowCards]);
+            statsData.push(['Rote Karten', player.stats.redCards]);
+
+            doc.autoTable({
+                startY: y + 5,
+                head: [['Statistik', 'Wert']],
+                body: statsData,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                columnStyles: { 0: { cellWidth: 80 } },
+                headStyles: { fillColor: [52, 152, 219] }
+            });
+            y = doc.lastAutoTable.finalY + 10;
+        }
+
+        // Add footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for(let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Seite ${i} von ${pageCount} - Erstellt am ${new Date().toLocaleDateString('de-DE')}`,
+                doc.internal.pageSize.width / 2,
+                doc.internal.pageSize.height - 10,
+                { align: 'center' }
+            );
+        }
+
+        // Save the PDF
+        doc.save(`${player.name.replace(/\s+/g, '_')}_profil.pdf`);
+    };
 
     // Fetch player data from API
     useEffect(() => {
@@ -513,8 +650,7 @@ const PlayerProfile = () => {
                                     </button>
                                     <h1 className="text-3xl font-bold text-gray-800">{player.name}</h1>
                                 </div>
-                                
-                                <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-3">
                                     {player.physicalAttributes && player.skills && (
                                         <div className="flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-lg">
                                             <FaStar className="text-amber-500 mr-1" />
@@ -528,6 +664,13 @@ const PlayerProfile = () => {
                                         className="px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-2"
                                     >
                                         <FaEdit /> Bearbeiten
+                                    </button>
+
+                                    <button 
+                                        onClick={exportToPDF}
+                                        className="px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
+                                    >
+                                        <FaFilePdf /> PDF Export
                                     </button>
                                 </div>
                             </div>

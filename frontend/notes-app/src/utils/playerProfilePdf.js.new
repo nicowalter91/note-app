@@ -1,0 +1,30 @@
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { calculatePlayerScore, getScoreRating } from './playerScoreUtils.jsx';
+
+// Schriftart für ein professionelleres Aussehen importieren
+// Dies sind Standard-Web-Schriftarten, die jsPDF standardmäßig unterstützt
+// Für benutzerdefinierte Schriftarten müssten wir Schriftdateien einbinden
+const FONTS = {
+    normal: 'helvetica',
+    bold: 'helvetica',  // jsPDF doesn't support 'helvetica-bold' directly
+    italic: 'helvetica',
+    boldItalic: 'helvetica'
+};
+
+// Schriftstil-Hilfsfunktionen für den korrekten Einsatz
+const setFontNormal = (doc) => {
+    doc.setFont(FONTS.normal, 'normal');
+};
+
+const setFontBold = (doc) => {
+    doc.setFont(FONTS.bold, 'bold');
+};
+
+const setFontItalic = (doc) => {
+    doc.setFont(FONTS.italic, 'italic');
+};
+
+const setFontBoldItalic = (doc) => {
+    doc.setFont(FONTS.boldItalic, 'bolditalic');
+};

@@ -4,11 +4,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
     FaArrowLeft, FaEdit, FaUser, FaRunning, FaMedal, FaChartLine, 
     FaBandAid, FaNotesMedical, FaTrophy, FaClipboardList, FaUserFriends, 
-    FaCalendarAlt, FaComment, FaDownload, FaChartBar, FaCaretUp, FaCaretDown
+    FaCalendarAlt, FaComment, FaDownload, FaChartBar, FaCaretUp, FaCaretDown,
+    FaFilePdf, FaCheck, FaExclamation, FaStar
 } from 'react-icons/fa';
 import { calculatePlayerScore, getScoreRating } from '../../../../utils/playerScoreUtils.jsx';
 import { getPlayerById } from '../../../../utils/playerService';
 import ProfileImageUpload from '../../../../components/ProfileImageUpload/ProfileImageUpload';
+import { exportPlayerProfileToPDF } from '../../../../utils/playerProfilePdf';
 
 const PlayerProfile = () => {
     const { id } = useParams();
@@ -17,6 +19,26 @@ const PlayerProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
+    
+    // Funktion zum Exportieren des Profils als PDF
+    const exportToPDF = () => {
+        console.log('exportToPDF wurde aufgerufen', player);
+        if (!player) {
+            console.error('Kein Spieler verfügbar für PDF-Export');
+            return;
+        }
+
+        try {
+            console.log('PDF-Erstellung gestartet');
+            // Use the imported exportPlayerProfileToPDF function
+            exportPlayerProfileToPDF(player);
+        } catch (error) {
+            console.error('Fehler beim Erstellen des PDF:', error);
+            if (error.stack) {
+                console.error('Stack trace:', error.stack);
+            }
+        }
+    };
 
     // Fetch player data from API
     useEffect(() => {
@@ -570,6 +592,81 @@ const PlayerProfile = () => {
         }
     };
 
+    // Testdaten für einen Spieler generieren
+const generateSamplePlayer = () => {
+  if (player) {
+    const samplePlayerData = {
+      ...player,
+      name: player.name || "Max Mustermann",
+      age: player.age || 23,
+      position: player.position || "MF",
+      number: player.number || 10,
+      dob: player.dob || "1999-05-15",
+      status: player.status || "Available",
+      height: player.height || 180,
+      weight: player.weight || 75,
+      physicalAttributes: player.physicalAttributes || {
+        speed: 85,
+        strength: 72,
+        agility: 88,
+        endurance: 78,
+        fitness: 81
+      },
+      skills: player.skills || {
+        passing: 87,
+        shooting: 75,
+        tackling: 68,
+        dribbling: 82,
+        heading: 65,
+        ballControl: 84
+      },
+      stats: player.stats || {
+        games: 25,
+        minutesPlayed: 2150,
+        goals: 8,
+        assists: 12,
+        yellowCards: 3,
+        redCards: 0
+      },
+      injuries: player.injuries || [
+        {
+          type: "Muskelzerrung",
+          date: "2022-11-05",
+          duration: "2 Wochen",
+          status: "Erholt"
+        }
+      ],
+      development: player.development || {
+        goals: [
+          "Verbesserung der Schusstechnik",
+          "Steigerung der Kopfballstärke",
+          "Ausbau der Führungsqualitäten"
+        ],
+        recentProgress: [
+          { skill: "Passing", date: "2023-02-10", change: 5 },
+          { skill: "Ballkontrolle", date: "2023-02-10", change: 3 },
+          { skill: "Schusstechnik", date: "2023-01-20", change: -2 }
+        ]
+      },
+      notes: player.notes || [
+        {
+          date: "2023-01-15",
+          author: "Trainer Schmidt",
+          text: "Zeigt gute Fortschritte im Passspiel. Sollte mehr an seiner Schusstechnik arbeiten."
+        },
+        {
+          date: "2022-12-05",
+          author: "Co-Trainer Müller",
+          text: "Sehr gute Einstellung im Training. Arbeitet hart an seinen Schwächen."
+        }
+      ]
+    };
+    
+    setPlayer(samplePlayerData);
+    console.log("Testdaten generiert:", samplePlayerData);
+  }
+};
+
     return (
         <Layout>
             <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -615,8 +712,7 @@ const PlayerProfile = () => {
                                             <div className="text-center">
                                                 <p className="text-xs text-gray-500">Phys</p>
                                                 <p className="font-medium text-gray-700 text-sm">
-                                                    {Math.round(Object.values(player.physicalAttributes).reduce((a, b) => a + b, 0) / Object.values(player.physicalAttributes).length)}
-                                                </p>
+                                                    {Math.round(Object.values(player.physicalAttributes).reduce((a, b) => a + b, 0) / Object.values(player.physicalAttributes).length)}                                                </p>
                                             </div>
                                         )}
                                         <div className="h-8 w-px bg-gray-200"></div>
@@ -629,22 +725,34 @@ const PlayerProfile = () => {
                                             </div>
                                         )}
                                     </div>
-                                </div>                            </div>
+                                </div>
+                            </div>
                         </div>
-                        
                         <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0">
                             <button
                                 onClick={() => navigate(`/team/players/edit/${id}`)}
                                 className="px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"
                             >
                                 <FaEdit size={14} /> Bearbeiten
-                            </button>
-                            <button
+                            </button>                            <button
+                                onClick={exportToPDF}
+                                className="px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors flex items-center justify-center gap-1"
+                            >
+                                <FaFilePdf size={14} /> PDF Export
+                            </button><button
                                 onClick={() => navigate('/team/players')}
                                 className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
                             >
                                 <FaArrowLeft size={14} /> Zurück zur Übersicht
                             </button>
+                            {process.env.NODE_ENV === 'development' && (
+                                <button
+                                    onClick={generateSamplePlayer}
+                                    className="px-4 py-2 bg-purple-50 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-1"
+                                >
+                                    <FaCheck size={14} /> Testdaten
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -676,17 +784,16 @@ const PlayerProfile = () => {
                                 onClick={() => setActiveTab('personal')}
                             >
                                 Persönlich
-                            </button>
-                            <button
+                            </button>                            <button
                                 className={`px-4 py-3 text-sm font-medium whitespace-nowrap ${activeTab === 'notes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                                onClick={() => setActiveTab('notes')}
-                            >
+                                onClick={() => setActiveTab('notes')}>
                                 Notizen
                             </button>
                         </nav>
                     </div>
                     <div className="p-6">
-                        {renderTabContent()}                    </div>
+                        {renderTabContent()}
+                    </div>
                 </div>
             </div>
         </Layout>

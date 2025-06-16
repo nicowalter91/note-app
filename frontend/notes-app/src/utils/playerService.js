@@ -15,6 +15,7 @@ export const getAllPlayers = async () => {
 export const getPlayerById = async (id) => {
   try {
     const response = await axiosInstance.get(`/players/${id}`);
+    // Die API gibt {success: true, player: {...}} zurück, wir geben nur das player-Objekt zurück
     return response.data.player;
   } catch (error) {
     console.error(`Fehler beim Abrufen des Spielers mit ID ${id}:`, error);

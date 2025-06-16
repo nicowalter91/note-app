@@ -12,14 +12,15 @@ const PlayerEdit = () => {
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({});
-    const [activeTab, setActiveTab] = useState('basic');    const [isSaving, setIsSaving] = useState(false);
-
-    // Simulating data fetch - in a real app, this would come from an API or props
-    useEffect(() => {
+    const [activeTab, setActiveTab] = useState('basic');    const [isSaving, setIsSaving] = useState(false);    useEffect(() => {
         const fetchPlayerData = async () => {
             try {
                 setLoading(true);
-                const playerData = await getPlayerById(id);
+                const response = await getPlayerById(id);
+                console.log('Geladene Spielerdaten für Bearbeitung:', response);
+                
+                // Prüfe ob die API-Response das erwartete Format hat
+                const playerData = response.player || response;
                 
                 // Initialisiere Standardwerte für optionale Felder, falls sie nicht vorhanden sind
                 const initializedPlayer = {

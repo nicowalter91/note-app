@@ -100,7 +100,9 @@ const documentSchema = new mongoose.Schema({
 
 // Schema für Notizen
 const noteSchema = new mongoose.Schema({
-  author: { type: String, required: true },
+  author: { type: String, 
+            enum: [ 'Trainer', 'Assistenztrainer', 'Sportlicher Leiter', 'Beteuer' ],
+            required: true },
   date: { type: String, required: true },
   text: { type: String, required: true }
 });
