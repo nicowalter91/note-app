@@ -116,6 +116,7 @@ const teamRoleSchema = new mongoose.Schema({
 
 // Hauptschema für Spieler
 const playerSchema = new mongoose.Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User" }, // Optional für Migration
   name: { type: String, required: true },
   position: { type: String },
   age: { type: Number },

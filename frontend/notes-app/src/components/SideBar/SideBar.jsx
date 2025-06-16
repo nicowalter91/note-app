@@ -15,26 +15,15 @@ import {
   HiDownload,
   HiUpload,
   HiChevronDown,
-  HiChevronUp,
   HiOutlineLogout,
   HiOutlineMoon,
   HiOutlineSun,
-  HiTranslate,
   HiInformationCircle,
-  HiGlobe,
-  HiBell,
-  HiChatAlt2,
-  HiExclamation,  
-  HiMail,
-  HiAnnotation,
-  HiArrowCircleDown,
-  HiUserGroup,
-  HiArrowCircleUp,
-  HiLightningBolt,
-  HiClipboardCheck,
   HiArrowLeft,
   HiCurrencyEuro,
-  HiPencilAlt
+  HiPencilAlt,
+  HiUserGroup,
+  HiClipboardCheck
 } from 'react-icons/hi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -72,26 +61,25 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
   // Save expanded menus state
   useEffect(() => {
     localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus));
-  }, [expandedMenus]);
-  // Identify currently open submenu based on URL when navigating
+  }, [expandedMenus]);  // Identify currently open submenu based on URL when navigating
   useEffect(() => {
     const path = location.pathname;
     
     // Automatically expand relevant submenus based on current path
     let newExpandedMenus = {...expandedMenus};
     
-    if (path.includes('/team/') || path.includes('/players')) {
+    if (path.includes('/team/') || path.includes('/players') || path.includes('/contacts')) {
       newExpandedMenus.team = true;
     }
     
-    if (path.includes('/settings/') || path.includes('/data/')) {
-      newExpandedMenus.settings = true;
+    if (path.includes('/exercises') || path.includes('/training') || 
+        path.includes('/video') || path.includes('/drawing-demo')) {
+      newExpandedMenus.training = true;
     }
     
-    if (path.includes('/help') || path.includes('/legal') || 
-        path.includes('/privacy') || path.includes('/terms') || 
-        path.includes('/feedback') || path.includes('/support')) {
-      newExpandedMenus.help = true;
+    if (path.includes('/settings/') || path.includes('/data/') || 
+        path.includes('/profil') || path.includes('/help') || path.includes('/legal')) {
+      newExpandedMenus.settings = true;
     }
     
     setExpandedMenus(newExpandedMenus);
@@ -247,164 +235,53 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
         )}
       </div>
     );
-  };
-  // Team submenu
+  };  // Team submenu - konsolidiert und logisch gruppiert
   const teamSubmenu = [
     { 
       icon: <HiUsers />, 
-      label: 'Players', 
+      label: 'Spieler', 
       path: '/players', 
       onClick: () => navigate('/players') 
     },
     { 
       icon: <HiCalendar />, 
-      label: 'Schedule', 
+      label: 'Spielplan', 
       path: '/team/schedule', 
       onClick: () => navigate('/team/schedule') 
     },
     { 
-      icon: <HiChartBar />, 
-      label: 'Statistics', 
-      path: '/team/statistics', 
-      onClick: () => navigate('/team/statistics') 
-    },
-    { 
-      icon: <HiAcademicCap />, 
-      label: 'Training', 
-      path: '/team/training', 
-      onClick: () => navigate('/team/training') 
-    },    { 
       icon: <HiViewBoards />, 
-      label: 'Tactics', 
+      label: 'Taktik', 
       path: '/team/tactics', 
       onClick: () => navigate('/team/tactics') 
-    },    { 
-      icon: <HiUsers />, 
-      label: 'Formation', 
-      path: '/team/formation', 
-      onClick: () => navigate('/team/formation') 
-    },    { 
-      icon: <HiCalendar />, 
-      label: 'Saisonplanung', 
-      path: '/team/planning', 
-      onClick: () => navigate('/team/planning'),
-      isNew: true
+    },
+    { 
+      icon: <HiChartBar />, 
+      label: 'Statistiken', 
+      path: '/team/statistics', 
+      onClick: () => navigate('/team/statistics') 
     },
     { 
       icon: <HiCurrencyEuro />, 
       label: 'Mannschaftskasse', 
       path: '/team/finance', 
-      onClick: () => navigate('/team/finance'),
-      isNew: true
-    },
-    { 
-      icon: <HiVideoCamera />, 
-      label: 'Video Analysis', 
-      path: '/video', 
-      onClick: () => navigate('/video'),
-      isNew: true
+      onClick: () => navigate('/team/finance')
     }
   ];
   
-  // Settings submenu
-  const settingsSubmenu = [
+  // Training submenu
+  const trainingSubmenu = [
     { 
-      icon: <HiUser />, 
-      label: 'Profile', 
-      path: '/profil', 
-      onClick: () => navigate('/profil') 
+      icon: <HiOutlineClipboard />, 
+      label: 'Übungen', 
+      path: '/exercises', 
+      onClick: () => navigate('/exercises') 
     },
     { 
-      icon: <HiBell />, 
-      label: 'Notifications', 
-      path: '/settings/notifications', 
-      onClick: () => navigate('/settings/notifications') 
-    },
-    { 
-      icon: <HiTranslate />, 
-      label: 'Language', 
-      path: '/settings/language', 
-      onClick: () => navigate('/settings/language') 
-    },
-    { 
-      icon: <HiDownload />, 
-      label: 'Export Data', 
-      path: '/data/export', 
-      onClick: () => navigate('/data/export') 
-    },
-    { 
-      icon: <HiUpload />, 
-      label: 'Import Data', 
-      path: '/data/import', 
-      onClick: () => navigate('/data/import'),
-      isNew: true
-    },
-  ];
-
-  // Support submenu
-  const supportSubmenu = [
-    { 
-      icon: <HiQuestionMarkCircle />, 
-      label: 'Help Center', 
-      path: '/help', 
-      onClick: () => navigate('/help') 
-    },
-    { 
-      icon: <HiAnnotation />, 
-      label: 'Feedback', 
-      path: '/feedback', 
-      onClick: () => navigate('/feedback') 
-    },
-    { 
-      icon: <HiMail />, 
-      label: 'Contact Support', 
-      path: '/support', 
-      onClick: () => navigate('/support') 
-    },
-  ];
-  
-  // Legal submenu
-  const legalSubmenu = [
-    { 
-      icon: <HiInformationCircle />, 
-      label: 'Legal Notice', 
-      path: '/legal', 
-      onClick: () => navigate('/legal') 
-    },
-    { 
-      icon: <HiGlobe />, 
-      label: 'Privacy Policy', 
-      path: '/privacy', 
-      onClick: () => navigate('/privacy') 
-    },
-    { 
-      icon: <HiClipboardCheck />, 
-      label: 'Terms of Service', 
-      path: '/terms', 
-      onClick: () => navigate('/terms') 
-    },
-  ];
-  
-  // Tools submenu
-  const toolsSubmenu = [
-    { 
-      icon: <HiLightningBolt />, 
-      label: 'Quick Actions', 
-      path: '/tools/quick-actions', 
-      onClick: () => navigate('/tools/quick-actions'),
-      isNew: true
-    },
-    { 
-      icon: <HiArrowCircleDown />, 
-      label: 'Import Templates', 
-      path: '/tools/templates/import', 
-      onClick: () => navigate('/tools/templates/import') 
-    },
-    { 
-      icon: <HiArrowCircleUp />, 
-      label: 'Export Templates', 
-      path: '/tools/templates/export', 
-      onClick: () => navigate('/tools/templates/export') 
+      icon: <HiAcademicCap />, 
+      label: 'Training planen', 
+      path: '/team/training', 
+      onClick: () => navigate('/team/training') 
     },
     { 
       icon: <HiPencilAlt />, 
@@ -413,6 +290,46 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       onClick: () => navigate('/tools/drawing-demo'),
       isNew: true
     },
+    { 
+      icon: <HiVideoCamera />, 
+      label: 'Video-Analyse', 
+      path: '/video', 
+      onClick: () => navigate('/video')
+    }
+  ];
+
+  // Settings submenu - vereinfacht
+  const settingsSubmenu = [
+    { 
+      icon: <HiUser />, 
+      label: 'Profil', 
+      path: '/profil', 
+      onClick: () => navigate('/profil') 
+    },
+    { 
+      icon: <HiDownload />, 
+      label: 'Daten exportieren', 
+      path: '/data/export', 
+      onClick: () => navigate('/data/export') 
+    },
+    { 
+      icon: <HiUpload />, 
+      label: 'Daten importieren', 
+      path: '/data/import', 
+      onClick: () => navigate('/data/import')
+    },
+    { 
+      icon: <HiQuestionMarkCircle />, 
+      label: 'Hilfe & Support', 
+      path: '/help', 
+      onClick: () => navigate('/help') 
+    },
+    { 
+      icon: <HiInformationCircle />, 
+      label: 'Rechtliches', 
+      path: '/legal', 
+      onClick: () => navigate('/legal') 
+    }
   ];
   return (
     <div className="h-full bg-[#1e293b] text-white flex flex-col shadow-lg overflow-y-auto">
@@ -425,25 +342,22 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
             <p className="text-xs truncate text-gray-400">{userInfo?.email || 'Keine E-Mail'}</p>
           </div>
         </div>
-      </div>
-
-      <div className="flex-grow overflow-y-auto px-3 py-2 space-y-6 custom-scrollbar">
-        {/* Main Navigation */}
+      </div>      <div className="flex-grow overflow-y-auto px-3 py-2 space-y-6 custom-scrollbar">
+        {/* Hauptbereich */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Main</p>
-          </div>
-          <nav className="space-y-1">            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
-            <NavItem icon={<HiClipboardCheck />} label="Tasks" onClick={() => navigate('/tasks')} />
-            <NavItem icon={<HiOutlineClipboard />} label="Exercises" onClick={() => navigate('/exercises')} />
-            <NavItem icon={<HiUserGroup />} label="Contacts" onClick={() => navigate('/contacts')} />
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Hauptbereich</p>
+          </div>          <nav className="space-y-1">
+            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
+            <NavItem icon={<HiClipboardCheck />} label="Aufgaben" onClick={() => navigate('/tasks')} />
+            <NavItem icon={<HiUserGroup />} label="Kontakte" onClick={() => navigate('/contacts')} />
           </nav>
         </div>
 
-        {/* Team Section */}
+        {/* Team & Spieler */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Team</p>
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Team & Spieler</p>
           </div>
           <nav className="space-y-1">
             <NavItem 
@@ -455,59 +369,37 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           </nav>
         </div>
 
-        {/* Tools Section */}
+        {/* Training */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Tools</p>
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Training</p>
           </div>
           <nav className="space-y-1">
             <NavItem 
-              icon={<HiLightningBolt />} 
-              label="Tools" 
-              path="tools" 
-              submenu={toolsSubmenu}
-              isNew={true}
+              icon={<HiAcademicCap />} 
+              label="Training & Übungen" 
+              path="training" 
+              submenu={trainingSubmenu}
             />
           </nav>
         </div>
 
-        {/* Settings Section */}
+        {/* Einstellungen */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Settings</p>
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Einstellungen</p>
           </div>
           <nav className="space-y-1">
             <NavItem 
               icon={<HiCog />} 
-              label="Settings" 
+              label="Einstellungen" 
               path="settings" 
               submenu={settingsSubmenu}
             />
             <NavItem 
               icon={isDarkMode ? <HiOutlineSun /> : <HiOutlineMoon />} 
-              label={isDarkMode ? "Light Mode" : "Dark Mode"} 
+              label={isDarkMode ? "Hell" : "Dunkel"} 
               onClick={toggleTheme}
-            />
-          </nav>
-        </div>
-        
-        {/* Support Section */}
-        <div>
-          <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Support</p>
-          </div>
-          <nav className="space-y-1">
-            <NavItem 
-              icon={<HiQuestionMarkCircle />} 
-              label="Help & Support" 
-              path="help" 
-              submenu={supportSubmenu}
-            />
-            <NavItem 
-              icon={<HiInformationCircle />} 
-              label="Legal" 
-              path="legal" 
-              submenu={legalSubmenu}
             />
           </nav>
         </div>

@@ -71,27 +71,27 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 
 // *** Spieler-Routen ***
 // Route zum Hinzufügen eines neuen Spielers
-app.post("/players", async (req, res) => {
+app.post("/players", authenticateToken, async (req, res) => {
   addPlayer(req, res);
 });
 
 // Route zum Bearbeiten eines Spielers
-app.put("/players/:id", async (req, res) => {
+app.put("/players/:id", authenticateToken, async (req, res) => {
   editPlayer(req, res);
 });
 
 // Route zum Abrufen aller Spieler
-app.get("/players", async (req, res) => {
+app.get("/players", authenticateToken, async (req, res) => {
   getPlayers(req, res);
 });
 
 // Route zum Abrufen eines einzelnen Spielers
-app.get("/players/:id", async (req, res) => {
+app.get("/players/:id", authenticateToken, async (req, res) => {
   getPlayer(req, res);
 });
 
 // Route zum Löschen eines Spielers
-app.delete("/players/:id", async (req, res) => {
+app.delete("/players/:id", authenticateToken, async (req, res) => {
   deletePlayer(req, res);
 });
 
