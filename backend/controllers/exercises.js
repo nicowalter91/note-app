@@ -23,7 +23,7 @@ const uploadExerciseImage = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
     // Nur Bilddateien prüfen
-    if (file.fieldname === 'image') {
+    if (file.fieldname === 'image' || file.fieldname === 'drawing') {
       const filetypes = /jpeg|jpg|png|gif/;
       const mimetype = filetypes.test(file.mimetype);
       const extname = filetypes.test(path.extname(file.originalname).toLowerCase());

@@ -24,7 +24,8 @@ import {
   HiGlobe,
   HiBell,
   HiChatAlt2,
-  HiExclamation,  HiMail,
+  HiExclamation,  
+  HiMail,
   HiAnnotation,
   HiArrowCircleDown,
   HiUserGroup,
@@ -32,7 +33,8 @@ import {
   HiLightningBolt,
   HiClipboardCheck,
   HiArrowLeft,
-  HiCurrencyEuro
+  HiCurrencyEuro,
+  HiPencilAlt
 } from 'react-icons/hi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -281,6 +283,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       label: 'Formation', 
       path: '/team/formation', 
       onClick: () => navigate('/team/formation') 
+    },    { 
+      icon: <HiCalendar />, 
+      label: 'Saisonplanung', 
+      path: '/team/planning', 
+      onClick: () => navigate('/team/planning'),
+      isNew: true
     },
     { 
       icon: <HiCurrencyEuro />, 
@@ -397,6 +405,13 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       label: 'Export Templates', 
       path: '/tools/templates/export', 
       onClick: () => navigate('/tools/templates/export') 
+    },
+    { 
+      icon: <HiPencilAlt />, 
+      label: 'Übungen zeichnen', 
+      path: '/tools/drawing-demo', 
+      onClick: () => navigate('/tools/drawing-demo'),
+      isNew: true
     },
   ];
   return (

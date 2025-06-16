@@ -31,7 +31,19 @@ const exerciseSchema = new mongoose.Schema({
   image: {
     type: String,
     default: '', // Optionales Bild, Standardwert ist ein leerer String
-  },  tags: {
+  },  drawing: {
+    type: String,
+    default: '', // Optionale Zeichnung, Standardwert ist ein leerer String
+  },
+  drawingImage: {
+    type: String,
+    default: '', // Path to the drawing image file
+  },
+  drawingData: {
+    type: String,
+    default: '', // JSON string containing all drawing element data
+  },
+  tags: {
     type: [String], // Array von Tags
     default: [], // Standardmäßig ein leeres Array
   },

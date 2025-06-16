@@ -21,6 +21,7 @@ import Training from './pages/Team/Training/Training';
 import Tactics from './pages/Team/Tactics/Tactics';
 import Formation from './pages/Team/Formation/Formation';
 import TeamFinance from './pages/Team/Finance/TeamFinance';
+import SeasonPlanning from './pages/Team/Planning/SeasonPlanning';
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -42,6 +43,9 @@ import ExportData from './pages/Data/ExportData';
 import QuickActions from './pages/Tools/QuickActions';
 import ImportTemplates from './pages/Tools/ImportTemplates';
 import ExportTemplates from './pages/Tools/ExportTemplates';
+import DrawingDemo from './pages/Tools/DrawingDemo'; // Importiere die Zeichenfunktion-Demo-Seite
+import DrawingToolPage from './pages/Tools/DrawingToolPage'; // Importiere die standalone Zeichenfunktion-Seite
+import FootballExerciseToolPage from './pages/Tools/FootballExerciseToolPage'; // Importiere die Fußballübungs-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -65,6 +69,7 @@ const routes = (
       <Route path="/team/tactics" exact element={<Tactics />} />
       <Route path="/team/formation" exact element={<Formation />} />
       <Route path="/team/finance" exact element={<TeamFinance />} />
+      <Route path="/team/planning" exact element={<SeasonPlanning />} />
       
       {/* Legal Routes */}
       <Route path="/legal" exact element={<LegalNotice />} />
@@ -86,6 +91,9 @@ const routes = (
       <Route path="/tools/quick-actions" exact element={<QuickActions />} />
       <Route path="/tools/templates/import" exact element={<ImportTemplates />} />
       <Route path="/tools/templates/export" exact element={<ExportTemplates />} />
+      <Route path="/tools/drawing-demo" exact element={<DrawingDemo />} />
+      <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
+      <Route path="/tools/football-exercise" exact element={<FootballExerciseToolPage />} />
       
       <Route exact path="/" element={<Navigate to="/login" />}/>
     </Routes>

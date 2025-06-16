@@ -7,6 +7,7 @@ const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = requir
 const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
 const { addExercise, editExercise, getAllExercises, deleteExercise, updateExercisePinned, searchExercises } = require("./controllers/exercises");
+const { addEvent, editEvent, getAllEvents, getEvent, deleteEvent, updatePlayerAttendance, getEventStats, addRecurringTraining } = require("./controllers/events");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -23,6 +24,7 @@ const Note = require("./models/note.model");
 const Task = require("./models/task.model");
 const Exercises = require("./models/exercises.model");
 const Player = require("./models/player.model");
+const Event = require("./models/event.model");
 
 // Express und Middleware einrichten
 const express = require("express");
@@ -178,6 +180,51 @@ app.use(taskRoutes);
 // *** Team Finance-Routen ***
 const teamFinanceRoutes = require('./routes/teamFinance');
 app.use('/team-finance', teamFinanceRoutes);
+
+// *** Drawings-Routen ***
+const drawingsRoutes = require('./routes/drawings');
+app.use('/api/exercises', drawingsRoutes);
+
+// *** Event/Planning-Routen ***
+// Route zum Hinzufügen eines neuen Events
+app.post("/add-event", authenticateToken, async (req, res) => {
+  addEvent(req, res);
+});
+
+// Route zum Hinzufügen wiederkehrender Trainings
+app.post("/add-recurring-training", authenticateToken, async (req, res) => {
+  addRecurringTraining(req, res);
+});
+
+// Route zum Bearbeiten eines Events
+app.put("/edit-event/:eventId", authenticateToken, async (req, res) => {
+  editEvent(req, res);
+});
+
+// Route zum Abrufen aller Events eines Benutzers
+app.get("/get-all-events", authenticateToken, async (req, res) => {
+  getAllEvents(req, res);
+});
+
+// Route zum Abrufen eines einzelnen Events
+app.get("/get-event/:eventId", authenticateToken, async (req, res) => {
+  getEvent(req, res);
+});
+
+// Route zum Löschen eines Events
+app.delete("/delete-event/:eventId", authenticateToken, async (req, res) => {
+  deleteEvent(req, res);
+});
+
+// Route zum Aktualisieren der Spieler-Teilnahme
+app.put("/update-attendance/:eventId", authenticateToken, async (req, res) => {
+  updatePlayerAttendance(req, res);
+});
+
+// Route für Event-Statistiken
+app.get("/event-stats", authenticateToken, async (req, res) => {
+  getEventStats(req, res);
+});
 
 // *** Server starten ***
 const PORT = process.env.PORT || 8000;

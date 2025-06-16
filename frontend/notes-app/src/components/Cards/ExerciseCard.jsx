@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { MdOutlinePushPin } from 'react-icons/md';
 import Modal from 'react-modal'; 
-import { FaPen, FaTrashAlt, FaTimes, FaStar, FaPlus, FaExpand } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaTimes, FaStar, FaPlus, FaExpand, FaPencilAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 // ExerciseCard-Komponente: Eine Komponente zur Darstellung einer Übungskarte
 const ExerciseCard = ({ 
@@ -16,12 +17,13 @@ const ExerciseCard = ({
   isFavorite = false,
   onToggleFavorite = () => {}
 }) => {
+    const navigate = useNavigate();
     // Zustand für das Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     // Zustand für das Image Modal (Vollbildansicht)
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     // Extrahiere Exercise-Daten
-    const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, date, isPinned } = exerciseData || {};
+    const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, drawing, date, isPinned } = exerciseData || {};
 
     // Kategorie-Farben für bessere visuelle Unterscheidung
     const getCategoryColor = (category) => {
@@ -61,6 +63,24 @@ const ExerciseCard = ({
     // Schließt das Bild-Modal
     const closeImageModal = () => {
         setIsImageModalOpen(false);
+    };
+      // Navigiert zur Zeichnen-Seite
+    const navigateToDrawingTool = (e) => {
+        if (e) e.stopPropagation();
+        // Wenn eine Exercise-ID vorhanden ist, füge sie als Query-Parameter hinzu
+        const exerciseId = exerciseData?.id || '';
+        const exerciseTitle = exerciseData?.title || 'Neue Übung';
+        navigate(`/tools/football-exercise?exerciseId=${exerciseId}&title=${encodeURIComponent(exerciseTitle)}`);
+    };
+    
+    // Callback für das Speichern einer Zeichnung
+    const handleDrawingSaved = (filename) => {
+        // Hier könnte man die Zeichnung in die Übung speichern oder weitergeben
+        if (onEdit && filename) {
+            // Automatisch die Übung mit der neuen Zeichnung aktualisieren
+            const updatedExercise = { ...exerciseData, drawing: filename };
+            onEdit(updatedExercise);
+        }
     };
 
     // Prevent event propagation when clicking on action buttons
@@ -365,6 +385,18 @@ const ExerciseCard = ({
                                         <FaTrashAlt className="w-4 h-4" />
                                         Löschen
                                     </button>
+                                    
+                                    {/* Zeichnen Button */}
+                                    <button
+                                        onClick={(e) => {
+                                            closeModal();
+                                            navigateToDrawingTool(e);
+                                        }}
+                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors ml-auto"
+                                    >
+                                        <FaPencilAlt className="w-4 h-4" />
+                                        Zeichnen
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -474,26 +506,11 @@ const ExerciseCard = ({
                                         <FaTrashAlt className="w-3 h-3" />
                                     </button>
                                     <button
-                                        onClick={(e) => handleActionClick(e, onToggleFavorite)}
-                                        className={`p-1 transition-colors ${
-                                            isFavorite 
-                                                ? 'text-amber-500 hover:text-amber-600' 
-                                                : 'text-gray-500 hover:text-amber-500'
-                                        } rounded-full`}
-                                        title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                        onClick={(e) => handleActionClick(e, () => navigateToDrawingTool(e))}
+                                        className="p-1 text-gray-500 hover:text-blue-600 rounded-full transition-colors"
+                                        title="Zeichnen"
                                     >
-                                        <FaStar className="w-3 h-3" />
-                                    </button>
-                                    <button
-                                        onClick={(e) => handleActionClick(e, onToggleSelect)}
-                                        className={`p-1 transition-colors ${
-                                            isSelected 
-                                                ? 'text-blue-500 hover:text-blue-600' 
-                                                : 'text-gray-500 hover:text-blue-500'
-                                        } rounded-full`}
-                                        title={isSelected ? "Aus Auswahl entfernen" : "Zur Auswahl hinzufügen"}
-                                    >
-                                        <FaPlus className="w-3 h-3" />
+                                        <FaPencilAlt className="w-3 h-3" />
                                     </button>
                                 </div>
                             </div>
@@ -599,8 +616,7 @@ const ExerciseCard = ({
                                             <FaExpand className="text-white opacity-0 group-hover:opacity-100 w-6 h-6 transition-opacity duration-200" />
                                         </div>
                                     </div>
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                ) : (                                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                         <span className="text-gray-500 text-6xl sm:text-8xl font-bold">
                                             {title ? title.charAt(0).toUpperCase() : 'Ü'}
                                         </span>
@@ -696,6 +712,18 @@ const ExerciseCard = ({
                                 >
                                     <FaTrashAlt className="w-4 h-4" />
                                     Löschen
+                                </button>
+                                
+                                {/* Zeichnen Button */}
+                                <button
+                                    onClick={(e) => {
+                                        closeModal();
+                                        navigateToDrawingTool(e);
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors ml-auto"
+                                >
+                                    <FaPencilAlt className="w-4 h-4" />
+                                    Zeichnen
                                 </button>
                             </div>
                         </div>
