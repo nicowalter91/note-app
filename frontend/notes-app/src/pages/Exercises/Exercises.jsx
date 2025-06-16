@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+  import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import ExerciseCard from '../../components/Cards/ExerciseCard';
-import { FaPlus, FaSearch, FaTimes, FaFilter, FaExclamation } from 'react-icons/fa';
-import { MdOutlinePushPin } from 'react-icons/md';
+import { FaPlus, FaSearch, FaTimes, FaFilter, FaExclamation, FaListUl, FaThLarge, FaCalendarAlt, FaClipboardList, FaStar } from 'react-icons/fa';
+import { MdOutlinePushPin, MdCategory } from 'react-icons/md';
 import Modal from "react-modal";
 import Layout from '../../components/Layout/Layout';
 import AddEditExercise from './AddEditExercises';
@@ -12,7 +12,29 @@ import Toast from '../../components/ToastMessage/Toast';
 // Set app element for react-modal
 Modal.setAppElement('#root');
 
-// Force reload to fix import issue
+// Kategorie-Farbmapping für bessere visuelle Unterscheidung
+const categoryColors = {
+  'Allgemein': { bg: 'bg-gray-100', text: 'text-gray-800', hover: 'hover:bg-gray-200', active: 'bg-gray-600' },
+  'Technik': { bg: 'bg-blue-100', text: 'text-blue-800', hover: 'hover:bg-blue-200', active: 'bg-blue-600' },
+  'Taktik': { bg: 'bg-indigo-100', text: 'text-indigo-800', hover: 'hover:bg-indigo-200', active: 'bg-indigo-600' },
+  'Kondition': { bg: 'bg-red-100', text: 'text-red-800', hover: 'hover:bg-red-200', active: 'bg-red-600' },
+  'Koordination': { bg: 'bg-orange-100', text: 'text-orange-800', hover: 'hover:bg-orange-200', active: 'bg-orange-600' },
+  'Torwart': { bg: 'bg-yellow-100', text: 'text-yellow-800', hover: 'hover:bg-yellow-200', active: 'bg-yellow-600' },
+  'Aufwärmen': { bg: 'bg-green-100', text: 'text-green-800', hover: 'hover:bg-green-200', active: 'bg-green-600' },
+  'Abschluss': { bg: 'bg-teal-100', text: 'text-teal-800', hover: 'hover:bg-teal-200', active: 'bg-teal-600' },
+  'Passspiel': { bg: 'bg-cyan-100', text: 'text-cyan-800', hover: 'hover:bg-cyan-200', active: 'bg-cyan-600' },
+  'Verteidigung': { bg: 'bg-purple-100', text: 'text-purple-800', hover: 'hover:bg-purple-200', active: 'bg-purple-600' },
+  'Angriff': { bg: 'bg-pink-100', text: 'text-pink-800', hover: 'hover:bg-pink-200', active: 'bg-pink-600' },
+  'Standards': { bg: 'bg-rose-100', text: 'text-rose-800', hover: 'hover:bg-rose-200', active: 'bg-rose-600' },
+  'Spielformen': { bg: 'bg-violet-100', text: 'text-violet-800', hover: 'hover:bg-violet-200', active: 'bg-violet-600' }
+};
+
+// Kategorie-Emoji-Mapping
+const categoryEmojis = {
+  'Allgemein': '📋', 'Technik': '⚽', 'Taktik': '🧠', 'Kondition': '💪', 'Koordination': '🤸',
+  'Torwart': '🥅', 'Aufwärmen': '🏃', 'Abschluss': '🎯', 'Passspiel': '👥', 'Verteidigung': '🛡️',
+  'Angriff': '⚡', 'Standards': '📐', 'Spielformen': '🎮'
+};
 
 const Exercises = () => {
   const [allExercises, setAllExercises] = useState([]);
@@ -21,6 +43,7 @@ const Exercises = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' oder 'list'
   const exercisesPerPage = 12;
   const navigate = useNavigate();
 
@@ -37,6 +60,22 @@ const Exercises = () => {
   
   // Filter state
   const [activeFilter, setActiveFilter] = useState('all');
+  
+  // Category grouping state
+  const [groupByCategory, setGroupByCategory] = useState(false);
+  
+  // Kategorien mit Übungen
+  const [availableCategories, setAvailableCategories] = useState([]);
+
+  // Trainingsplan State
+  const [selectedExercises, setSelectedExercises] = useState([]);
+  const [showTrainingPlanModal, setShowTrainingPlanModal] = useState(false);
+  const [trainingPlanName, setTrainingPlanName] = useState('');
+  const [trainingPlanDescription, setTrainingPlanDescription] = useState('');
+  const [savedTrainingPlans, setSavedTrainingPlans] = useState([]);
+  
+  // Favoriten
+  const [favoriteExercises, setFavoriteExercises] = useState([]);
 
   // Get all exercises
   const getAllExercises = async () => {
@@ -101,7 +140,85 @@ const Exercises = () => {
     }
   };
 
-  // Filter exercises based on active filter with useMemo for performance
+  // Toggle exercise selection for training plan
+  const toggleExerciseSelection = (exerciseId) => {
+    if (selectedExercises.includes(exerciseId)) {
+      setSelectedExercises(selectedExercises.filter(id => id !== exerciseId));
+    } else {
+      setSelectedExercises([...selectedExercises, exerciseId]);
+    }
+  };
+
+  // Save training plan
+  const saveTrainingPlan = () => {
+    if (trainingPlanName.trim() === '') {
+      showToast('Bitte geben Sie einen Namen für den Trainingsplan ein', 'error');
+      return;
+    }
+    
+    if (selectedExercises.length === 0) {
+      showToast('Bitte wählen Sie mindestens eine Übung aus', 'error');
+      return;
+    }
+
+    const newPlan = {
+      id: Date.now().toString(),
+      name: trainingPlanName,
+      description: trainingPlanDescription,
+      exercises: selectedExercises,
+      date: new Date().toISOString(),
+    };
+
+    // In Produktion würde dies mit einer API gespeichert werden
+    const updatedPlans = [...savedTrainingPlans, newPlan];
+    setSavedTrainingPlans(updatedPlans);
+    
+    // Speichern im localStorage für Persistenz
+    localStorage.setItem('trainingPlans', JSON.stringify(updatedPlans));
+    
+    // Reset state
+    setTrainingPlanName('');
+    setTrainingPlanDescription('');
+    setSelectedExercises([]);
+    setShowTrainingPlanModal(false);
+    
+    showToast('Trainingsplan erfolgreich gespeichert!', 'success');
+  };
+
+  // Load saved training plans from localStorage
+  useEffect(() => {
+    const savedPlans = localStorage.getItem('trainingPlans');
+    if (savedPlans) {
+      setSavedTrainingPlans(JSON.parse(savedPlans));
+    }
+    
+    const savedFavorites = localStorage.getItem('favoriteExercises');
+    if (savedFavorites) {
+      setFavoriteExercises(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Toggle favorite status
+  const toggleFavorite = (exerciseId) => {
+    let updatedFavorites;
+    
+    if (favoriteExercises.includes(exerciseId)) {
+      updatedFavorites = favoriteExercises.filter(id => id !== exerciseId);
+    } else {
+      updatedFavorites = [...favoriteExercises, exerciseId];
+    }
+    
+    setFavoriteExercises(updatedFavorites);
+    localStorage.setItem('favoriteExercises', JSON.stringify(updatedFavorites));
+    showToast(
+      favoriteExercises.includes(exerciseId) 
+        ? 'Übung aus Favoriten entfernt' 
+        : 'Übung zu Favoriten hinzugefügt', 
+      'success'
+    );
+  };
+
+  // Filtered exercises including favorites
   const filteredExercises = useMemo(() => {
     let filtered = allExercises;
     
@@ -117,6 +234,9 @@ const Exercises = () => {
       case 'tagged':
         filtered = allExercises.filter(ex => ex.tags && ex.tags.length > 0);
         break;
+      case 'favorites':
+        filtered = allExercises.filter(ex => favoriteExercises.includes(ex._id));
+        break;
       default:
         // Check if it's a category filter
         if (activeFilter !== 'all') {
@@ -127,11 +247,21 @@ const Exercises = () => {
     }
     
     return filtered.sort((a, b) => {
+      // Priorisiere Favoriten
+      const aIsFavorite = favoriteExercises.includes(a._id);
+      const bIsFavorite = favoriteExercises.includes(b._id);
+      
+      if (aIsFavorite && !bIsFavorite) return -1;
+      if (!aIsFavorite && bIsFavorite) return 1;
+      
+      // Dann priorisiere angepinnte Übungen
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
+      
+      // Dann nach Datum sortieren
       return new Date(b.date) - new Date(a.date);
     });
-  }, [allExercises, activeFilter]);
+  }, [allExercises, activeFilter, favoriteExercises]);
 
   // Pagination with filtering
   const indexOfLastExercise = currentPage * exercisesPerPage;
@@ -252,19 +382,100 @@ const Exercises = () => {
     setCurrentPage(1);
   }, [activeFilter]);
 
+  // Update the categories list whenever exercises change
+  useEffect(() => {
+    if (allExercises.length > 0) {
+      const categories = [...new Set(allExercises.map(ex => ex.category))];
+      setAvailableCategories(categories);
+    }
+  }, [allExercises]);
+
+  // Gruppieren der Übungen nach Kategorien
+  const exercisesByCategory = useMemo(() => {
+    if (!groupByCategory) return null;
+    
+    // Create an object with categories as keys
+    const grouped = {};
+    
+    // First process pinned exercises regardless of category if we're not filtering by a specific category
+    if (activeFilter === 'all' || activeFilter === 'pinned') {
+      const pinnedExercises = filteredExercises.filter(ex => ex.isPinned);
+      if (pinnedExercises.length > 0) {
+        grouped['Gepinnt'] = pinnedExercises;
+      }
+    }
+    
+    // Then process by categories
+    filteredExercises.forEach(exercise => {
+      // Skip pinned exercises if we already grouped them separately
+      if (activeFilter === 'all' && exercise.isPinned && grouped['Gepinnt']) {
+        return;
+      }
+      
+      if (!grouped[exercise.category]) {
+        grouped[exercise.category] = [];
+      }
+      grouped[exercise.category].push(exercise);
+    });
+    
+    return grouped;
+  }, [filteredExercises, groupByCategory, activeFilter]);
+
   return (
     <Layout>
       <div className="container mx-auto py-8 px-4 max-w-7xl">
-        {/* Header section */}
+        {/* Header section with view toggles */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Übungsverwaltung</h1>
           <div className="flex gap-2">
+            <div className="flex items-center bg-gray-100 rounded-lg p-1 mr-3">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                title="Grid-Ansicht"
+              >
+                <FaThLarge size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                title="Listen-Ansicht"
+              >
+                <FaListUl size={16} />
+              </button>
+              <button
+                onClick={() => setGroupByCategory(!groupByCategory)}
+                className={`p-2 rounded ${groupByCategory ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                title={groupByCategory ? "Gruppierung aufheben" : "Nach Kategorien gruppieren"}
+              >
+                <MdCategory size={18} />
+              </button>
+            </div>
+            
+            {/* Trainingsplan-Button */}
+            <button
+              onClick={() => {
+                if (selectedExercises.length === 0) {
+                  showToast('Bitte wählen Sie zuerst Übungen aus, indem Sie auf die Sternchen klicken', 'info');
+                } else {
+                  setShowTrainingPlanModal(true);
+                }
+              }}
+              className={`px-4 py-2 text-white font-medium rounded-lg transition-colors flex items-center gap-2 ${
+                selectedExercises.length > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+              title="Trainingsplan erstellen"
+            >
+              <FaCalendarAlt />
+              {selectedExercises.length > 0 ? `Plan erstellen (${selectedExercises.length})` : 'Trainingsplan'}
+            </button>
+            
             <button
               onClick={exportExercises}
-              className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
               disabled={loading || allExercises.length === 0}
             >
-              📄 Export
+              <FaClipboardList /> Export
             </button>
             <button
               onClick={() => openModal('add')}
@@ -360,11 +571,6 @@ const Exercises = () => {
               <div className="flex flex-wrap gap-2">
                 {(() => {
                   const categories = ['Allgemein', 'Technik', 'Taktik', 'Kondition', 'Koordination', 'Torwart', 'Aufwärmen', 'Abschluss', 'Passspiel', 'Verteidigung', 'Angriff', 'Standards', 'Spielformen'];
-                  const categoryEmojis = {
-                    'Allgemein': '📋', 'Technik': '⚽', 'Taktik': '🧠', 'Kondition': '💪', 'Koordination': '🤸',
-                    'Torwart': '🥅', 'Aufwärmen': '🏃', 'Abschluss': '🎯', 'Passspiel': '👥', 'Verteidigung': '🛡️',
-                    'Angriff': '⚡', 'Standards': '📐', 'Spielformen': '🎮'
-                  };
                   
                   return categories.map(category => {
                     const count = allExercises.filter(ex => ex.category === category).length;
@@ -457,6 +663,18 @@ const Exercises = () => {
               🏷️ Mit Tags ({allExercises.filter(ex => ex.tags && ex.tags.length > 0).length})
             </button>
             
+            {/* Favoriten Filter Button */}
+            <button 
+              onClick={() => setActiveFilter('favorites')}
+              className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                activeFilter === 'favorites' 
+                  ? 'bg-amber-500 text-white' 
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              ⭐ Favoriten ({allExercises.filter(ex => favoriteExercises.includes(ex._id)).length})
+            </button>
+            
             {/* Dynamic Category Filter Buttons */}
             {(() => {
               const categories = [
@@ -470,24 +688,9 @@ const Exercises = () => {
                 allExercises.some(ex => ex.category === category)
               );
               
-              const categoryEmojis = {
-                'Allgemein': '📋',
-                'Technik': '⚽',
-                'Taktik': '🧠',
-                'Kondition': '💪',
-                'Koordination': '🤸',
-                'Torwart': '🥅',
-                'Aufwärmen': '🏃',
-                'Abschluss': '🎯',
-                'Passspiel': '👥',
-                'Verteidigung': '🛡️',
-                'Angriff': '⚡',
-                'Standards': '📐',
-                'Spielformen': '🎮'
-              };
-              
               return categoriesWithExercises.map(category => {
                 const count = allExercises.filter(ex => ex.category === category).length;
+                const colors = categoryColors[category] || { bg: 'bg-gray-100', text: 'text-gray-800', hover: 'hover:bg-gray-200' };
                 return (
                   <button
                     key={category}
@@ -506,23 +709,96 @@ const Exercises = () => {
           </div>
         </div>
 
-        {/* Exercises Grid */}
+        {/* Exercises Display - Either grouped by category or flat list */}
         {!loading && currentExercises.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6">
-            {currentExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise._id}
-                exerciseData={exercise}
-                onEdit={() => openModal('edit', exercise)}
-                onDelete={() => {
-                  if(window.confirm('Möchten Sie diese Übung wirklich löschen?')) {
-                    deleteExercise(exercise._id);
-                  }
-                }}
-                onPinExercise={() => updateExercisePinned(exercise._id, exercise.isPinned)}
-              />
-            ))}
-          </div>
+          <>
+            {/* Selected Exercises Bar */}
+            {selectedExercises.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex justify-between items-center">
+                <div className="flex items-center">
+                  <span className="text-blue-700 font-medium mr-2">
+                    {selectedExercises.length} {selectedExercises.length === 1 ? 'Übung' : 'Übungen'} ausgewählt
+                  </span>
+                  <button 
+                    onClick={() => setSelectedExercises([])}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Auswahl zurücksetzen
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowTrainingPlanModal(true)}
+                  className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                >
+                  Als Trainingsplan speichern
+                </button>
+              </div>
+            )}
+            
+            {groupByCategory && exercisesByCategory ? (
+              // Grouped by category view
+              <div className="space-y-8">
+                {Object.keys(exercisesByCategory).map(category => (
+                  <div key={category} className="bg-white rounded-xl shadow-sm p-4">
+                    <div className="flex items-center mb-4">
+                      <div className={`p-2 rounded-lg mr-3 ${
+                        category === 'Gepinnt' 
+                          ? 'bg-yellow-100'
+                          : categoryColors[category]?.bg || 'bg-gray-100'
+                      }`}>
+                        {category === 'Gepinnt'
+                          ? <MdOutlinePushPin className="text-yellow-600" size={20} />
+                          : <span className="text-xl">{categoryEmojis[category] || '📋'}</span>
+                        }
+                      </div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {category} ({exercisesByCategory[category].length})
+                      </h2>
+                    </div>
+                      <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>                      {exercisesByCategory[category].map(exercise => (
+                        <ExerciseCard
+                          key={exercise._id}
+                          exerciseData={exercise}
+                          onEdit={() => openModal('edit', exercise)}
+                          onDelete={() => {
+                            if(window.confirm('Möchten Sie diese Übung wirklich löschen?')) {
+                              deleteExercise(exercise._id);
+                            }
+                          }}
+                          onPinExercise={() => updateExercisePinned(exercise._id, exercise.isPinned)}
+                          viewMode={viewMode}
+                          isSelected={selectedExercises.includes(exercise._id)}
+                          onToggleSelect={() => toggleExerciseSelection(exercise._id)}
+                          isFavorite={favoriteExercises.includes(exercise._id)}
+                          onToggleFavorite={() => toggleFavorite(exercise._id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>            ) : (
+              // Regular view (not grouped)
+              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>                {currentExercises.map((exercise) => (
+                  <ExerciseCard
+                    key={exercise._id}
+                    exerciseData={exercise}
+                    onEdit={() => openModal('edit', exercise)}
+                    onDelete={() => {
+                      if(window.confirm('Möchten Sie diese Übung wirklich löschen?')) {
+                        deleteExercise(exercise._id);
+                      }
+                    }}
+                    onPinExercise={() => updateExercisePinned(exercise._id, exercise.isPinned)}
+                    viewMode={viewMode}
+                    isSelected={selectedExercises.includes(exercise._id)}
+                    onToggleSelect={() => toggleExerciseSelection(exercise._id)}
+                    isFavorite={favoriteExercises.includes(exercise._id)}
+                    onToggleFavorite={() => toggleFavorite(exercise._id)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         ) : !loading && (
           <div className="bg-white rounded-xl p-10 flex flex-col items-center justify-center shadow-sm mt-6">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -592,6 +868,115 @@ const Exercises = () => {
             showToast={showToast}
           />
         </Modal>
+
+        {/* Trainingsplan Modal */}
+        <Modal
+          isOpen={showTrainingPlanModal}
+          onRequestClose={() => setShowTrainingPlanModal(false)}
+          style={{
+            overlay: {
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              zIndex: 1000,
+            },
+            content: {
+              top: '50%',
+              left: '50%',
+              right: 'auto',
+              bottom: 'auto',
+              marginRight: '-50%',
+              transform: 'translate(-50%, -50%)',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '0',
+              width: '90%',
+              maxWidth: '600px',
+              maxHeight: '90vh',
+              overflow: 'auto',
+            },
+          }}
+        >
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Trainingsplan erstellen</h2>
+              <button
+                onClick={() => setShowTrainingPlanModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name des Trainingsplans</label>
+                <input
+                  type="text"
+                  value={trainingPlanName}
+                  onChange={(e) => setTrainingPlanName(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="z.B. Passspiel-Training Jugend U17"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Beschreibung (optional)</label>
+                <textarea
+                  value={trainingPlanDescription}
+                  onChange={(e) => setTrainingPlanDescription(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 min-h-[100px]"
+                  placeholder="Beschreiben Sie den Zweck oder die Ziele dieses Trainingsplans"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ausgewählte Übungen ({selectedExercises.length})</label>
+                <div className="border border-gray-200 rounded-lg p-3 max-h-[200px] overflow-y-auto">
+                  {selectedExercises.length > 0 ? (
+                    <ul className="space-y-2">
+                      {selectedExercises.map(id => {
+                        const exercise = allExercises.find(ex => ex._id === id);
+                        return exercise ? (
+                          <li key={id} className="flex items-center justify-between">
+                            <div>
+                              <span className="font-medium">{exercise.title}</span>
+                              <span className="text-xs text-gray-500 ml-2">{exercise.category}</span>
+                            </div>
+                            <button
+                              onClick={() => toggleExerciseSelection(id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTimes size={14} />
+                            </button>
+                          </li>
+                        ) : null;
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500 text-center py-2">Keine Übungen ausgewählt</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowTrainingPlanModal(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={saveTrainingPlan}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                disabled={trainingPlanName.trim() === '' || selectedExercises.length === 0}
+              >
+                Trainingsplan speichern
+              </button>
+            </div>
+          </div>
+        </Modal>
+        
+        {/* Saved Training Plans Modal - würde in einer vollständigen Implementierung hinzugefügt werden */}
 
         {/* Toast */}
         <Toast
