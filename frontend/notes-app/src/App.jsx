@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Tasks from './pages/Notes/Tasks';  // Importiere die Tasks-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
-import Exercises from './pages/Exercises/Exercises';
 import Profil from './pages/Profil/Profil';
 import Settings from './pages/Settings/Settings';
 import Team from './pages/Team/team';
@@ -13,6 +12,7 @@ import Players from './pages/Team/Players/Players';
 import Dashboard from './pages/Dashboard/Dashboard';
 import PlayerProfile from './pages/Team/Players/Profile/PlayerProfile';
 import PlayerEdit from './pages/Team/Players/Profile/PlayerEdit';
+import Exercises from './pages/Exercises/Exercises';
 
 // Importiere die Team-bezogenen Seiten
 import Schedule from './pages/Team/Schedule/Schedule';
@@ -20,6 +20,7 @@ import Statistics from './pages/Team/Statistics/Statistics';
 import Training from './pages/Team/Training/Training';
 import Tactics from './pages/Team/Tactics/Tactics';
 import Formation from './pages/Team/Formation/Formation';
+import TeamFinance from './pages/Team/Finance/TeamFinance';
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -45,26 +46,25 @@ import ExportTemplates from './pages/Tools/ExportTemplates';
 // Definiere die Routen der App
 const routes = (
   <Router>  {/* Der Router verwaltet die Navigation und die URL-Verarbeitung */}
-    <Routes>  {/* Routes enthält alle Routen, die der Router verwalten soll */}
-      <Route path="/dashboard" exact element={<Dashboard />} />  {/* Route für die Dashboard-Seite */}
-      <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}
-      <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
-      <Route path="/tasks" exact element={<Tasks />}/>  {/* Route für Aufgaben-Seite */}
-      <Route path="/exercises" exact element={<Exercises />} />
-      <Route path="/profil" exact element={<Profil />} />
+    <Routes>  {/* Routes enthält alle Routen, die der Router verwalten soll */}      <Route path="/dashboard" exact element={<Dashboard />} />  {/* Route für die Dashboard-Seite */}
+      <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}      <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}
+      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
+      <Route path="/tasks" exact element={<Tasks />}/>  {/* Route für Aufgaben-Seite */}      <Route path="/profil" exact element={<Profil />} />
       <Route path="/settings" exact element={<Settings />} />
+      <Route path="/exercises" exact element={<Exercises />} />
       <Route path="/team" exact element={<Team />} />
       <Route path="/video" exact element={<Video />} />
-      
       {/* Team Management Routes */}
       <Route path="/players" exact element={<Players />} />
       <Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
-      <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />      <Route path="/team/schedule" exact element={<Schedule />} />
+      <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
+      <Route path="/team/schedule" exact element={<Schedule />} />
       <Route path="/team/statistics" exact element={<Statistics />} />
       <Route path="/team/training" exact element={<Training />} />
       <Route path="/team/tactics" exact element={<Tactics />} />
       <Route path="/team/formation" exact element={<Formation />} />
+      <Route path="/team/finance" exact element={<TeamFinance />} />
       
       {/* Legal Routes */}
       <Route path="/legal" exact element={<LegalNotice />} />

@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
 import moment from 'moment';
-import { MdOutlinePushPin, MdAdd } from 'react-icons/md';
-import { MdCreate, MdDelete, MdClose } from 'react-icons/md'; // Close-Icon für das Modal
-import Modal from 'react-modal'; // Modal importieren
-import Example from '../../assets/img/example.png'; // Beispielbild
+import { MdOutlinePushPin } from 'react-icons/md';
+import Modal from 'react-modal'; 
+import { FaPen, FaTrashAlt, FaTimes } from 'react-icons/fa';
 
-// NoteCard-Komponente: Eine Komponente zur Darstellung einer Notizkarte
-const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote, onAddExercise }) => {
+// ExerciseCard-Komponente: Eine Komponente zur Darstellung einer Übungskarte
+const ExerciseCard = ({ exerciseData, onEdit, onDelete, onPinExercise }) => {
     // Zustand für das Modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);    // Extrahiere Exercise-Daten
+    const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, date, isPinned } = exerciseData || {};
 
-    // Öffnet das Modal mit dem gesamten Inhalt der Karte
+    // Kategorie-Farben für bessere visuelle Unterscheidung
+    const getCategoryColor = (category) => {
+        const colors = {
+            'Technik': 'bg-blue-100 text-blue-800',
+            'Taktik': 'bg-green-100 text-green-800',
+            'Kondition': 'bg-red-100 text-red-800',
+            'Koordination': 'bg-purple-100 text-purple-800',
+            'Torwart': 'bg-yellow-100 text-yellow-800',
+            'Aufwärmen': 'bg-orange-100 text-orange-800',
+            'Abschluss': 'bg-pink-100 text-pink-800',
+            'Passspiel': 'bg-cyan-100 text-cyan-800',
+            'Verteidigung': 'bg-gray-100 text-gray-800',
+            'Angriff': 'bg-emerald-100 text-emerald-800',
+            'Standards': 'bg-indigo-100 text-indigo-800',
+            'Spielformen': 'bg-teal-100 text-teal-800',
+            'Allgemein': 'bg-slate-100 text-slate-800'
+        };
+        return colors[category] || 'bg-gray-100 text-gray-800';
+    };// Öffnet das Modal mit dem gesamten Inhalt der Karte
     const openModal = () => {
+        console.log('Opening modal for exercise:', exerciseData);
         setIsModalOpen(true);
     };
 
@@ -20,111 +39,290 @@ const NoteCard = ({ title, date, content, isPinned, onEdit, onDelete, onPinNote,
         setIsModalOpen(false);
     };
 
-    return (
-        <div className="flex gap-4">
-            {/* Die reguläre NoteCard */}
-            <div
-                className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-out w-full sm:w-1/3 md:w-1/4 lg:w-1/4 cursor-pointer"
-                onClick={openModal} // Modal öffnen bei Klick auf die Karte
-            >
-                <div className="flex items-center justify-between">
-                    <div>
-                        {/* Titel der Notiz */}
-                        <h6 className="text-sm font-medium">3vs2 Linie brechen</h6>
-                        {/* Formatiertes Datum */}
-                        <span className="text-xs text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
+    // Prevent event propagation when clicking on action buttons
+    const handleActionClick = (e, action) => {
+        e.stopPropagation();
+        action();
+    };    return (
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden w-full">
+            <div className="cursor-pointer" onClick={openModal}>
+                {/* Horizontal Layout: Image Left, Content Right */}
+                <div className="flex flex-col sm:flex-row min-h-[200px]">
+                    {/* Image Section - Left Side */}
+                    <div className="flex-shrink-0 w-full sm:w-64 md:w-72 lg:w-80 h-48 sm:h-auto bg-gray-100 overflow-hidden">
+                        {image ? (
+                            <img 
+                                src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                alt={title}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                <span className="text-blue-500 text-4xl sm:text-5xl md:text-6xl font-bold">
+                                    {title ? title.charAt(0).toUpperCase() : 'Ü'}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Pin-Icon, das auf den Status "isPinned" reagiert */}
-                    <MdOutlinePushPin
-                        className={`icon-btn ${isPinned ? 'text-primary' : 'text-slate-300'}`}
-                        onClick={onPinNote} // Event-Handler, der das Pinnen der Notiz ermöglicht
-                    />
+                    {/* Content Section - Right Side */}
+                    <div className="flex-1 p-4 sm:p-6 flex flex-col justify-between min-h-[200px]">
+                        <div>
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1 pr-2">
+                                    <h3 className="text-xl font-semibold text-gray-800 line-clamp-2 mb-2">
+                                        {title || 'Unbenannte Übung'}
+                                    </h3>
+                                    
+                                    {/* Category Badge */}
+                                    <div className="mb-3">
+                                        <span className={`text-sm px-3 py-1 rounded-full font-medium ${getCategoryColor(category)}`}>
+                                            {category || 'Allgemein'}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <button
+                                    onClick={(e) => handleActionClick(e, onPinExercise)}
+                                    className={`ml-2 p-2 rounded-full transition-colors ${
+                                        isPinned 
+                                            ? 'text-yellow-500 hover:text-yellow-600 bg-yellow-50' 
+                                            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    <MdOutlinePushPin className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                    <span className="font-medium">Organisation:</span> {organisation || 'Keine Organisation angegeben'}
+                                </p>
+                                
+                                {durchfuehrung && (
+                                    <p className="text-sm text-gray-600 line-clamp-3">
+                                        <span className="font-medium">Durchführung:</span> {durchfuehrung}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mt-4">
+                            {/* Tags */}
+                            {tags && tags.length > 0 && (
+                                <div className="mb-3 flex flex-wrap gap-1">
+                                    {tags.slice(0, 4).map((tag, index) => (
+                                        <span
+                                            key={index}
+                                            className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                    {tags.length > 4 && (
+                                        <span className="text-xs text-gray-500 px-2 py-1">
+                                            +{tags.length - 4} mehr
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Date and Action Buttons */}
+                            <div className="flex items-center justify-between">
+                                <p className="text-xs text-gray-500">
+                                    {moment(date).format('DD.MM.YYYY')}
+                                </p>
+                                
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onEdit)}
+                                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                        title="Bearbeiten"
+                                    >
+                                        <FaPen className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleActionClick(e, onDelete)}
+                                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                        title="Löschen"
+                                    >
+                                        <FaTrashAlt className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                {/* Bild mit abgerundeten Ecken und kleinerer Breite */}
-                <img src={Example} alt="Logo" className="w-full h-32 object-cover rounded-md mt-4" />
-
-                {/* Vorschau des Inhalts der Notiz (nur die ersten 60 Zeichen) */}
-                <p className="text-xs text-slate-600 mt-2">Hier steht eine Beschreibung</p>
-
-                {/* Buttons für Bearbeiten und Löschen der Notiz */}
-                <div className="flex items-center gap-2 mt-4">
-                    {/* Bearbeiten-Icon */}
-                    <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
-                    {/* Löschen-Icon */}
-                    <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
-                </div>
-            </div>
-
-            {/* Die leere Karte mit gestricheltem Rand */}
-            <div
-                className="border-dashed border-2 border-gray-400 rounded p-4 w-full sm:w-1/3 md:w-1/4 lg:w-1/4 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-all"
-                onClick={onAddExercise} // onClick-Handler für das Hinzufügen einer Übung
-            >
-                <div className="flex flex-col items-center justify-center text-center">
-                    <MdAdd className="text-4xl text-gray-500 mb-2" /> {/* Plus-Symbol */}
-                    <p className="text-sm text-gray-500">Add Exercise</p>
-                </div>
-            </div>
-
-            {/* Modal-Komponente */}
+            </div>{/* Modal für Exercise Details */}
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
+                shouldCloseOnOverlayClick={true}
+                shouldCloseOnEsc={true}
                 style={{
-                    overlay: {
-                        backgroundColor: "rgba(0,0,0,0.2)",
-                        zIndex: 9999,
-                    },
                     content: {
-                        zIndex: 10000,
-                        width: '60%', // Breite des Modals (60%)
-                        maxWidth: '900px', // Maximale Breite des Modals
-                        maxHeight: '60%', // Maximale Höhe des Modals
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '90vw',
+                        width: '800px',
+                        maxHeight: '90vh',
+                        overflow: 'auto',
+                        borderRadius: '16px',
+                        border: 'none',
+                        padding: '0',
                         backgroundColor: 'white',
-                        margin: 'auto',
-                        borderRadius: '10px',
-                        padding: '20px',
-                        overflowY: 'auto',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                        zIndex: 1000
                     },
+                    overlay: {
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                        zIndex: 1000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }
                 }}
-                contentLabel="Modal Inhalt"
             >
-                {/* Kopfzeile: Titel, Datum und Close-Button */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-xl font-medium">3vs2 Linie brechen</h3>
-                        <span className="text-sm text-slate-500">{moment(date).format('DD.MM.YYYY')}</span>
-                    </div>
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 className="text-2xl font-bold text-gray-800">
+                        {title || 'Übung Details'}
+                    </h2>
                     <button
-                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-50"
-                        onClick={closeModal}  // Modal schließen
+                        onClick={closeModal}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                        <MdClose className="text-xl text-slate-400" />
+                        <FaTimes className="w-5 h-5 text-gray-500" />
                     </button>
-                </div>
+                </div>                {/* Modal Content */}
+                <div className="p-4 sm:p-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+                        {/* Left Column - Image */}
+                        <div className="space-y-4 order-2 xl:order-1">
+                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                {image ? (
+                                    <img 
+                                        src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                        alt={title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                        <span className="text-blue-500 text-6xl sm:text-8xl font-bold">
+                                            {title ? title.charAt(0).toUpperCase() : 'Ü'}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
 
-                {/* Modal-Inhalt */}
-                <div className="p-4">
-                    {/* Bild und Content nebeneinander */}
-                    <div className="flex mt-4 gap-4">
-                        <img src={Example} alt="Logo" className="w-1/2 h-auto object-cover rounded-md" />
-                        <p className="text-sm text-gray-700 w-1/2">Hier steht eine Beschreibung</p>
-                    </div>
+                            {/* Tags Section */}
+                            {tags && tags.length > 0 && (
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-2">🏷️ Tags:</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {tags.map((tag, index) => (
+                                            <span
+                                                key={index}
+                                                className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>                        {/* Right Column - Exercise Details */}
+                        <div className="space-y-4 order-1 xl:order-2">                            <div>
+                                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                                    {title || 'Unbenannte Übung'}
+                                </h3>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className={`text-sm px-3 py-1 rounded-full font-medium ${getCategoryColor(category)}`}>
+                                        {category || 'Allgemein'}
+                                    </span>
+                                    <p className="text-sm text-gray-500">
+                                        Erstellt am {moment(date).format('DD.MM.YYYY')}
+                                    </p>
+                                </div>
+                            </div>
 
-                    {/* Edit- und Delete-Buttons unten rechts */}
-                    <div className="flex justify-end gap-2 mt-6">
-                        <MdCreate className="icon-btn hover:text-green-600" onClick={onEdit} />
-                        <MdDelete className="icon-btn hover:text-red-500" onClick={onDelete} />
+                            <div className="space-y-6">
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                        📋 Organisation
+                                    </h4>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        {organisation || 'Nicht angegeben'}
+                                    </p>
+                                </div>
+
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                        ⚽ Durchführung
+                                    </h4>
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        {durchfuehrung || 'Nicht angegeben'}
+                                    </p>
+                                </div>
+
+                                <div className="bg-green-50 p-4 rounded-lg">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                        🎯 Coaching
+                                    </h4>
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        {coaching || 'Nicht angegeben'}
+                                    </p>
+                                </div>
+
+                                <div className="bg-yellow-50 p-4 rounded-lg">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                        🔄 Variante
+                                    </h4>
+                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                        {variante || 'Nicht angegeben'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons in Modal */}
+                            <div className="flex gap-3 pt-4 border-t border-gray-200">
+                                <button
+                                    onClick={() => {
+                                        closeModal();
+                                        onEdit();
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <FaPen className="w-4 h-4" />
+                                    Bearbeiten
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        closeModal();
+                                        onDelete();
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    <FaTrashAlt className="w-4 h-4" />
+                                    Löschen
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </Modal>
-
-
         </div>
     );
 };
 
-// Exportiert die NoteCard-Komponente, damit sie in anderen Teilen der Anwendung verwendet werden kann
-export default NoteCard;
+export default ExerciseCard;

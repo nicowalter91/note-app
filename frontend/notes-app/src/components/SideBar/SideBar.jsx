@@ -31,7 +31,8 @@ import {
   HiArrowCircleUp,
   HiLightningBolt,
   HiClipboardCheck,
-  HiArrowLeft
+  HiArrowLeft,
+  HiCurrencyEuro
 } from 'react-icons/hi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -275,12 +276,18 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       label: 'Tactics', 
       path: '/team/tactics', 
       onClick: () => navigate('/team/tactics') 
-    },
-    { 
+    },    { 
       icon: <HiUsers />, 
       label: 'Formation', 
       path: '/team/formation', 
       onClick: () => navigate('/team/formation') 
+    },
+    { 
+      icon: <HiCurrencyEuro />, 
+      label: 'Mannschaftskasse', 
+      path: '/team/finance', 
+      onClick: () => navigate('/team/finance'),
+      isNew: true
     },
     { 
       icon: <HiVideoCamera />, 

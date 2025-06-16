@@ -27,6 +27,27 @@ const Login = () => {  const [email, setEmail] = useState(""); // Zustand für E
       setRememberMe(true);
     }
   }, []);
+
+  // Prüfe ob Benutzer bereits angemeldet ist
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // Prüfe ob das Token noch gültig ist
+          await axiosInstance.get('/get-user');
+          // Token ist gültig, leite zum Dashboard weiter
+          navigate('/dashboard');
+        } catch (error) {
+          // Token ist ungültig, entferne es
+          localStorage.removeItem('token');
+        }
+      }
+    };
+    
+    checkAuthStatus();
+  }, [navigate]);
+
   // Login-Handler
   const handleLogin = async (e) => {
     e.preventDefault(); // Verhindert das Standardformularverhalten (Seiten-Reload)

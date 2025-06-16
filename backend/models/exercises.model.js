@@ -8,9 +8,21 @@ const exerciseSchema = new mongoose.Schema({
     type: String,
     required: true, // Der Titel ist erforderlich
   },
-  content: {
+  organisation: {
     type: String,
-    required: true, // Der Inhalt ist ebenfalls erforderlich
+    required: true, // Die Organisation ist erforderlich
+  },
+  durchfuehrung: {
+    type: String,
+    required: true, // Die Durchführung ist erforderlich
+  },
+  coaching: {
+    type: String,
+    required: true, // Das Coaching ist erforderlich
+  },
+  variante: {
+    type: String,
+    required: true, // Die Variante ist erforderlich
   },
   date: {
     type: Date,
@@ -19,14 +31,36 @@ const exerciseSchema = new mongoose.Schema({
   image: {
     type: String,
     default: '', // Optionales Bild, Standardwert ist ein leerer String
-  },
-  tags: {
+  },  tags: {
     type: [String], // Array von Tags
     default: [], // Standardmäßig ein leeres Array
+  },
+  category: {
+    type: String,
+    default: 'Allgemein', // Standardkategorie
+    enum: [
+      'Allgemein',
+      'Technik', 
+      'Taktik',
+      'Kondition',
+      'Koordination',
+      'Torwart',
+      'Aufwärmen',
+      'Abschluss',
+      'Passspiel',
+      'Verteidigung',
+      'Angriff',
+      'Standards',
+      'Spielformen'
+    ]
   },
   isPinned: {
     type: Boolean,
     default: false, // Standardwert ist false, Übung ist nicht angepinnt
+  },
+  userId: {
+    type: String,
+    required: true, // Benutzer-ID ist erforderlich
   }
 });
 

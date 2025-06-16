@@ -16,8 +16,7 @@ const Footer = () => {
               <p>&copy; {currentYear} mytacticlab. All rights reserved.</p>
             </div>
             <p className="hidden md:flex items-center text-sm">
-              <span className="mx-2 text-blue-400">•</span>
-              Made with <HiHeart className="text-red-500 mx-1" size={14} /> in Germany
+                            Made with <HiHeart className="text-red-500 mx-1" size={14} /> in Fürth, Germany
             </p>
           </div>
           

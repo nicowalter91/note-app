@@ -1,33 +1,61 @@
-import React, { useState } from 'react';
-import { MdClose, MdDelete } from 'react-icons/md';
+import React, { useState, useEffect } from 'react';
+import { FaTimes, FaTrashAlt, FaImage, FaTag } from 'react-icons/fa';
 import axiosInstance from '../../utils/axiosInstance';
 
-const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {
-  const [title, setTitle] = useState(exerciseData?.title || '');
+const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToastMessage }) => {  const [title, setTitle] = useState(exerciseData?.title || '');
   const [organisation, setOrganisation] = useState(exerciseData?.organisation || '');
   const [durchfuehrung, setDurchfuehrung] = useState(exerciseData?.durchfuehrung || '');
   const [coaching, setCoaching] = useState(exerciseData?.coaching || '');
   const [variante, setVariante] = useState(exerciseData?.variante || '');
   const [tags, setTags] = useState(exerciseData?.tags || []);
+  const [category, setCategory] = useState(exerciseData?.category || 'Allgemein');
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState(null);
+  const [tagInput, setTagInput] = useState('');
+
+  // Verfügbare Kategorien
+  const categories = [
+    'Allgemein',
+    'Technik', 
+    'Taktik',
+    'Kondition',
+    'Koordination',
+    'Torwart',
+    'Aufwärmen',
+    'Abschluss',
+    'Passspiel',
+    'Verteidigung',
+    'Angriff',
+    'Standards',
+    'Spielformen'
+  ];
+  
+  // Set image preview if exercise data has an image
+  useEffect(() => {
+    if (exerciseData?.image) {
+      setImagePreview(`/uploads/exercises/${exerciseData.image}`);
+    }
+  }, [exerciseData]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleImageRemove = () => {
     setImage(null);
+    setImagePreview(null);
   };
 
-  const handleAddTag = (e) => {
-    if (e.key === 'Enter' && e.target.value.trim()) {
-      if (!tags.includes(e.target.value.trim())) {
-        setTags([...tags, e.target.value.trim()]);
-        e.target.value = '';
+  const handleAddTag = () => {
+    if (tagInput.trim()) {
+      if (!tags.includes(tagInput.trim())) {
+        setTags([...tags, tagInput.trim()]);
+        setTagInput('');
       }
     }
   };
@@ -35,18 +63,23 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   const handleRemoveTag = (tag) => {
     setTags(tags.filter((t) => t !== tag));
   };
-
   const addNewExercise = async () => {
+    console.log('=== addNewExercise called ===');
     try {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('organisation', organisation);
       formData.append('durchfuehrung', durchfuehrung);
-      formData.append('coaching', coaching);
-      formData.append('variante', variante);
+      formData.append('coaching', coaching);      formData.append('variante', variante);
       formData.append('tags', tags.join(','));
+      formData.append('category', category);
       if (image) {
         formData.append('image', image);
+      }
+
+      console.log('FormData entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
       }
 
       const response = await axiosInstance.post('/add-exercise', formData, {
@@ -55,14 +88,20 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
         },
       });
 
+      console.log('Add exercise response:', response.data);
+
       if (response.data && response.data.exercise) {
-        showToastMessage('Exercise Added Successfully');
-        getAllExercises();
+        showToastMessage('Übung erfolgreich hinzugefügt');
+        console.log('Calling getAllExercises to refresh list...');
+        await getAllExercises();
         onClose();
       }
     } catch (error) {
+      console.error('Error adding exercise:', error);
       if (error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
+      } else {
+        setError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
       }
     }
   };
@@ -75,9 +114,9 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       formData.append('title', title);
       formData.append('organisation', organisation);
       formData.append('durchfuehrung', durchfuehrung);
-      formData.append('coaching', coaching);
-      formData.append('variante', variante);
+      formData.append('coaching', coaching);      formData.append('variante', variante);
       formData.append('tags', tags.join(','));
+      formData.append('category', category);
       if (image) {
         formData.append('image', image);
       }
@@ -89,20 +128,22 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
       });
 
       if (response.data && response.data.exercise) {
-        showToastMessage('Exercise Updated Successfully');
+        showToastMessage('Übung erfolgreich aktualisiert');
         getAllExercises();
         onClose();
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
+      } else {
+        setError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
       }
     }
   };
 
   const handleSubmit = () => {
     if (!title || !organisation || !durchfuehrung || !coaching || !variante) {
-      setError('Please fill in all fields.');
+      setError('Bitte füllen Sie alle Pflichtfelder aus.');
       return;
     }
 
@@ -116,143 +157,179 @@ const AddEditExercise = ({ exerciseData, type, getAllExercises, onClose, showToa
   };
 
   return (
-    <div className="relative mx-auto">
-      {/* Close Button */}
-      <button className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-50" onClick={onClose}>
-        <MdClose className="text-xl text-slate-400" />
-      </button>
+    <div className="w-full">
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 flex items-center">
+          <FaTimes className="mr-2" />
+          {error}
+        </div>
+      )}      {/* Form Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Column - Image Upload */}
+        <div className="lg:col-span-2 space-y-3">
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Bild hochladen</h3>
+              {imagePreview ? (
+              <div className="space-y-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-40 object-contain rounded-lg"
+                />
+                <button
+                  className="flex items-center gap-1 text-red-500 text-xs hover:text-red-600"
+                  onClick={handleImageRemove}
+                >
+                  <FaTrashAlt size={12} /> Bild entfernen
+                </button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                <div className="flex flex-col items-center space-y-2">
+                  <FaImage className="text-gray-400 text-2xl" />
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">
+                      Ziehen Sie ein Bild hierher oder
+                    </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                      id="imageUpload"
+                    />
+                    <label 
+                      htmlFor="imageUpload" 
+                      className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium cursor-pointer hover:bg-blue-100"
+                    >
+                      Datei auswählen
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-      {/* Title Input */}
-      <div className="flex flex-col gap-2 mb-4">
-        <label className="input-label">TITLE</label>
-        <input
-          type="text"
-          className="text-2xl text-slate-950 outline-none w-full"
-          placeholder="Please insert title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
+          {/* Category Selection */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Kategorie</h3>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {/* Main Content Containers */}
-      <div className="grid grid-cols-2 gap-8 mt-4">
-        {/* Image Upload */}
-        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6">
-          <label className="input-label mb-2">UPLOAD IMAGE</label>
-          {image ? (
-            <div className="flex flex-col items-center">
-              <img
-                src={URL.createObjectURL(image)}
-                alt="Preview"
-                className="w-full  object-cover rounded mb-4"
-              />
-              <button
-                className="flex items-center gap-2 text-red-500 text-sm hover:underline"
-                onClick={handleImageRemove}
+          {/* Tags Input */}
+          <div className="border border-gray-200 rounded-lg p-3">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Tags</h3>
+            
+            <div className="flex flex-wrap gap-1 mb-2 max-h-16 overflow-y-auto">
+              {tags.map((tag) => (
+                <div key={tag} className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-xs">{tag}</span>
+                  <button onClick={() => handleRemoveTag(tag)} className="text-blue-500 hover:text-blue-700">
+                    <FaTimes className="text-xs" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex items-center">
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  className="w-full p-1.5 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                  placeholder="Tag hinzufügen"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+                <FaTag className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+              </div>              <button
+                className="ml-2 px-2 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs hover:bg-gray-200"
+                onClick={handleAddTag}
               >
-                <MdDelete className="text-lg" />
-                Remove Image
+                +
               </button>
             </div>
-          ) : (
-            <>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                id="imageUpload"
-              />
-              <label htmlFor="imageUpload" className="cursor-pointer text-blue-500 underline">
-                Choose a file
-              </label>
-            </>
-          )}
+          </div>
         </div>
-
-        {/* Form Fields */}
-        <div className="flex flex-col gap-6">
-          {/* Organisation */}
-          <div className="flex flex-col gap-2">
-            <label className="input-label">ORGANISATION</label>
-            <textarea
-              rows={4}
-              className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
-              placeholder="Describe the organisation setup..."
+          {/* Right Column - Form Fields */}
+        <div className="lg:col-span-3 space-y-3">
+          {/* Title Input */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Titel</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Titel der Übung"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+            {/* Organisation */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Organisation</label>            <textarea
+              rows={3}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Beschreiben Sie die Organisation der Übung..."
               value={organisation}
               onChange={(e) => setOrganisation(e.target.value)}
             />
           </div>
-
-          {/* Durchführung */}
-          <div className="flex flex-col gap-2">
-            <label className="input-label">DURCHFÜHRUNG</label>
-            <textarea
-              rows={4}
-              className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
-              placeholder="Describe how the exercise is conducted..."
+            {/* Durchführung */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Durchführung</label>            <textarea
+              rows={3}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Beschreiben Sie die Durchführung der Übung..."
               value={durchfuehrung}
               onChange={(e) => setDurchfuehrung(e.target.value)}
             />
           </div>
-
-          {/* Coaching */}
-          <div className="flex flex-col gap-2">
-            <label className="input-label">COACHING</label>
-            <textarea
-              rows={4}
-              className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
-              placeholder="Coaching points or instructions..."
+            {/* Coaching */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Coaching</label>            <textarea
+              rows={3}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Coaching-Punkte oder Anweisungen..."
               value={coaching}
               onChange={(e) => setCoaching(e.target.value)}
             />
           </div>
-
-          {/* Variante */}
-          <div className="flex flex-col gap-2">
-            <label className="input-label">VARIANTE</label>
-            <textarea
-              rows={4}
-              className="text-sm text-slate-950 outline-none bg-slate-50 p-3 rounded w-full"
-              placeholder="Possible variations or adjustments..."
+            {/* Variante */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Variante</label>            <textarea
+              rows={3}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Mögliche Variationen oder Anpassungen..."
               value={variante}
               onChange={(e) => setVariante(e.target.value)}
             />
           </div>
         </div>
+      </div>      {/* Submit Button */}
+      <div className="mt-4 flex justify-end">
+        <button
+          className="px-6 py-2 bg-gray-800 text-white font-medium text-sm rounded-lg hover:bg-gray-700 transition-colors"
+          onClick={handleSubmit}
+        >
+          {type === 'edit' ? 'Aktualisieren' : 'Hinzufügen'}
+        </button>
       </div>
-
-      {/* Tags Input */}
-      <div className="flex flex-col gap-2 mt-4">
-        <label className="input-label">TAGS</label>
-        <div className="flex items-center gap-2 flex-wrap bg-slate-50 p-2 rounded">
-          {tags.map((tag) => (
-            <div key={tag} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded">
-              <span>{tag}</span>
-              <button onClick={() => handleRemoveTag(tag)} className="text-blue-600 hover:text-blue-800">
-                <MdClose className="text-sm" />
-              </button>
-            </div>
-          ))}
-          <input
-            type="text"
-            className="flex-grow outline-none bg-transparent"
-            placeholder="Add a tag and press Enter"
-            onKeyDown={handleAddTag}
-          />
-        </div>
-      </div>
-
-      {/* Error Message */}
-      {error && <p className="text-red-500 text-xs pt-4">{error}</p>}
-
-      {/* Submit Button */}
-      <button
-        className="btn-primary font-medium text-xs mt-5 p-3 w-full"
-        onClick={handleSubmit}
-      >
-        {type === 'edit' ? 'UPDATE' : 'ADD'}
-      </button>
     </div>
   );
 };

@@ -338,23 +338,19 @@ const addProfessionalFooter = (doc, player, colors) => {
         // Datum und Zeit
         const today = new Date().toLocaleDateString('de-DE');
         doc.text(`Erstellt am: ${today}`, 190, 290, { align: 'right' });
-        
-        // Branding/Copyright
+          // Branding/Copyright
         setFontBold(doc);
         doc.text('Spieleranalyse', 20, 290);
-        
-        // Spielername als Wasserzeichen auf allen Seiten außer der Titelseite
-        if (i > 1) {
-            setFontBold(doc);
-            doc.setFontSize(60);
-            doc.setTextColor(colors.grayLight);
-            doc.setGState(new doc.GState({opacity: 0.05})); // Sehr transparent
-            doc.text(player.name || 'Spielerprofil', pageWidth / 2, 150, { 
-                align: 'center',
-                angle: 45
-            });
-            doc.setGState(new doc.GState({opacity: 1.0})); // Zurücksetzen
-        }
+          // Spielername als Wasserzeichen auf allen Seiten
+        setFontBold(doc);
+        doc.setFontSize(60);
+        doc.setTextColor(colors.grayLight);
+        doc.setGState(new doc.GState({opacity: 0.05})); // Sehr transparent
+        doc.text(player.name || 'Spielerprofil', pageWidth / 2, 150, { 
+            align: 'center',
+            angle: 45
+        });
+        doc.setGState(new doc.GState({opacity: 1.0})); // Zurücksetzen
     }
 };
 
@@ -1240,15 +1236,9 @@ export const exportPlayerProfileToPDF = (player) => {
             chart: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', 
                     '#14b8a6', '#f97316', '#8b5cf6', '#22c55e', '#0ea5e9', '#ef4444']
         };
-        
-        // Seitenzähler initialisieren
-        let currentPage = 1;
+          // Seitenzähler initialisieren        let currentPage = 1;
 
-        // TITELBLATT ERSTELLEN        createCoverPage(doc, player, colors);
-        currentPage++;
-
-        // INHALT BEGINNT AUF SEITE 2
-        doc.addPage();
+        // INHALT BEGINNT AUF SEITE 1 (Titelblatt entfernt)
         let y = 20;
 
         // Konsistenten Header für alle Inhaltsseiten hinzufügen

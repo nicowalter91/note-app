@@ -6,6 +6,7 @@ const { getUser, loginUser, createUser } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
+const { addExercise, editExercise, getAllExercises, deleteExercise, updateExercisePinned, searchExercises } = require("./controllers/exercises");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -137,9 +138,46 @@ app.delete("/players/:id/profile-image", async (req, res) => {
   deleteProfileImage(req, res);
 });
 
+// *** Exercise-Routen ***
+// Route zum Hinzufügen einer Übung
+app.post("/add-exercise", authenticateToken, async (req, res) => {
+  // Handle file upload in controller
+  addExercise(req, res);
+});
+
+// Route zum Bearbeiten einer Übung
+app.put("/edit-exercise/:exerciseId", authenticateToken, async (req, res) => {
+  // Handle file upload in controller
+  editExercise(req, res);
+});
+
+// Route zum Abrufen aller Übungen
+app.get("/get-all-exercises", authenticateToken, async (req, res) => {
+  getAllExercises(req, res);
+});
+
+// Route zum Löschen einer Übung
+app.delete("/delete-exercise/:exerciseId", authenticateToken, async (req, res) => {
+  deleteExercise(req, res);
+});
+
+// Route zum Aktualisieren des Pin-Status einer Übung
+app.put("/update-exercise-pinned/:exerciseId", authenticateToken, async (req, res) => {
+  updateExercisePinned(req, res);
+});
+
+// Route zur Suche nach Übungen
+app.get("/search-exercises", authenticateToken, async (req, res) => {
+  searchExercises(req, res);
+});
+
 // *** Task-Routen ***
 const taskRoutes = require('./routes/tasks');
 app.use(taskRoutes);
+
+// *** Team Finance-Routen ***
+const teamFinanceRoutes = require('./routes/teamFinance');
+app.use('/team-finance', teamFinanceRoutes);
 
 // *** Server starten ***
 const PORT = process.env.PORT || 8000;
