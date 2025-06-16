@@ -105,15 +105,20 @@ const Dashboard = () => {
                 // Task-Statistiken berechnen
                 const completedTasks = tasks.filter(task => task.status === 'completed').length;
                 const pendingTasks = tasks.filter(task => task.status === 'pending').length;
-                const inProgressTasks = tasks.filter(task => task.status === 'in-progress').length;
-
-                // Kommende Events (nächste 7 Tage)
+                const inProgressTasks = tasks.filter(task => task.status === 'in-progress').length;                // Kommende Events (nächste 7 Tage)
                 const now = new Date();
                 const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
                 const upcomingEvents = events.filter(event => {
                     const eventDate = new Date(event.date);
                     return eventDate >= now && eventDate <= nextWeek;
                 });
+
+                // Nächstes Training und nächstes Spiel finden
+                const futureEvents = events.filter(event => new Date(event.date) >= now)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                const nextTraining = futureEvents.find(event => event.type === 'training');
+                const nextGame = futureEvents.find(event => event.type === 'game');
 
                 // Neueste Items (letzte 5)
                 const recentTasks = tasks
@@ -126,9 +131,7 @@ const Dashboard = () => {
 
                 const recentExercises = exercises
                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    .slice(0, 3);
-
-                setDashboardData({
+                    .slice(0, 3);                setDashboardData({
                     tasks: {
                         total: tasks.length,
                         completed: completedTasks,
@@ -146,7 +149,9 @@ const Dashboard = () => {
                     },
                     events: {
                         upcoming: upcomingEvents.length,
-                        thisWeek: upcomingEvents.slice(0, 3)
+                        thisWeek: upcomingEvents.slice(0, 3),
+                        nextTraining: nextTraining,
+                        nextGame: nextGame
                     },
                     contacts: {
                         total: contacts.length
@@ -240,7 +245,105 @@ const Dashboard = () => {
                 </div>
                 <h1 className="text-3xl font-bold mb-2">{getGreeting()}, {userInfo?.name || 'Trainer'}!</h1>
                 <p className="opacity-90">Hier ist ein Überblick über dein Team und anstehende Aufgaben.</p>
-            </div>            {/* Statistikkarten - mit echten Daten */}
+            </div>            {/* Nächste wichtige Termine */}
+            {(dashboardData.events.nextTraining || dashboardData.events.nextGame) && (
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Nächste Termine</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Nächstes Training */}
+                        {dashboardData.events.nextTraining && (
+                            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center">
+                                        <FaDumbbell className="text-2xl mr-3" />
+                                        <h3 className="text-xl font-semibold">Nächstes Training</h3>
+                                    </div>
+                                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                                        Training
+                                    </span>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-lg font-medium">{dashboardData.events.nextTraining.title}</h4>
+                                    <div className="flex items-center text-green-100">
+                                        <FaCalendarAlt className="mr-2" />
+                                        <span>{moment(dashboardData.events.nextTraining.date).format('dddd, DD. MMMM YYYY')}</span>
+                                    </div>
+                                    <div className="flex items-center text-green-100">
+                                        <FaRegClock className="mr-2" />
+                                        <span>{dashboardData.events.nextTraining.time} Uhr</span>
+                                    </div>
+                                    {dashboardData.events.nextTraining.location && (
+                                        <div className="flex items-center text-green-100">
+                                            <FaUserAlt className="mr-2" />
+                                            <span>{dashboardData.events.nextTraining.location}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-4 text-right">
+                                    <span className="text-sm text-green-100">
+                                        {moment(dashboardData.events.nextTraining.date).fromNow()}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Nächstes Spiel */}
+                        {dashboardData.events.nextGame && (
+                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center">
+                                        <FaUsers className="text-2xl mr-3" />
+                                        <h3 className="text-xl font-semibold">Nächstes Spiel</h3>
+                                    </div>
+                                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                                        Spiel
+                                    </span>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-lg font-medium">
+                                        {dashboardData.events.nextGame.gameData?.opponent 
+                                            ? `vs ${dashboardData.events.nextGame.gameData.opponent}`
+                                            : dashboardData.events.nextGame.title
+                                        }
+                                    </h4>
+                                    <div className="flex items-center text-blue-100">
+                                        <FaCalendarAlt className="mr-2" />
+                                        <span>{moment(dashboardData.events.nextGame.date).format('dddd, DD. MMMM YYYY')}</span>
+                                    </div>
+                                    <div className="flex items-center text-blue-100">
+                                        <FaRegClock className="mr-2" />
+                                        <span>{dashboardData.events.nextGame.time} Uhr</span>
+                                    </div>
+                                    {dashboardData.events.nextGame.location && (
+                                        <div className="flex items-center text-blue-100">
+                                            <FaUserAlt className="mr-2" />
+                                            <span>{dashboardData.events.nextGame.location}</span>
+                                        </div>
+                                    )}
+                                    {dashboardData.events.nextGame.gameData?.isHome !== undefined && (
+                                        <div className="flex items-center text-blue-100">
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                dashboardData.events.nextGame.gameData.isHome 
+                                                    ? 'bg-green-500/20 text-green-100' 
+                                                    : 'bg-orange-500/20 text-orange-100'
+                                            }`}>
+                                                {dashboardData.events.nextGame.gameData.isHome ? 'Heimspiel' : 'Auswärtsspiel'}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-4 text-right">
+                                    <span className="text-sm text-blue-100">
+                                        {moment(dashboardData.events.nextGame.date).fromNow()}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Statistikkarten - mit echten Daten */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Karte 1: Gesamtaufgaben */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
