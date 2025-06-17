@@ -1,13 +1,24 @@
-  import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import ExerciseCard from '../../components/Cards/ExerciseCard';
-import { FaPlus, FaSearch, FaTimes, FaFilter, FaExclamation, FaListUl, FaThLarge, FaCalendarAlt, FaClipboardList, FaStar } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaTimes, FaFilter, FaExclamation, FaListUl, FaThLarge, FaCalendarAlt, FaClipboardList, FaStar, FaDumbbell } from 'react-icons/fa';
 import { MdOutlinePushPin, MdCategory } from 'react-icons/md';
 import Modal from "react-modal";
 import Layout from '../../components/Layout/Layout';
 import AddEditExercise from './AddEditExercises';
 import Toast from '../../components/ToastMessage/Toast';
+
+// Import Design System Components
+import {
+  PageHeader,
+  Card,
+  Button,
+  Badge,
+  LoadingSpinner,
+  EmptyState,
+  StatsGrid
+} from '../../components/UI/DesignSystem';
 
 // Set app element for react-modal
 Modal.setAppElement('#root');
@@ -420,298 +431,274 @@ const Exercises = () => {
     
     return grouped;
   }, [filteredExercises, groupByCategory, activeFilter]);
-
   return (
     <Layout>
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        {/* Header section with view toggles */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Übungsverwaltung</h1>
-          <div className="flex gap-2">
-            <div className="flex items-center bg-gray-100 rounded-lg p-1 mr-3">
+      <div className="min-h-screen bg-gray-50 p-6">
+        {/* Page Header */}
+        <PageHeader
+          title="Übungen"
+          subtitle="Verwalten Sie Ihre Trainingsübungen und erstellen Sie Trainingspläne"
+          icon={FaDumbbell}
+          action={
+            <div className="flex gap-3">
+              <Button
+                onClick={() => {
+                  if (selectedExercises.length === 0) {
+                    showToast('Bitte wählen Sie zuerst Übungen aus', 'info');
+                  } else {
+                    setShowTrainingPlanModal(true);
+                  }
+                }}
+                variant={selectedExercises.length > 0 ? "success" : "secondary"}
+                icon={FaCalendarAlt}
+                disabled={loading}
+              >
+                {selectedExercises.length > 0 ? `Plan erstellen (${selectedExercises.length})` : 'Trainingsplan'}
+              </Button>
+              
+              <Button
+                onClick={exportExercises}
+                variant="secondary"
+                icon={FaClipboardList}
+                disabled={loading || allExercises.length === 0}
+              >
+                Export
+              </Button>
+              
+              <Button
+                onClick={() => openModal('add')}
+                variant="primary"
+                icon={FaPlus}
+                disabled={loading}
+              >
+                Neue Übung
+              </Button>
+            </div>
+          }
+        >
+          {/* View Mode Toggle */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center bg-white rounded-lg p-1 shadow-sm">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'grid' 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 title="Grid-Ansicht"
               >
                 <FaThLarge size={16} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'list' 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 title="Listen-Ansicht"
               >
                 <FaListUl size={16} />
               </button>
               <button
                 onClick={() => setGroupByCategory(!groupByCategory)}
-                className={`p-2 rounded ${groupByCategory ? 'bg-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-2 rounded transition-colors ${
+                  groupByCategory 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 title={groupByCategory ? "Gruppierung aufheben" : "Nach Kategorien gruppieren"}
               >
                 <MdCategory size={18} />
               </button>
             </div>
             
-            {/* Trainingsplan-Button */}
-            <button
-              onClick={() => {
-                if (selectedExercises.length === 0) {
-                  showToast('Bitte wählen Sie zuerst Übungen aus, indem Sie auf die Sternchen klicken', 'info');
-                } else {
-                  setShowTrainingPlanModal(true);
-                }
-              }}
-              className={`px-4 py-2 text-white font-medium rounded-lg transition-colors flex items-center gap-2 ${
-                selectedExercises.length > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-              title="Trainingsplan erstellen"
-            >
-              <FaCalendarAlt />
-              {selectedExercises.length > 0 ? `Plan erstellen (${selectedExercises.length})` : 'Trainingsplan'}
-            </button>
-            
-            <button
-              onClick={exportExercises}
-              className="px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
-              disabled={loading || allExercises.length === 0}
-            >
-              <FaClipboardList /> Export
-            </button>
-            <button
-              onClick={() => openModal('add')}
-              className="px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
-              disabled={loading}
-            >
-              <FaPlus /> Übung hinzufügen
-            </button>
+            {/* Exercise Statistics */}
+            <div className="text-sm text-gray-600">
+              {filteredExercises.length} {filteredExercises.length === 1 ? 'Übung' : 'Übungen'}
+              {selectedExercises.length > 0 && (
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                  {selectedExercises.length} ausgewählt
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        </PageHeader>
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 flex items-center">
-            <FaExclamation className="mr-2" />
-            {error}
-          </div>
+          <Card className="border-red-200 bg-red-50 mb-6">
+            <div className="flex items-center text-red-700">
+              <FaExclamation className="mr-2" />
+              {error}
+            </div>
+          </Card>
         )}
 
-        {/* Loading Indicator */}
-        {loading && (
-          <div className="flex justify-center items-center my-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-            <span className="ml-3 text-gray-700">Lädt Übungen...</span>
-          </div>
-        )}
+        {/* Loading State */}
+        {loading && <LoadingSpinner text="Lade Übungen..." />}
 
-        {/* Statistics */}
-        {!loading && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center">
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <FaFilter className="text-blue-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-gray-500">Gesamt</p>
-                  <p className="text-lg font-semibold">{allExercises.length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center">
-                <div className="bg-yellow-100 p-3 rounded-full">
-                  <MdOutlinePushPin className="text-yellow-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-gray-500">Gepinnt</p>
-                  <p className="text-lg font-semibold">{allExercises.filter(ex => ex.isPinned).length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center">
-                <div className="bg-green-100 p-3 rounded-full">
-                  <FaSearch className="text-green-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-gray-500">Mit Tags</p>
-                  <p className="text-lg font-semibold">{allExercises.filter(ex => ex.tags && ex.tags.length > 0).length}</p>
-                </div>
-              </div>
-            </div>            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex items-center">
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <FaPlus className="text-purple-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-gray-500">Diese Woche</p>
-                  <p className="text-lg font-semibold">
-                    {allExercises.filter(ex => {
-                      const exerciseDate = new Date(ex.date);
-                      const oneWeekAgo = new Date();
-                      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                      return exerciseDate >= oneWeekAgo;
-                    }).length}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Search and Filter */}
-        <div className="bg-white shadow-sm rounded-xl p-4 mb-8">
-          <div className="flex items-center border-b border-gray-200 pb-4 mb-4">
-            <FaSearch className="text-gray-400 mr-3" />
-            <input
-              type="text"
-              placeholder="Übung suchen..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full focus:outline-none text-gray-700"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  onSearchExercise(searchQuery);
+        {/* Exercise Statistics Grid */}
+        {!loading && allExercises.length > 0 && (
+          <div className="mb-6">
+            <StatsGrid
+              stats={[
+                {
+                  icon: FaDumbbell,
+                  value: allExercises.length,
+                  label: 'Gesamt Übungen'
+                },
+                {
+                  icon: MdCategory,
+                  value: availableCategories.length,
+                  label: 'Kategorien'
+                },
+                {
+                  icon: FaStar,
+                  value: favoriteExercises.length,
+                  label: 'Favoriten'
+                },
+                {
+                  icon: FaCalendarAlt,
+                  value: savedTrainingPlans.length,
+                  label: 'Trainingspläne'
                 }
-              }}
+              ]}
             />
-            {searchQuery && (
-              <button 
-                onClick={() => {
-                  setSearchQuery('');
-                  onSearchExercise('');
-                }}
-                className="text-gray-400 hover:text-gray-600"
+          </div>
+        )}        {/* Search and Filters */}
+        <Card className="mb-6">
+          <div className="space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Übungen durchsuchen..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && onSearchExercise(searchQuery)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setIsSearch(false);
+                    getAllExercises();
+                  }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-gray-500 mr-2">Filter:</span>
+              
+              {/* Basic Filters */}
+              <Badge
+                variant={activeFilter === 'all' ? 'primary' : 'secondary'}
+                onClick={() => setActiveFilter('all')}
+                className="cursor-pointer"
               >
-                <FaTimes />
-              </button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-500 mr-2">Filter:</span>
-            <button 
-              onClick={() => setActiveFilter('all')}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                activeFilter === 'all' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              Alle ({allExercises.length})
-            </button>
-            <button 
-              onClick={() => setActiveFilter('pinned')}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                activeFilter === 'pinned' 
-                  ? 'bg-yellow-500 text-white' 
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              📌 Gepinnt ({allExercises.filter(ex => ex.isPinned).length})
-            </button>
-            <button 
-              onClick={() => setActiveFilter('recent')}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                activeFilter === 'recent' 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              🆕 Diese Woche ({allExercises.filter(ex => {
-                const exerciseDate = new Date(ex.date);
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                return exerciseDate >= oneWeekAgo;
-              }).length})
-            </button>
-            <button 
-              onClick={() => setActiveFilter('tagged')}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                activeFilter === 'tagged' 
-                  ? 'bg-purple-500 text-white' 
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              🏷️ Mit Tags ({allExercises.filter(ex => ex.tags && ex.tags.length > 0).length})
-            </button>
-            
-            {/* Favoriten Filter Button */}
-            <button 
-              onClick={() => setActiveFilter('favorites')}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                activeFilter === 'favorites' 
-                  ? 'bg-amber-500 text-white' 
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-              }`}
-            >
-              ⭐ Favoriten ({allExercises.filter(ex => favoriteExercises.includes(ex._id)).length})
-            </button>
-            
-            {/* Dynamic Category Filter Buttons */}
-            {(() => {
-              const categories = [
-                'Allgemein', 'Technik', 'Taktik', 'Kondition', 'Koordination', 
-                'Torwart', 'Aufwärmen', 'Abschluss', 'Passspiel', 'Verteidigung', 
-                'Angriff', 'Standards', 'Spielformen'
-              ];
+                Alle ({allExercises.length})
+              </Badge>
               
-              // Get categories that actually have exercises
-              const categoriesWithExercises = categories.filter(category => 
-                allExercises.some(ex => ex.category === category)
-              );
+              <Badge
+                variant={activeFilter === 'pinned' ? 'warning' : 'secondary'}
+                onClick={() => setActiveFilter('pinned')}
+                className="cursor-pointer"
+              >
+                📌 Gepinnt ({allExercises.filter(ex => ex.isPinned).length})
+              </Badge>
               
-              return categoriesWithExercises.map(category => {
-                const count = allExercises.filter(ex => ex.category === category).length;
-                const colors = categoryColors[category] || { bg: 'bg-gray-100', text: 'text-gray-800', hover: 'hover:bg-gray-200' };
+              <Badge
+                variant={activeFilter === 'favorites' ? 'info' : 'secondary'}
+                onClick={() => setActiveFilter('favorites')}
+                className="cursor-pointer"
+              >
+                ⭐ Favoriten ({favoriteExercises.length})
+              </Badge>
+              
+              <Badge
+                variant={activeFilter === 'recent' ? 'success' : 'secondary'}
+                onClick={() => setActiveFilter('recent')}
+                className="cursor-pointer"
+              >
+                🆕 Diese Woche ({allExercises.filter(ex => {
+                  const exerciseDate = new Date(ex.date);
+                  const oneWeekAgo = new Date();
+                  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                  return exerciseDate >= oneWeekAgo;
+                }).length})
+              </Badge>
+              
+              <Badge
+                variant={activeFilter === 'tagged' ? 'primary' : 'secondary'}
+                onClick={() => setActiveFilter('tagged')}
+                className="cursor-pointer"
+              >
+                🏷️ Mit Tags ({allExercises.filter(ex => ex.tags && ex.tags.length > 0).length})
+              </Badge>
+              
+              {/* Category Filters */}
+              {availableCategories.map(category => {
+                const categoryCount = allExercises.filter(ex => ex.category === category).length;
+                
                 return (
-                  <button
+                  <Badge
                     key={category}
+                    variant={activeFilter === category ? 'primary' : 'secondary'}
                     onClick={() => setActiveFilter(category)}
-                    className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                      activeFilter === category
-                        ? 'bg-indigo-500 text-white'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`}
+                    className="cursor-pointer flex items-center space-x-1"
                   >
-                    {categoryEmojis[category]} {category} ({count})
-                  </button>
+                    <span>{categoryEmojis[category]}</span>
+                    <span>{category} ({categoryCount})</span>
+                  </Badge>
                 );
-              });
-            })()}
+              })}
+            </div>
           </div>
-        </div>
+        </Card>        {/* Selected Exercises Bar */}
+        {selectedExercises.length > 0 && (
+          <Card className="mb-6 bg-blue-50 border-blue-200">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <Badge variant="info" className="mr-3">
+                  {selectedExercises.length} {selectedExercises.length === 1 ? 'Übung' : 'Übungen'} ausgewählt
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedExercises([])}
+                >
+                  Auswahl zurücksetzen
+                </Button>
+              </div>
+              <Button
+                variant="success"
+                size="sm"
+                onClick={() => setShowTrainingPlanModal(true)}
+                icon={FaCalendarAlt}
+              >
+                Als Trainingsplan speichern
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Exercises Display - Either grouped by category or flat list */}
         {!loading && currentExercises.length > 0 ? (
           <>
-            {/* Selected Exercises Bar */}
-            {selectedExercises.length > 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex justify-between items-center">
-                <div className="flex items-center">
-                  <span className="text-blue-700 font-medium mr-2">
-                    {selectedExercises.length} {selectedExercises.length === 1 ? 'Übung' : 'Übungen'} ausgewählt
-                  </span>
-                  <button 
-                    onClick={() => setSelectedExercises([])}
-                    className="text-xs text-blue-600 hover:text-blue-800"
-                  >
-                    Auswahl zurücksetzen
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowTrainingPlanModal(true)}
-                  className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
-                >
-                  Als Trainingsplan speichern
-                </button>
-              </div>
-            )}
-            
             {groupByCategory && exercisesByCategory ? (
               // Grouped by category view
               <div className="space-y-8">
                 {Object.keys(exercisesByCategory).map(category => (
-                  <div key={category} className="bg-white rounded-xl shadow-sm p-4">
+                  <Card key={category}>
                     <div className="flex items-center mb-4">
                       <div className={`p-2 rounded-lg mr-3 ${
                         category === 'Gepinnt' 
@@ -727,7 +714,8 @@ const Exercises = () => {
                         {category} ({exercisesByCategory[category].length})
                       </h2>
                     </div>
-                      <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>                      {exercisesByCategory[category].map(exercise => (
+                    <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>
+                      {exercisesByCategory[category].map(exercise => (
                         <ExerciseCard
                           key={exercise._id}
                           exerciseData={exercise}
@@ -746,11 +734,13 @@ const Exercises = () => {
                         />
                       ))}
                     </div>
-                  </div>
+                  </Card>
                 ))}
-              </div>            ) : (
+              </div>
+            ) : (
               // Regular view (not grouped)
-              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>                {currentExercises.map((exercise) => (
+              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'} gap-6`}>
+                {currentExercises.map((exercise) => (
                   <ExerciseCard
                     key={exercise._id}
                     exerciseData={exercise}
@@ -772,37 +762,46 @@ const Exercises = () => {
             )}
           </>
         ) : !loading && (
-          <div className="bg-white rounded-xl p-10 flex flex-col items-center justify-center shadow-sm mt-6">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <FaSearch className="text-gray-400" size={24} />
-            </div>
-            <h3 className="text-xl font-medium text-gray-700">Keine Übungen gefunden</h3>
-            <p className="text-gray-500 text-center mt-2">
-              Versuchen Sie Ihre Suche anzupassen oder fügen Sie neue Übungen hinzu.
-            </p>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {allExercises.length > exercisesPerPage && (
+          <EmptyState
+            icon={FaSearch}
+            title="Keine Übungen gefunden"
+            description={
+              activeFilter === 'all' 
+                ? "Erstellen Sie Ihre erste Übung, um zu beginnen."
+                : "Versuchen Sie Ihre Suche anzupassen oder fügen Sie neue Übungen hinzu."
+            }
+            action={
+              <Button
+                variant="primary"
+                icon={FaPlus}
+                onClick={() => openModal('add')}
+              >
+                Neue Übung erstellen
+              </Button>
+            }
+          />
+        )}        {/* Pagination */}
+        {!groupByCategory && allExercises.length > exercisesPerPage && (
           <div className="flex justify-center items-center mt-8 space-x-2">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={prevPage}
               disabled={currentPage === 1}
-              className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Vorherige
-            </button>
+            </Button>
             <span className="px-4 py-2 text-sm text-gray-700">
               Seite {currentPage} von {totalPages}
             </span>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={nextPage}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Nächste
-            </button>
+            </Button>
           </div>
         )}
 
@@ -839,9 +838,7 @@ const Exercises = () => {
             getAllExercises={getAllExercises}
             showToast={showToast}
           />
-        </Modal>
-
-        {/* Trainingsplan Modal */}
+        </Modal>        {/* Trainingsplan Modal */}
         <Modal
           isOpen={showTrainingPlanModal}
           onRequestClose={() => setShowTrainingPlanModal(false)}
@@ -867,15 +864,15 @@ const Exercises = () => {
             },
           }}
         >
-          <div className="p-6">
+          <Card className="p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Trainingsplan erstellen</h2>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowTrainingPlanModal(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full"
-              >
-                <FaTimes />
-              </button>
+                icon={FaTimes}
+              />
             </div>
             
             <div className="space-y-4">
@@ -904,25 +901,25 @@ const Exercises = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Ausgewählte Übungen ({selectedExercises.length})</label>
                 <div className="border border-gray-200 rounded-lg p-3 max-h-[200px] overflow-y-auto">
                   {selectedExercises.length > 0 ? (
-                    <ul className="space-y-2">
+                    <div className="space-y-2">
                       {selectedExercises.map(id => {
                         const exercise = allExercises.find(ex => ex._id === id);
                         return exercise ? (
-                          <li key={id} className="flex items-center justify-between">
+                          <div key={id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                             <div>
                               <span className="font-medium">{exercise.title}</span>
-                              <span className="text-xs text-gray-500 ml-2">{exercise.category}</span>
+                              <Badge variant="secondary" className="ml-2">{exercise.category}</Badge>
                             </div>
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => toggleExerciseSelection(id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTimes size={14} />
-                            </button>
-                          </li>
+                              icon={FaTimes}
+                            />
+                          </div>
                         ) : null;
                       })}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="text-gray-500 text-center py-2">Keine Übungen ausgewählt</p>
                   )}
@@ -931,21 +928,21 @@ const Exercises = () => {
             </div>
             
             <div className="mt-6 flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowTrainingPlanModal(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               >
                 Abbrechen
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 onClick={saveTrainingPlan}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 disabled={trainingPlanName.trim() === '' || selectedExercises.length === 0}
               >
                 Trainingsplan speichern
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </Modal>
         
         {/* Saved Training Plans Modal - würde in einer vollständigen Implementierung hinzugefügt werden */}

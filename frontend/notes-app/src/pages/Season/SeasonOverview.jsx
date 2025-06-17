@@ -18,8 +18,22 @@ import {
     FaClock,
     FaExclamationTriangle,
     FaPlay,
-    FaArrowRight
+    FaArrowRight,
+    FaPlus,
+    FaEye
 } from 'react-icons/fa';
+
+// Import Design System Components
+import {
+  PageHeader,
+  Card,
+  Button,
+  Badge,
+  LoadingSpinner,
+  EmptyState,
+  StatsGrid,
+  QuickActionsGrid
+} from '../../components/UI/DesignSystem';
 
 const SeasonOverview = () => {
     const navigate = useNavigate();
@@ -284,91 +298,157 @@ const SeasonOverview = () => {
 
     const navigateToPhase = (phaseId) => {
         navigate(`/season/${phaseId}`);
-    };
+    };    if (loading) {
+        return (
+            <Layout>
+                <div className="min-h-screen bg-gray-50 p-6">
+                    <LoadingSpinner text="Lade Saisondaten..." />
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>
             <div className="min-h-screen bg-gray-50 p-6">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl p-6 mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold mb-2">Saison 2024/2025</h1>
-                            <p className="text-blue-100">
-                                Wochenweise Führung durch alle Saisonphasen
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-2xl font-bold">Woche {currentWeek}</div>
-                            <div className="text-blue-200">von 52 Wochen</div>
-                        </div>
-                    </div>
-                    
-                    {/* Progress Bar */}
-                    <div className="mt-4">
-                        <div className="flex justify-between text-sm text-blue-200 mb-2">
-                            <span>Saisonfortschritt</span>
-                            <span>{Math.round((currentWeek / 52) * 100)}%</span>
-                        </div>
-                        <div className="w-full bg-blue-800/30 rounded-full h-2">
-                            <div 
-                                className="bg-white h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${(currentWeek / 52) * 100}%` }}
-                            ></div>
-                        </div>
-                    </div>
+                {/* Page Header */}
+                <PageHeader
+                    title={`Saison 2024/2025 - Woche ${currentWeek}`}
+                    subtitle="Wochenweise Führung durch alle Saisonphasen"
+                    icon={FaCalendarAlt}
+                    action={
+                        <Button
+                            onClick={() => navigate('/season/planning')}
+                            variant="primary"
+                            icon={FaPlus}
+                        >
+                            Saisonplanung
+                        </Button>
+                    }
+                />
+
+                {/* Statistics Grid */}
+                <div className="mb-6">
+                    <StatsGrid
+                        stats={[
+                            {
+                                icon: FaCalendarAlt,
+                                value: currentWeek,
+                                label: 'Aktuelle Woche'
+                            },
+                            {
+                                icon: FaTrophy,
+                                value: `${Math.round((currentWeek / 52) * 100)}%`,
+                                label: 'Saisonfortschritt'
+                            },
+                            {
+                                icon: FaUsers,
+                                value: seasonData.players?.length || 0,
+                                label: 'Spieler im Kader'
+                            },
+                            {
+                                icon: FaDumbbell,
+                                value: seasonData.events?.filter(e => e.type === 'training').length || 0,
+                                label: 'Trainingseinheiten'
+                            },
+                            {
+                                icon: FaCheckCircle,
+                                value: seasonData.tasks?.filter(t => t.isCompleted).length || 0,
+                                label: 'Erledigte Aufgaben'
+                            }
+                        ]}
+                    />
                 </div>
 
                 {/* Current Week Overview */}
-                <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                <Card className="mb-6">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <FaClock className="text-blue-500 mr-2" />
                         Diese Woche - {seasonPhases.find(p => p.id === currentPhase)?.title}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-green-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-green-800 mb-2">Prioritäten</h3>
-                            <ul className="text-sm text-green-700 space-y-1">
-                                <li>• Nächstes Spiel vorbereiten</li>
-                                <li>• Trainingseinheiten planen</li>
-                                <li>• Spieleranalyse durchführen</li>
+                        <Card className="border-green-200 bg-green-50">
+                            <h3 className="font-medium text-green-800 mb-3 flex items-center">
+                                <FaPlay className="mr-2" />
+                                Prioritäten
+                            </h3>
+                            <ul className="text-sm text-green-700 space-y-2">
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Nächstes Spiel vorbereiten
+                                </li>
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Trainingseinheiten planen
+                                </li>
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Spieleranalyse durchführen
+                                </li>
                             </ul>
-                        </div>
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-blue-800 mb-2">Anstehende Termine</h3>
-                            <ul className="text-sm text-blue-700 space-y-1">
-                                <li>• Training Dienstag 18:00</li>
-                                <li>• Spiel Samstag 15:00</li>
-                                <li>• Taktikbesprechung</li>
+                        </Card>
+                        <Card className="border-blue-200 bg-blue-50">
+                            <h3 className="font-medium text-blue-800 mb-3 flex items-center">
+                                <FaCalendarAlt className="mr-2" />
+                                Anstehende Termine
+                            </h3>
+                            <ul className="text-sm text-blue-700 space-y-2">
+                                <li className="flex items-center">
+                                    <FaClock className="mr-2 text-xs" />
+                                    Training Dienstag 18:00
+                                </li>
+                                <li className="flex items-center">
+                                    <FaTrophy className="mr-2 text-xs" />
+                                    Spiel Samstag 15:00
+                                </li>
+                                <li className="flex items-center">
+                                    <FaUsers className="mr-2 text-xs" />
+                                    Taktikbesprechung
+                                </li>
                             </ul>
-                        </div>
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-orange-800 mb-2">Wichtige Aufgaben</h3>
-                            <ul className="text-sm text-orange-700 space-y-1">
-                                <li>• Aufstellung festlegen</li>
-                                <li>• Verletzungsupdate</li>
-                                <li>• Gegneranalyse</li>
+                        </Card>
+                        <Card className="border-orange-200 bg-orange-50">
+                            <h3 className="font-medium text-orange-800 mb-3 flex items-center">
+                                <FaExclamationTriangle className="mr-2" />
+                                Wichtige Aufgaben
+                            </h3>
+                            <ul className="text-sm text-orange-700 space-y-2">
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Aufstellung festlegen
+                                </li>
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Verletzungsupdate
+                                </li>
+                                <li className="flex items-center">
+                                    <FaArrowRight className="mr-2 text-xs" />
+                                    Gegneranalyse
+                                </li>
                             </ul>
-                        </div>
+                        </Card>
                     </div>
-                </div>
-
-                {/* Season Phases */}
-                <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-6">Saisonphasen</h2>
+                </Card>                {/* Season Phases */}
+                <Card>
+                    <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                        <FaTrophy className="text-blue-500 mr-2" />
+                        Saisonphasen
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {seasonPhases.map((phase, index) => {
                             const status = getPhaseStatus(phase.id);
+                            const isActive = status === 'active';
+                            const isCompleted = status === 'completed';
+                            
                             return (
-                                <div
+                                <Card
                                     key={phase.id}
-                                    onClick={() => navigateToPhase(phase.id)}
-                                    className={`border rounded-xl p-6 cursor-pointer transition-all hover:shadow-md ${
-                                        status === 'active' 
-                                            ? 'ring-2 ring-blue-500 bg-blue-50' 
-                                            : status === 'completed'
-                                            ? 'bg-green-50 border-green-200'
-                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                    className={`cursor-pointer transition-all hover:shadow-md ${
+                                        isActive ? 'ring-2 ring-blue-500 bg-blue-50' :
+                                        isCompleted ? 'bg-green-50 border-green-200' :
+                                        'hover:bg-gray-50'
                                     }`}
+                                    onClick={() => navigateToPhase(phase.id)}
                                 >
                                     <div className="flex items-start justify-between mb-4">
                                         <div className={`p-3 rounded-lg ${getPhaseColor(phase.color)} bg-opacity-20`}>
@@ -416,53 +496,51 @@ const SeasonOverview = () => {
                                         ))}
                                     </ul>
                                     
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500">
+                                    <div className="flex items-center justify-between">                                        <span className="text-sm text-gray-500">
                                             {status === 'active' ? 'Woche 2 von 8' : ''}
                                         </span>
                                         <FaChevronRight className="text-gray-400" />
                                     </div>
-                                </div>
+                                </Card>
                             );
                         })}
                     </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Schnellzugriff</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button
-                            onClick={() => navigate('/team/training')}
-                            className="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-center transition-colors"
-                        >
-                            <FaDumbbell className="text-2xl text-green-600 mx-auto mb-2" />
-                            <span className="text-sm font-medium text-gray-800">Training planen</span>
-                        </button>
-                        
-                        <button
-                            onClick={() => navigate('/team/schedule')}
-                            className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors"
-                        >
-                            <FaCalendarAlt className="text-2xl text-blue-600 mx-auto mb-2" />
-                            <span className="text-sm font-medium text-gray-800">Spielplan</span>
-                        </button>
-                        
-                        <button
-                            onClick={() => navigate('/team/players')}
-                            className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition-colors"
-                        >
-                            <FaUsers className="text-2xl text-purple-600 mx-auto mb-2" />
-                            <span className="text-sm font-medium text-gray-800">Spieler</span>
-                        </button>
-                          <button
-                            onClick={() => navigate('/team/statistics')}
-                            className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-center transition-colors"
-                        >
-                            <FaChartLine className="text-2xl text-orange-600 mx-auto mb-2" />
-                            <span className="text-sm font-medium text-gray-800">Statistiken</span>
-                        </button>
-                    </div>
+                </Card>                {/* Quick Actions */}
+                <div className="mt-6">
+                    <QuickActionsGrid
+                        title="Saisonmanagement"
+                        icon={FaPlay}
+                        actions={[
+                            {
+                                title: 'Training planen',
+                                description: 'Einheiten erstellen',
+                                icon: FaDumbbell,
+                                onClick: () => navigate('/team/training'),
+                                variant: 'success'
+                            },
+                            {
+                                title: 'Spielplan',
+                                description: 'Termine verwalten',
+                                icon: FaCalendarAlt,
+                                onClick: () => navigate('/team/schedule'),
+                                variant: 'primary'
+                            },
+                            {
+                                title: 'Spieler',
+                                description: 'Kader verwalten',
+                                icon: FaUsers,
+                                onClick: () => navigate('/team/players'),
+                                variant: 'info'
+                            },
+                            {
+                                title: 'Statistiken',
+                                description: 'Daten analysieren',
+                                icon: FaChartLine,
+                                onClick: () => navigate('/team/statistics'),
+                                variant: 'warning'
+                            }
+                        ]}
+                    />
                 </div>
             </div>
         </Layout>

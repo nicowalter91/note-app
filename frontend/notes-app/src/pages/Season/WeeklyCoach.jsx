@@ -843,14 +843,13 @@ const WeeklyCoach = () => {
                                         <span className="font-medium">Spieler verwalten</span>
                                     </div>
                                 </button>
-                                
-                                <button
-                                    onClick={() => navigate('/notes')}
+                                  <button
+                                    onClick={() => navigate('/tasks')}
                                     className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 transition-colors"
                                 >
                                     <div className="flex items-center space-x-3">
                                         <FaClipboardList className="text-yellow-600" />
-                                        <span className="font-medium">Notizen erstellen</span>
+                                        <span className="font-medium">Aufgaben erstellen</span>
                                     </div>
                                 </button>
                             </div>

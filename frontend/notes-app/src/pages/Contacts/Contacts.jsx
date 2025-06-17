@@ -6,7 +6,8 @@ import AddEditContact from '../../components/Cards/AddEditContact';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import EmptyCard from '../../components/EmptyCard/EmptyCard';
 import Toast from '../../components/ToastMessage/Toast';
-import { MdAdd, MdFilterList, MdClear } from 'react-icons/md';
+import { MdAdd, MdFilterList, MdClear, MdContacts } from 'react-icons/md';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 import { 
     getAllContacts, 
     addContact, 
@@ -16,6 +17,17 @@ import {
     updateLastContactDate 
 } from '../../utils/contactService';
 import axiosInstance from '../../utils/axiosInstance';
+
+// Import Design System Components
+import {
+  PageHeader,
+  Card,
+  Button,
+  Badge,
+  LoadingSpinner,
+  EmptyState,
+  StatsGrid
+} from '../../components/UI/DesignSystem';
 
 const Contacts = () => {
     const [contacts, setContacts] = useState([]);
@@ -185,110 +197,148 @@ const Contacts = () => {
 
     const stats = getContactStats();    return (
         <Layout>
-            <div className="mx-auto max-w-7xl px-4 py-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Kontakte</h1>
-                            <p className="text-gray-600">
-                                Verwalten Sie Ihre Kontakte für Testspiele, Verbände und mehr
-                            </p>
-                        </div>
-                        <button
+            <div className="min-h-screen bg-gray-50 p-6">
+                {/* Page Header */}
+                <PageHeader
+                    title="Kontakte"
+                    subtitle="Verwalten Sie Ihre Kontakte für Testspiele, Verbände und mehr"
+                    icon={MdContacts}
+                    action={
+                        <Button
                             onClick={handleAddContact}
-                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            variant="primary"
+                            icon={MdAdd}
                         >
-                            <MdAdd className="w-5 h-5 mr-2" />
                             Neuer Kontakt
-                        </button>
-                    </div>
+                        </Button>
+                    }
+                />
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                            <div className="text-sm text-blue-600 font-medium">Gesamt</div>
-                            <div className="text-xl font-bold text-blue-900">{stats.total}</div>
-                        </div>
-                        <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                            <div className="text-sm text-orange-600 font-medium">Angepinnt</div>
-                            <div className="text-xl font-bold text-orange-900">{stats.pinned}</div>
-                        </div>
-                        {Object.entries(stats.byCategory).map(([category, count]) => (
-                            <div key={category} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <div className="text-sm text-gray-600 font-medium">{category}</div>
-                                <div className="text-xl font-bold text-gray-900">{count}</div>
-                            </div>
-                        ))}
+                {/* Loading State */}
+                {isLoading && <LoadingSpinner text="Lade Kontakte..." />}
+
+                {/* Statistics Grid */}
+                {!isLoading && contacts.length > 0 && (
+                    <div className="mb-6">
+                        <StatsGrid
+                            stats={[
+                                {
+                                    icon: MdContacts,
+                                    value: stats.total,
+                                    label: 'Gesamt Kontakte'
+                                },
+                                {
+                                    icon: MdFilterList,
+                                    value: stats.pinned,
+                                    label: 'Angepinnt'
+                                },
+                                {
+                                    icon: MdContacts,
+                                    value: stats.byCategory['Vereine'] || 0,
+                                    label: 'Vereine'
+                                },
+                                {
+                                    icon: MdContacts,
+                                    value: stats.byCategory['Schiedsrichter'] || 0,
+                                    label: 'Schiedsrichter'
+                                }
+                            ]}
+                        />
                     </div>
-                </div>
+                )}
 
                 {/* Search and Filters */}
-                <div className="mb-6">
-                    <div className="flex flex-col lg:flex-row gap-4">
+                <Card className="mb-6">
+                    <div className="space-y-4">
                         {/* Search Bar */}
-                        <div className="flex-1">
-                            <SearchBar 
-                                value={searchQuery}
-                                onChange={setSearchQuery}
-                                onClear={() => setSearchQuery('')}
+                        <div className="relative">
+                            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
                                 placeholder="Kontakte durchsuchen..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
-                        </div>
-
-                        {/* Category Filter */}
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                                <MdFilterList className="w-5 h-5 text-gray-500" />
-                                <select
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    {categories.map(category => (
-                                        <option key={category} value={category}>
-                                            {category}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {(searchQuery || selectedCategory !== 'Alle') && (
+                            {searchQuery && (
                                 <button
-                                    onClick={handleClearFilters}
-                                    className="inline-flex items-center px-3 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    <MdClear className="w-4 h-4 mr-1" />
-                                    Filter löschen
+                                    <FaTimes />
                                 </button>
                             )}
                         </div>
-                    </div>
 
-                    {/* Results Info */}
-                    <div className="mt-2 text-sm text-gray-600">
-                        {filteredContacts.length} von {contacts.length} Kontakten
-                        {searchQuery && ` für "${searchQuery}"`}
-                        {selectedCategory !== 'Alle' && ` in Kategorie "${selectedCategory}"`}
+                        {/* Category Filters */}
+                        <div className="flex flex-wrap gap-2 items-center">
+                            <span className="text-sm text-gray-500 mr-2">Kategorien:</span>
+                            
+                            {categories.map(category => (
+                                <Badge
+                                    key={category}
+                                    variant={selectedCategory === category ? 'primary' : 'secondary'}
+                                    onClick={() => setSelectedCategory(category)}
+                                    className="cursor-pointer"
+                                >
+                                    {category}
+                                    {category !== 'Alle' && (
+                                        <span className="ml-1">
+                                            ({stats.byCategory[category] || 0})
+                                        </span>
+                                    )}
+                                    {category === 'Alle' && (
+                                        <span className="ml-1">({stats.total})</span>
+                                    )}
+                                </Badge>
+                            ))}
+
+                            {(searchQuery || selectedCategory !== 'Alle') && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleClearFilters}
+                                    icon={MdClear}
+                                >
+                                    Filter löschen
+                                </Button>
+                            )}
+                        </div>
+
+                        {/* Results Info */}
+                        <div className="text-sm text-gray-600">
+                            {filteredContacts.length} von {contacts.length} Kontakten
+                            {searchQuery && ` für "${searchQuery}"`}
+                            {selectedCategory !== 'Alle' && ` in Kategorie "${selectedCategory}"`}
+                        </div>
                     </div>
-                </div>
+                </Card>
 
                 {/* Content */}
-                {isLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                ) : filteredContacts.length === 0 ? (
-                    <EmptyCard 
-                        imgSrc="/src/assets/img/noData.png"
-                        message={
+                {!isLoading && filteredContacts.length === 0 ? (
+                    <EmptyState
+                        icon={FaSearch}
+                        title={
                             searchQuery || selectedCategory !== 'Alle'
                                 ? "Keine Kontakte gefunden"
                                 : "Noch keine Kontakte vorhanden"
                         }
-                        isSearch={!!(searchQuery || selectedCategory !== 'Alle')}
+                        description={
+                            searchQuery || selectedCategory !== 'Alle'
+                                ? "Versuchen Sie Ihre Suche anzupassen oder Filter zu ändern."
+                                : "Erstellen Sie Ihren ersten Kontakt, um zu beginnen."
+                        }
+                        action={
+                            <Button
+                                variant="primary"
+                                icon={MdAdd}
+                                onClick={handleAddContact}
+                            >
+                                Ersten Kontakt erstellen
+                            </Button>
+                        }
                     />
-                ) : (
+                ) : !isLoading && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredContacts.map(contact => (
                             <ContactCard
@@ -312,12 +362,15 @@ const Contacts = () => {
                     }}
                     onSave={handleSaveContact}
                     contact={contactToEdit}
-                />                {/* Toast Message */}
+                />
+
+                {/* Toast Message */}
                 <Toast
                     isShown={showToast}
                     onClose={() => setShowToast(false)}
                     message={toastMessage}
-                    type={toastType}                />
+                    type={toastType}
+                />
             </div>
         </Layout>
     );

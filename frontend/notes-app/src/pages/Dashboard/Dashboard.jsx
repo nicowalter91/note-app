@@ -21,13 +21,14 @@ import {
     FaMapMarkerAlt,
     FaFire,
     FaRunning,
-    FaTrophy,
-    FaFutbol,
-    FaDrawPolygon,
+    FaTrophy,    FaFutbol,    FaDrawPolygon,
     FaHome,
     FaPlane,
     FaSnowflake,
-    FaSun
+    FaSun,
+    FaCalendarWeek,
+    FaArrowRight,
+    FaPlay
 } from 'react-icons/fa';
 import { 
     HiLightningBolt, 

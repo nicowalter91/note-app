@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Importiere benötigte Komponenten von 'react-router-dom'
-import Tasks from './pages/Notes/Tasks';  // Importiere die Tasks-Seite
+import Tasks from './pages/Tasks/Tasks';  // Importiere die Tasks-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
 // Removed empty/incomplete pages: Profil, Settings, Team, Tactic, Video
@@ -11,7 +11,7 @@ import PlayerEdit from './pages/Team/Players/Profile/PlayerEdit';
 import Exercises from './pages/Exercises/Exercises';
 
 // Importiere die Team-bezogenen Seiten
-import Schedule from './pages/Team/Schedule/Schedule';
+// Schedule temporarily removed
 import Statistics from './pages/Team/Statistics/Statistics';
 import Training from './pages/Team/Training/Training';
 import Tactics from './pages/Team/Tactics/Tactics';
@@ -57,13 +57,12 @@ const routes = (
       <Route path="/tasks" exact element={<Tasks />} />
       <Route path="/exercises" exact element={<Exercises />} />
       <Route path="/contacts" exact element={<Contacts />} />
-      
-      {/* Team Management Routes */}
+        {/* Team Management Routes */}
       <Route path="/players" exact element={<Players />} />
       <Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
       <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
-      <Route path="/team/schedule" exact element={<Schedule />} />
+      {/* <Route path="/team/schedule" exact element={<Schedule />} /> */}
       <Route path="/team/event/:id" exact element={<EventDetail />} />
       <Route path="/team/training/:id" exact element={<TrainingDetails />} />
       <Route path="/team/statistics" exact element={<Statistics />} />
