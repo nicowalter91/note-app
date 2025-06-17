@@ -111,15 +111,23 @@ const Training = () => {
                 <PageHeader
                     title="Trainingsplanung"
                     subtitle="Plane und verwalte alle Trainingseinheiten deines Teams"
-                    icon={FaDumbbell}
-                    action={
-                        <Button
-                            onClick={() => setShowAddTraining(true)}
-                            variant="primary"
-                            icon={FaPlus}
-                        >
-                            Neues Training
-                        </Button>
+                    icon={FaDumbbell}                    action={
+                        <div className="flex gap-3">
+                            <Button
+                                onClick={() => navigate('/team/training/plan')}
+                                variant="primary"
+                                icon={FaPlus}
+                            >
+                                Training planen
+                            </Button>
+                            <Button
+                                onClick={() => setShowAddTraining(true)}
+                                variant="secondary"
+                                icon={FaCalendarAlt}
+                            >
+                                Schnell hinzufügen
+                            </Button>
+                        </div>
                     }
                 />
 
