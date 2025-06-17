@@ -24,6 +24,7 @@ import TrainingDetails from './pages/Team/Training/TrainingDetails';
 import TrainingPlan from './pages/Team/Training/TrainingPlan';
 import MatchDay from './pages/Team/MatchDay/MatchDay';
 import MatchDayDetails from './pages/Team/MatchDay/MatchDayDetails';
+import TeamInvitation from './pages/Team/Invitation/TeamInvitation';
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -36,6 +37,7 @@ import Feedback from './pages/Support/Feedback';
 import ContactSupport from './pages/Support/ContactSupport';
 
 // Importiere Einstellungs- und Daten-Seiten
+import Settings from './pages/Settings/Settings';
 import NotificationSettings from './pages/Settings/NotificationSettings';
 import LanguageSettings from './pages/Settings/LanguageSettings';
 import ImportData from './pages/Data/ImportData';
@@ -70,10 +72,12 @@ const routes = (
       <Route path="/team/statistics" exact element={<Statistics />} />
       <Route path="/team/tactics" exact element={<Tactics />} />
       <Route path="/team/formation" exact element={<Formation />} />
-      <Route path="/team/finance" exact element={<TeamFinance />} />
-      <Route path="/team/planning" exact element={<SeasonPlanning />} />
+      <Route path="/team/finance" exact element={<TeamFinance />} />      <Route path="/team/planning" exact element={<SeasonPlanning />} />
       <Route path="/team/matchday" exact element={<MatchDay />} />
       <Route path="/team/matchday/:id" exact element={<MatchDayDetails />} />
+      
+      {/* Team Invitation Route */}
+      <Route path="/invite/:token" exact element={<TeamInvitation />} />
       
       {/* Season Management Routes - Core Feature */}
       <Route path="/season" exact element={<SeasonOverview />} />
@@ -83,10 +87,10 @@ const routes = (
       {/* Essential Tools - Only Drawing Tools for Exercises */}
       <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
       <Route path="/tools/football-exercise" exact element={<FootballExerciseToolPage />} />
-      
-      {/* Settings and Data Routes - Essential Only */}
+        {/* Settings and Data Routes - Essential Only */}
+      <Route path="/settings" exact element={<Settings />} />
       <Route path="/data/import" exact element={<ImportData />} />
-      <Route path="/data/export" exact element={<ExportData />} />      
+      <Route path="/data/export" exact element={<ExportData />} />
       {/* Support & Legal Routes - Moved to bottom */}
       <Route path="/legal" exact element={<LegalNotice />} />
       <Route path="/privacy" exact element={<PrivacyPolicy />} />

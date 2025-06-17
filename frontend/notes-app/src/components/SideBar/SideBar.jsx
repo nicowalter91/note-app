@@ -412,14 +412,17 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
             <NavItem icon={<HiClipboardCheck />} label="Aufgaben" onClick={() => navigate('/tasks')} />
             <NavItem icon={<HiUserGroup />} label="Kontakte" onClick={() => navigate('/contacts')} />
           </nav>
-        </div>
-
-        {/* Einstellungen */}
+        </div>        {/* Einstellungen */}
         <div>
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Einstellungen</p>
           </div>
           <nav className="space-y-1">
+            <NavItem 
+              icon={<HiCog />} 
+              label="Vereinseinstellungen" 
+              onClick={() => navigate('/settings')}
+            />
             <NavItem 
               icon={<HiCog />} 
               label="Daten & Hilfe" 

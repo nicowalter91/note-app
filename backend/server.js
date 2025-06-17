@@ -2,7 +2,7 @@
 require("dotenv").config();
 const config = require("./config.json");
 
-const { getUser, loginUser, createUser } = require("./controllers/user");
+const { getUser, loginUser, createUser, changePassword, changeEmail } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
@@ -70,6 +70,16 @@ app.post("/login", async (req, res) => {
 // Route zum Abrufen von Benutzerinformationen
 app.get("/get-user", authenticateToken, async (req, res) => {
   getUser(req, res);
+});
+
+// Route zum Ändern des Passworts
+app.put("/change-password", authenticateToken, async (req, res) => {
+  changePassword(req, res);
+});
+
+// Route zum Ändern der E-Mail-Adresse
+app.put("/change-email", authenticateToken, async (req, res) => {
+  changeEmail(req, res);
 });
 
 // *** Spieler-Routen ***
@@ -353,6 +363,44 @@ app.get("/api/formations/templates", authenticateToken, async (req, res) => {
 // Route zum Aktualisieren der Formation-Nutzungsstatistiken
 app.put("/api/formations/:formationId/usage", authenticateToken, async (req, res) => {
   updateFormationUsage(req, res);
+});
+
+// *** Settings-Routen ***
+const { getClubSettings, updateClubSettings, uploadClubLogo } = require('./controllers/clubSettings');
+const { getTeamMembers, inviteTeamMember, acceptInvitation, updateTeamMember, removeTeamMember } = require('./controllers/teamMembers');
+
+// Club Settings Routes
+app.get("/api/club-settings", authenticateToken, async (req, res) => {
+  getClubSettings(req, res);
+});
+
+app.put("/api/club-settings", authenticateToken, async (req, res) => {
+  updateClubSettings(req, res);
+});
+
+app.post("/api/club-settings/logo", authenticateToken, upload.single('logo'), async (req, res) => {
+  uploadClubLogo(req, res);
+});
+
+// Team Members Routes
+app.get("/api/team-members", authenticateToken, async (req, res) => {
+  getTeamMembers(req, res);
+});
+
+app.post("/api/team-members/invite", authenticateToken, async (req, res) => {
+  inviteTeamMember(req, res);
+});
+
+app.post("/api/team-members/accept/:token", authenticateToken, async (req, res) => {
+  acceptInvitation(req, res);
+});
+
+app.put("/api/team-members/:id", authenticateToken, async (req, res) => {
+  updateTeamMember(req, res);
+});
+
+app.delete("/api/team-members/:id", authenticateToken, async (req, res) => {
+  removeTeamMember(req, res);
 });
 
 // *** Server starten ***

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
 import { PageHeader, LoadingSpinner } from '../../components/UI/DesignSystem';
 import { useNavigate } from 'react-router-dom';
+import { getClubSettings } from '../../utils/clubSettingsService';
 import { 
     FaChartLine, 
     FaCalendarAlt, 
@@ -63,6 +64,7 @@ import 'moment/locale/de';
 const Dashboard = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
+    const [clubSettings, setClubSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [dashboardData, setDashboardData] = useState({
         tasks: {
@@ -100,13 +102,11 @@ const Dashboard = () => {
             } catch (error) {
                 console.error("Failed to fetch user info:", error);
             }
-        };
-
-        const loadDashboardData = async () => {
+        };        const loadDashboardData = async () => {
             try {
                 setLoading(true);
-                  // Parallel laden aller Dashboard-Daten
-                const [tasksRes, playersRes, exercisesRes, eventsRes, contactsRes] = await Promise.all([
+                  // Parallel laden aller Dashboard-Daten inkl. Club-Settings
+                const [tasksRes, playersRes, exercisesRes, eventsRes, contactsRes, clubSettingsRes] = await Promise.all([
                     axiosInstance.get("/get-all-tasks").catch(() => ({ data: { tasks: [] } })),
                     axiosInstance.get("/players").catch((error) => {
                         console.error("Player API error:", error);
@@ -114,7 +114,8 @@ const Dashboard = () => {
                     }),
                     axiosInstance.get("/get-all-exercises").catch(() => ({ data: { exercises: [] } })),
                     axiosInstance.get("/get-all-events").catch(() => ({ data: { events: [] } })),
-                    axiosInstance.get("/contacts").catch(() => ({ data: { contacts: [] } }))
+                    axiosInstance.get("/contacts").catch(() => ({ data: { contacts: [] } })),
+                    getClubSettings().catch(() => ({ settings: null }))
                 ]);
 
                 console.log("Players response:", playersRes.data); // Debug Log
@@ -124,6 +125,10 @@ const Dashboard = () => {
                 const exercises = exercisesRes.data.exercises || [];
                 const events = eventsRes.data.events || [];
                 const contacts = contactsRes.data.contacts || [];
+                const clubSettingsData = clubSettingsRes.settings;
+
+                // Club Settings setzen
+                setClubSettings(clubSettingsData);
 
                 // Task-Statistiken berechnen
                 const completedTasks = tasks.filter(task => task.status === 'completed').length;
@@ -322,16 +327,51 @@ const Dashboard = () => {
                 </div>
             </Layout>
         );
-    }
-
-    return (
+    }    return (
     <Layout>
-        <div className="container mx-auto px-4 py-6">            {/* Dashboard Header */}
-            <PageHeader
-                title={`${getGreeting()}, ${userInfo?.name || 'Trainer'}!`}
-                subtitle="Hier ist ein Überblick über dein Team und anstehende Aufgaben"
-                icon={HiHome}
-            />{/* Nächste wichtige Termine - Konsistent mit App-Design */}
+        <div className="container mx-auto px-4 py-6">            
+            {/* Dashboard Header with Club Info */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        {/* Club Logo */}
+                        {clubSettings?.logo && (
+                            <div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200 bg-white shadow-md">
+                                <img 
+                                    src={clubSettings.logo} 
+                                    alt="Vereinslogo" 
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        )}
+                        
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                {clubSettings?.name || `${getGreeting()}, ${userInfo?.name || 'Trainer'}!`}
+                            </h1>
+                            <p className="text-lg text-gray-600 dark:text-gray-300 mt-1">
+                                {clubSettings?.name ? `${getGreeting()}, ${userInfo?.name || 'Trainer'}!` : 'Hier ist ein Überblick über dein Team und anstehende Aufgaben'}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* Optionale Vereinsfarben als Akzent */}
+                    {clubSettings?.primaryColor && (
+                        <div className="hidden md:flex items-center space-x-2">
+                            <div 
+                                className="w-4 h-4 rounded-full border border-gray-300"
+                                style={{ backgroundColor: clubSettings.primaryColor }}
+                            ></div>
+                            {clubSettings?.secondaryColor && (
+                                <div 
+                                    className="w-4 h-4 rounded-full border border-gray-300"
+                                    style={{ backgroundColor: clubSettings.secondaryColor }}
+                                ></div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>{/* Nächste wichtige Termine - Konsistent mit App-Design */}
             {(dashboardData.events.nextTraining || dashboardData.events.nextGame) && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Nächste Termine</h2>
