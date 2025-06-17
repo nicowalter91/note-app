@@ -102,16 +102,39 @@ const getPlayer = async (req, res) => {
     const { id } = req.params;
     const { user } = req.user; // Aus dem Token
     
-    // Spieler nach ID abrufen, nur wenn er dem Benutzer gehört
-    const player = await Player.findOne({ _id: id, userId: user._id });
+    console.log('=== GET PLAYER DEBUG ===');
+    console.log('Requested Player ID:', id);
+    console.log('User ID from token:', user._id);
     
+    // Spieler nach ID abrufen - auch Legacy-Daten ohne userId berücksichtigen
+    const player = await Player.findOne({
+      _id: id,
+      $or: [
+        { userId: user._id },
+        { userId: { $exists: false } },
+        { userId: null }
+      ]
+    });
+    
+    console.log('Found player:', player ? 'YES' : 'NO');
     if (!player) {
+      console.log('Searching for any player with this ID regardless of userId...');
+      const anyPlayer = await Player.findById(id);
+      console.log('Player exists in DB:', anyPlayer ? 'YES' : 'NO');
+      if (anyPlayer) {
+        console.log('Player userId:', anyPlayer.userId);
+        console.log('Current user ID:', user._id);
+      }
+    }
+      if (!player) {
+      console.log('Player not found with current user restrictions');
       return res.status(404).json({
         success: false,
         message: "Spieler nicht gefunden"
       });
     }
     
+    console.log('Successfully found player:', player.name);
     res.status(200).json({
       success: true,
       player

@@ -24,15 +24,14 @@ const Players = () => {    const [players, setPlayers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlayer, setEditingPlayer] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [isEditing, setIsEditing] = useState(false);    const [statusFilter, setStatusFilter] = useState('all');
     const navigate = useNavigate();// Fetch players from API
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 setLoading(true);
-                const playersData = await getAllPlayers();
-                console.log('Spielerdaten von API:', playersData);
+                const playersData = await getAllPlayers();                console.log('Spielerdaten von API:', playersData);
+                console.log('Erste 3 Spieler IDs:', playersData.slice(0, 3).map(p => ({ id: p._id, name: p.name })));
                 setPlayers(playersData || []);
                 setError(null);
             } catch (err) {
@@ -184,13 +183,14 @@ const Players = () => {    const [players, setPlayers] = useState([]);
                 // Aktualisiere die lokale Spielerliste
                 setPlayers(players.filter((_, i) => i !== index));
                 setLoading(false);
-            }
-        } catch (err) {
+            }        } catch (err) {
             console.error('Fehler beim Löschen des Spielers:', err);
             alert('Fehler beim Löschen des Spielers. Bitte versuchen Sie es später erneut.');
             setLoading(false);
         }
-    };    const editPlayer = (index) => {
+    };
+
+    const editPlayer = (index) => {
         const player = players[index];
         setEditingPlayer(index);
         // Stelle sicher, dass alle notwendigen Felder vorhanden sind
@@ -202,7 +202,10 @@ const Players = () => {    const [players, setPlayers] = useState([]);
         });
         setIsEditing(true);
         setIsModalOpen(true);
-    };    const filteredPlayers = players.filter(player => {
+    };
+
+    // Filter players based on search and status
+    const displayPlayers = players.filter(player => {
         const matchesSearch = player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             player.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
             player.number.toString().includes(searchQuery);
@@ -356,12 +359,10 @@ const Players = () => {    const [players, setPlayers] = useState([]);
                             </Badge>
                         </div>
                     </div>
-                </Card>
-
-                {/* Player Grid */}
-                {!loading && filteredPlayers.length > 0 ? (
+                </Card>                {/* Player Grid */}
+                {!loading && displayPlayers.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredPlayers.map((player, index) => (
+                        {displayPlayers.map((player, index) => (
                             <Card key={index} className="overflow-hidden hover:shadow-md transition-shadow">
                                 <div className="bg-gray-50 p-4 flex justify-center">
                                     {player.profileImage ? (

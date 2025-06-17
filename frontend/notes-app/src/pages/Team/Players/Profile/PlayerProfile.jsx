@@ -662,20 +662,12 @@ const PlayerProfile = () => {
                                 className="px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors flex items-center justify-center gap-1"
                             >
                                 <FaFilePdf size={14} /> PDF Export
-                            </button><button
+                            </button>                            <button
                                 onClick={() => navigate('/team/players')}
                                 className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
                             >
                                 <FaArrowLeft size={14} /> Zurück zur Übersicht
                             </button>
-                            {process.env.NODE_ENV === 'development' && (
-                                <button
-                                    onClick={generateSamplePlayer}
-                                    className="px-4 py-2 bg-purple-50 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-1"
-                                >
-                                    <FaCheck size={14} /> Testdaten
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>
