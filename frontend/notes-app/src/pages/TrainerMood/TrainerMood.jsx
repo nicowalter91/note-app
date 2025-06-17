@@ -341,10 +341,12 @@ const TrainerMood = () => {
                   />
                 </div>              </div>            </Card>
           )}
-        </div>
-
-        {/* Analytics Sidebar */}
-        <div className="space-y-4">
+        </div>        {/* Analytics Sidebar */}
+        <div className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2"
+             style={{
+               scrollbarWidth: 'thin',
+               scrollbarColor: '#d1d5db #f3f4f6'
+             }}>
           {/* Quick Stats */}
           <Card title="30-Tage Übersicht" icon={FaChartLine}>
             {analytics ? (
