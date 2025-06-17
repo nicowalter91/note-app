@@ -3,6 +3,9 @@ import Layout from '../../components/Layout/Layout';
 import { PageHeader, LoadingSpinner } from '../../components/UI/DesignSystem';
 import { useNavigate } from 'react-router-dom';
 import { getClubSettings } from '../../utils/clubSettingsService';
+import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
+import InvitedUserTour from '../../components/Tour/InvitedUserTour';
+import { completeTour } from '../../utils/tourService';
 import { 
     FaChartLine, 
     FaCalendarAlt, 
@@ -62,10 +65,12 @@ import moment from 'moment';
 import 'moment/locale/de';
 
 const Dashboard = () => {
-    const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
+    const navigate = useNavigate();    const [userInfo, setUserInfo] = useState(null);
+    const [teamMemberInfo, setTeamMemberInfo] = useState(null);
     const [clubSettings, setClubSettings] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showTour, setShowTour] = useState(false);
     const [dashboardData, setDashboardData] = useState({
         tasks: {
             total: 0,
@@ -92,17 +97,31 @@ const Dashboard = () => {
     });
 
     // Benutzerdaten laden
-    useEffect(() => {
-        const getUserInfo = async () => {
+    useEffect(() => {        const getUserInfo = async () => {
             try {
                 const response = await axiosInstance.get("/get-user");
                 if (response.data && response.data.user) {
                     setUserInfo(response.data.user);
+                    
+                    // Check if onboarding is needed for main users
+                    if (!response.data.user.onboardingCompleted && response.data.user.userType === 'main') {
+                        setShowOnboarding(true);
+                    }
+                    
+                    // Check if tour is needed for invited users
+                    if (!response.data.user.onboardingCompleted && response.data.user.userType === 'invited') {
+                        setShowTour(true);
+                    }
+                    
+                    // Set team member info if available
+                    if (response.data.teamMember) {
+                        setTeamMemberInfo(response.data.teamMember);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch user info:", error);
             }
-        };        const loadDashboardData = async () => {
+        };const loadDashboardData = async () => {
             try {
                 setLoading(true);
                   // Parallel laden aller Dashboard-Daten inkl. Club-Settings
@@ -326,10 +345,49 @@ const Dashboard = () => {
                     <LoadingSpinner size="lg" />
                 </div>
             </Layout>
-        );
-    }    return (
-    <Layout>
-        <div className="container mx-auto px-4 py-6">            
+        );    }    return (
+    <>
+        {/* Onboarding Wizard */}
+        {showOnboarding && (
+            <OnboardingWizard 
+                onComplete={() => {
+                    setShowOnboarding(false);
+                    // Reload dashboard data after onboarding
+                    window.location.reload();
+                }}
+            />
+        )}
+        
+        {/* Invited User Tour */}
+        {showTour && userInfo && teamMemberInfo && (
+            <InvitedUserTour 
+                user={userInfo}
+                teamMember={teamMemberInfo}
+                onComplete={async () => {
+                    try {
+                        await completeTour();
+                        setShowTour(false);
+                        setUserInfo(prev => ({ ...prev, onboardingCompleted: true }));
+                    } catch (error) {
+                        console.error('Failed to complete tour:', error);
+                        setShowTour(false);
+                    }
+                }}
+                onSkip={async () => {
+                    try {
+                        await completeTour();
+                        setShowTour(false);
+                        setUserInfo(prev => ({ ...prev, onboardingCompleted: true }));
+                    } catch (error) {
+                        console.error('Failed to skip tour:', error);
+                        setShowTour(false);
+                    }
+                }}
+            />
+        )}
+        
+        <Layout>
+        <div className="main-content container mx-auto px-4 py-6">            
             {/* Dashboard Header with Club Info */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -962,15 +1020,13 @@ const Dashboard = () => {
                         <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div 
                                 className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full h-2 transition-all duration-300"
-                                style={{ width: `${(moment().isoWeekday() / 7) * 100}%` }}
-                            />
+                                style={{ width: `${(moment().isoWeekday() / 7) * 100}%` }}                            />
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Layout>
-    );
+        </div>        </Layout>    </>
+);
 };
 
 export default Dashboard;

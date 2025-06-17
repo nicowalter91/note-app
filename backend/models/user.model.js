@@ -8,6 +8,9 @@ const userSchema = new Schema({
     email: {type: String, unique: true}, // Optional: Email sollte eindeutig sein
     password: {type: String, required: true}, // Passwort ist erforderlich
     createdOn: {type: Date, default: new Date().getTime()},
+    onboardingCompleted: {type: Boolean, default: false},
+    onboardingCompletedAt: {type: Date, default: null},
+    userType: {type: String, enum: ['main', 'invited'], default: 'main'}, // main = Haupt-Trainer, invited = eingeladener User
 });
 
 // Middleware, die vor dem Speichern ausgeführt wird

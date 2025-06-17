@@ -2,7 +2,7 @@
 require("dotenv").config();
 const config = require("./config.json");
 
-const { getUser, loginUser, createUser, changePassword, changeEmail } = require("./controllers/user");
+const { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
@@ -12,6 +12,7 @@ const { addContact, editContact, getAllContacts, getContact, deleteContact, upda
 const { getStatistics, recalculateStatistics } = require("./controllers/statistics");
 const { addTactic, editTactic, getAllTactics, getTactic, deleteTactic, createFromTemplate: createTacticFromTemplate, updateTacticUsage } = require("./controllers/tactics");
 const { addFormation, editFormation, getAllFormations, getFormation, deleteFormation, createFromTemplate: createFormationFromTemplate, updateFormationUsage, getFormationTemplates } = require("./controllers/formations");
+const { startOnboarding, trackStep, completeOnboarding: completeOnboardingAnalytics, getAnalytics, getPersonalAnalytics } = require("./controllers/onboardingAnalytics");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -80,6 +81,47 @@ app.put("/change-password", authenticateToken, async (req, res) => {
 // Route zum Ändern der E-Mail-Adresse
 app.put("/change-email", authenticateToken, async (req, res) => {
   changeEmail(req, res);
+});
+
+// Route zum Abschließen des Onboardings
+app.put("/complete-onboarding", authenticateToken, async (req, res) => {
+  completeOnboarding(req, res);
+});
+
+// Route zum Abschließen der Tour für eingeladene User
+app.put("/complete-tour", authenticateToken, async (req, res) => {
+  completeTour(req, res);
+});
+
+// Route zum Zurücksetzen des Onboardings (für Testing)
+app.put("/reset-onboarding", authenticateToken, async (req, res) => {
+  resetOnboarding(req, res);
+});
+
+// *** Analytics-Routen ***
+// Route zum Starten der Onboarding-Verfolgung
+app.post("/analytics/onboarding/start", authenticateToken, async (req, res) => {
+  startOnboarding(req, res);
+});
+
+// Route zum Verfolgen von Schritten
+app.post("/analytics/onboarding/track-step", authenticateToken, async (req, res) => {
+  trackStep(req, res);
+});
+
+// Route zum Abschließen der Onboarding-Verfolgung
+app.post("/analytics/onboarding/complete", authenticateToken, async (req, res) => {
+  completeOnboardingAnalytics(req, res);
+});
+
+// Route zum Abrufen der Analytics (für Club-Besitzer)
+app.get("/analytics/onboarding", authenticateToken, async (req, res) => {
+  getAnalytics(req, res);
+});
+
+// Route zum Abrufen persönlicher Analytics
+app.get("/analytics/onboarding/personal", authenticateToken, async (req, res) => {
+  getPersonalAnalytics(req, res);
 });
 
 // *** Spieler-Routen ***

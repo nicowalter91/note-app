@@ -1,5 +1,6 @@
 // *** Controller for User ***
 const User = require("../models/user.model");
+const TeamMember = require("../models/teamMember.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -8,13 +9,24 @@ const getUser = async (req, res) => {
   const isUser = await User.findOne({ _id: user._id });
 
   if (!isUser) return res.sendStatus(401);
+
+  // Check if user is an invited team member
+  let teamMemberInfo = null;
+  if (isUser.userType === 'invited') {
+    teamMemberInfo = await TeamMember.findOne({ userId: isUser._id });
+  }
+
   return res.json({
     user: {
       fullName: isUser.fullName,
       email: isUser.email,
       _id: isUser._id,
       createdOn: isUser.createdOn,
+      userType: isUser.userType,
+      onboardingCompleted: isUser.onboardingCompleted,
+      onboardingCompletedAt: isUser.onboardingCompletedAt
     },
+    teamMember: teamMemberInfo,
     message: "",
   });
 };
@@ -218,8 +230,86 @@ const changeEmail = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Interner Serverfehler beim Ändern der E-Mail-Adresse"
+    });  }
+};
+
+// Complete onboarding
+const completeOnboarding = async (req, res) => {
+  try {
+    const { user } = req.user;
+
+    // Update user to mark onboarding as completed
+    await User.findByIdAndUpdate(user._id, {
+      onboardingCompleted: true,
+      onboardingCompletedAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Onboarding erfolgreich abgeschlossen"
+    });
+
+  } catch (error) {
+    console.error('Fehler beim Abschließen des Onboardings:', error);
+    res.status(500).json({
+      success: false,
+      message: "Interner Serverfehler beim Abschließen des Onboardings"
+    });  }
+};
+
+// Complete tour for invited users
+const completeTour = async (req, res) => {
+  try {
+    const { user } = req.user;
+
+    // For invited users, mark onboarding as completed (used as tour completion)
+    if (user.userType === 'invited') {
+      await User.findByIdAndUpdate(user._id, {
+        onboardingCompleted: true,
+        onboardingCompletedAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Tour erfolgreich abgeschlossen"
+    });
+
+  } catch (error) {
+    console.error('Fehler beim Abschließen der Tour:', error);
+    res.status(500).json({
+      success: false,
+      message: "Interner Serverfehler beim Abschließen der Tour"
     });
   }
 };
 
-module.exports = { getUser, loginUser, createUser, changePassword, changeEmail };
+// Reset onboarding (for testing purposes)
+const resetOnboarding = async (req, res) => {
+  try {
+    const { user } = req.user;
+
+    // Reset user onboarding status
+    await User.findByIdAndUpdate(user._id, {
+      onboardingCompleted: false,
+      onboardingCompletedAt: null,
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Onboarding-Status zurückgesetzt"
+    });
+
+  } catch (error) {
+    console.error('Fehler beim Zurücksetzen des Onboardings:', error);
+    res.status(500).json({
+      success: false,
+      message: "Interner Serverfehler beim Zurücksetzen des Onboardings"
+    });
+  }
+};
+
+module.exports = { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding };

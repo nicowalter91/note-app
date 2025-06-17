@@ -133,9 +133,8 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     }
     
     return false;
-  };
-  // NavItem component with submenu support
-  const NavItem = ({ icon, label, onClick, path, submenu, badge, isNew }) => {
+  };  // NavItem component with submenu support
+  const NavItem = ({ icon, label, onClick, path, submenu, badge, isNew, dataTour }) => {
     const routePath = path || label.toLowerCase();
     const active = isActive(routePath);
     const hasSubmenu = submenu && submenu.length > 0;
@@ -162,6 +161,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
               ? 'bg-blue-600 text-white font-medium shadow-md' 
               : 'text-gray-300 hover:bg-blue-700/20 hover:text-white'}
           `}
+          data-tour={dataTour}
         >
           <div className="flex items-center gap-3">
             <span className={`text-lg ${active ? 'text-white' : 'text-blue-400 group-hover:text-white'}`}>{icon}</span>
@@ -196,8 +196,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
               ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
           >
             <div className="ml-4 mt-1 pl-2 border-l border-blue-400/30">
-              {submenu.map((item, index) => (
-                <a
+              {submenu.map((item, index) => (                <a
                   key={index}
                   href={item.path}
                   onClick={(e) => {
@@ -213,6 +212,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
                       ? 'bg-blue-600/60 text-white font-medium' 
                       : 'text-gray-300 hover:bg-blue-700/20 hover:text-white'}
                   `}
+                  data-tour={item.dataTour}
                 >
                   <span className={`text-md ${location.pathname === item.path ? 'text-white' : 'text-blue-400 group-hover:text-white'}`}>
                     {item.icon}
@@ -245,7 +245,8 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       icon: <HiUsers />, 
       label: 'Spieler', 
       path: '/players', 
-      onClick: () => navigate('/players') 
+      onClick: () => navigate('/players'),
+      dataTour: 'players-submenu'
     },
     { 
       icon: <HiCalendar />, 
@@ -263,13 +264,15 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       icon: <HiChartBar />, 
       label: 'Statistiken', 
       path: '/team/statistics', 
-      onClick: () => navigate('/team/statistics') 
+      onClick: () => navigate('/team/statistics'),
+      dataTour: 'statistics-submenu'
     },
     { 
       icon: <HiCurrencyEuro />, 
       label: 'Mannschaftskasse', 
       path: '/team/finance', 
-      onClick: () => navigate('/team/finance')
+      onClick: () => navigate('/team/finance'),
+      dataTour: 'finance-submenu'
     }
   ];
 
@@ -283,7 +286,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     },
     { 
       icon: <HiClipboardCheck />, 
-      label: 'Wochenassistent', 
+      label: 'Assistent', 
       path: '/weekly-coach', 
       onClick: () => navigate('/weekly-coach'),
       isNew: true
@@ -374,7 +377,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
             <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <NavItem 
               icon={<HiClipboardCheck />} 
-              label="Wochenassistent" 
+              label="Assistent" 
               onClick={() => navigate('/weekly-coach')}
               isNew={true}
             />
@@ -386,19 +389,20 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
         <div>
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Team & Training</p>
-          </div>
-          <nav className="space-y-1">
+          </div>          <nav className="space-y-1">
             <NavItem 
               icon={<HiUsers />} 
               label="Team Management" 
               path="team" 
               submenu={teamSubmenu}
+              dataTour="players-menu"
             />
             <NavItem 
               icon={<HiAcademicCap />} 
               label="Training & Übungen" 
               path="training" 
               submenu={trainingSubmenu}
+              dataTour="training-menu"
             />
           </nav>
         </div>
@@ -416,12 +420,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
         <div>
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Einstellungen</p>
-          </div>
-          <nav className="space-y-1">
+          </div>          <nav className="space-y-1">
             <NavItem 
               icon={<HiCog />} 
-              label="Vereinseinstellungen" 
+              label="Einstellungen" 
               onClick={() => navigate('/settings')}
+              dataTour="settings-menu"
             />
             <NavItem 
               icon={<HiCog />} 

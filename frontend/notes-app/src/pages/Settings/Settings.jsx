@@ -27,11 +27,14 @@ import {
     FaMedkit,
     FaKey,
     FaShieldAlt,
-    FaEye,
-    FaEyeSlash
+    FaEye,    FaEyeSlash,    FaRedo,
+    FaBug,
+    FaQuestionCircle,
+    FaChartLine
 } from 'react-icons/fa';
 import { getClubSettings, updateClubSettings, uploadClubLogo } from '../../utils/clubSettingsService';
 import { getTeamMembers, inviteTeamMember, removeTeamMember } from '../../utils/teamMembersService';
+import OnboardingAnalytics from '../../components/Analytics/OnboardingAnalytics';
 import axiosInstance from '../../utils/axiosInstance';
 
 const Settings = () => {
@@ -69,8 +72,9 @@ const Settings = () => {
     });
     const [showEmailPassword, setShowEmailPassword] = useState(false);
     const [emailLoading, setEmailLoading] = useState(false);const tabs = [
-        { id: 'club', label: 'Vereinseinstellungen', icon: FaBuilding },
+        { id: 'club', label: 'Einstellungen', icon: FaBuilding },
         { id: 'team', label: 'Team-Management', icon: FaUsers },
+        { id: 'analytics', label: 'Analytics', icon: FaChartLine },
         { id: 'notifications', label: 'Benachrichtigungen', icon: FaBell },
         { id: 'security', label: 'Sicherheit', icon: FaLock }
     ];
@@ -172,6 +176,29 @@ const Settings = () => {
                 setClubSettings({ ...clubSettings, logo: e.target.result });
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    // Test function to reset onboarding
+    const handleResetOnboarding = async () => {
+        if (!confirm('Möchten Sie das Onboarding wirklich zurücksetzen? Das Dashboard wird nach dem Reset neu geladen.')) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axiosInstance.put('/reset-onboarding');
+            
+            if (response.data.success) {
+                alert('Onboarding-Status zurückgesetzt! Das Dashboard wird neu geladen.');
+                // Redirect to dashboard to trigger onboarding
+                window.location.href = '/dashboard';
+            }
+        } catch (error) {
+            console.error('Fehler beim Zurücksetzen des Onboardings:', error);
+            alert('Fehler beim Zurücksetzen des Onboardings.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -760,14 +787,47 @@ const Settings = () => {
                             <FaShieldAlt className="text-orange-600 mt-0.5 flex-shrink-0" />
                             <p>Melden Sie sich immer ab, wenn Sie einen geteilten Computer verwenden.</p>
                         </div>
-                    </div>
-
-                    <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    </div>                    <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                         <h4 className="font-medium text-yellow-800 mb-2">Tipp für sichere Passwörter:</h4>
                         <p className="text-sm text-yellow-700">
                             Verwenden Sie eine Kombination aus Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen. 
                             Vermeiden Sie persönliche Informationen wie Ihren Namen oder Geburtsdatum.
                         </p>
+                    </div>
+                </div>
+            </Card>
+
+            {/* Help & Development Tools */}
+            <Card>
+                <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                        <FaQuestionCircle className="mr-2 text-blue-600" />
+                        Hilfe & Entwicklertools
+                    </h3>
+                    
+                    <div className="space-y-4">
+                        <p className="text-gray-600 text-sm">
+                            Tools für Entwicklung und Testing oder wenn Sie Hilfe benötigen.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <Button 
+                                variant="outline" 
+                                onClick={handleResetOnboarding}
+                                disabled={loading}
+                                className="flex items-center justify-center"
+                            >
+                                <FaRedo className="mr-2" />
+                                Onboarding zurücksetzen
+                            </Button>
+                        </div>
+                        
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-700">
+                                <strong>Onboarding zurücksetzen:</strong> Startet den Einrichtungsassistenten erneut. 
+                                Nützlich zum Testen oder wenn Sie die Einführung wiederholen möchten.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </Card>
@@ -806,10 +866,10 @@ const Settings = () => {
                     </nav>
                 </div>
 
-                {/* Tab Content */}
-                <div>
+                {/* Tab Content */}                <div>
                     {activeTab === 'club' && renderClubSettings()}
                     {activeTab === 'team' && renderTeamManagement()}
+                    {activeTab === 'analytics' && <OnboardingAnalytics />}
                     {activeTab === 'notifications' && renderNotificationSettings()}
                     {activeTab === 'security' && renderSecuritySettings()}
                 </div>

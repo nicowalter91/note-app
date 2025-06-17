@@ -171,9 +171,8 @@ const Navbar = ({
   ];
 
   return (
-    <div className="relative z-50">
-      {/* Main Navbar */}
-      <div className="flex items-center justify-between px-4 md:px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0">
+    <div className="relative z-50">      {/* Main Navbar */}
+      <div className="navbar flex items-center justify-between px-4 md:px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0">
         {/* Left Section: Logo, Sidebar Toggle, and Breadcrumbs */}
         <div className="flex items-center gap-3">
           {/* Sidebar Toggle Button */}
