@@ -51,6 +51,7 @@ import Contacts from './pages/Contacts/Contacts'; // Importiere die Kontakte-Sei
 import SeasonOverview from './pages/Season/SeasonOverview';
 import SeasonPhaseDetail from './pages/Season/PhaseDetail/SeasonPhaseDetail';
 import WeeklyCoach from './pages/Season/WeeklyCoach';
+import TrainerMood from './pages/TrainerMood/TrainerMood'; // Importiere die Trainer Mood-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -86,6 +87,7 @@ const routes = (
       <Route path="/season" exact element={<SeasonOverview />} />
       <Route path="/season/:phaseId" exact element={<SeasonPhaseDetail />} />
       <Route path="/weekly-coach" exact element={<WeeklyCoach />} />
+      <Route path="/trainer-mood" exact element={<TrainerMood />} />
       
       {/* Essential Tools - Only Drawing Tools for Exercises */}
       <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />

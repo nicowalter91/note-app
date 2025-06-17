@@ -27,7 +27,8 @@ import {
   HiChatAlt2,
   HiInboxIn,
   HiSparkles,
-  HiColorSwatch
+  HiColorSwatch,
+  HiHeart
 } from 'react-icons/hi';
 
 const Navbar = ({ 
@@ -76,12 +77,12 @@ const Navbar = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  
-  // Get current page title
+    // Get current page title
   const getCurrentPageTitle = () => {    const path = location.pathname;
     if (path.includes('/dashboard')) return 'Dashboard';
     if (path.includes('/tasks')) return 'Tasks';
     if (path.includes('/exercises')) return 'Exercises';
+    if (path.includes('/trainer-mood')) return 'TrainerMood';
     if (path.includes('/team') || path.includes('/players')) return 'Team';
     if (path.includes('/profil')) return 'Profile';
     if (path.includes('/settings')) return 'Settings';
@@ -159,15 +160,15 @@ const Navbar = ({
     { id: 1, title: 'Weekly Training Plan', type: 'task', path: '/tasks/123' },
     { id: 2, title: 'Team Meeting Tasks', type: 'task', path: '/tasks/456' },
     { id: 3, title: 'Passing Exercise', type: 'exercise', path: '/exercises/789' },
-  ];
-    // Quick action items
+  ];    // Quick action items
   const quickActions = [
     { id: 1, title: 'New Task', icon: <HiDocumentText />, path: '/tasks?action=new' },
     { id: 2, title: 'New Exercise', icon: <HiOutlineClipboard />, path: '/exercises?action=new' },
     { id: 3, title: 'Add Player', icon: <HiUsers />, path: '/players?action=new' },
-    { id: 4, title: 'Quick Actions', icon: <HiLightningBolt />, path: '/tools/quick-actions' },
-    { id: 5, title: 'Schedule Event', icon: <HiCalendar />, path: '/team/schedule?action=new' },
-    { id: 6, title: 'Record Video', icon: <HiVideoCamera />, path: '/video?action=record' },
+    { id: 4, title: 'Log Mood', icon: <HiHeart />, path: '/trainer-mood' },
+    { id: 5, title: 'Quick Actions', icon: <HiLightningBolt />, path: '/tools/quick-actions' },
+    { id: 6, title: 'Schedule Event', icon: <HiCalendar />, path: '/team/schedule?action=new' },
+    { id: 7, title: 'Record Video', icon: <HiVideoCamera />, path: '/video?action=record' },
   ];
 
   return (
@@ -201,9 +202,7 @@ const Navbar = ({
               </>
             )}
           </div>
-        </div>
-
-        {/* Center Section: Navigation Tabs - Desktop Only */}
+        </div>        {/* Center Section: Navigation Tabs - Desktop Only */}
         <div className="hidden lg:flex items-center gap-1">
           <Link 
             to="/dashboard" 
@@ -238,6 +237,18 @@ const Navbar = ({
           >
             <HiOutlineClipboard className="inline mr-1.5" />
             Exercises
+          </Link>
+          
+          <Link 
+            to="/trainer-mood" 
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              location.pathname.includes('/trainer-mood') 
+                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <HiHeart className="inline mr-1.5" />
+            Mood
           </Link>
           
           <Link 

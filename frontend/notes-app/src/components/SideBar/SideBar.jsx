@@ -23,7 +23,8 @@ import {
   HiCurrencyEuro,
   HiPencilAlt,
   HiUserGroup,
-  HiClipboardCheck
+  HiClipboardCheck,
+  HiHeart
 } from 'react-icons/hi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -114,7 +115,6 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       ...prev,
       [menuKey]: !prev[menuKey]    }));
   };
-
   // Function to check if the current path corresponds to the active page
   const isActive = (path) => {
     // Handle exact matches
@@ -132,8 +132,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       return true;
     }
     
+    if (path === 'trainer-mood' && location.pathname.includes('/trainer-mood')) {
+      return true;
+    }
+    
     return false;
-  };  // NavItem component with submenu support
+  };// NavItem component with submenu support
   const NavItem = ({ icon, label, onClick, path, submenu, badge, isNew, dataTour }) => {
     const routePath = path || label.toLowerCase();
     const active = isActive(routePath);
@@ -367,8 +371,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
             <p className="text-xs truncate text-gray-400">{userInfo?.email || 'Keine E-Mail'}</p>
           </div>
         </div>
-      </div>      <div className="flex-grow overflow-y-auto px-3 py-2 space-y-6 custom-scrollbar">
-        {/* Wochenplanung - Roter Faden */}
+      </div>      <div className="flex-grow overflow-y-auto px-3 py-2 space-y-6 custom-scrollbar">        {/* Wochenplanung - Roter Faden */}
         <div>
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Wochenplanung</p>
@@ -382,6 +385,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
               isNew={true}
             />
             <NavItem icon={<HiCalendar />} label="Saisonübersicht" onClick={() => navigate('/season')} />
+            <NavItem 
+              icon={<HiHeart />} 
+              label="TrainerMood" 
+              onClick={() => navigate('/trainer-mood')}
+              dataTour="trainer-mood-menu"
+            />
           </nav>
         </div>
 

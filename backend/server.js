@@ -13,6 +13,7 @@ const { getStatistics, recalculateStatistics } = require("./controllers/statisti
 const { addTactic, editTactic, getAllTactics, getTactic, deleteTactic, createFromTemplate: createTacticFromTemplate, updateTacticUsage } = require("./controllers/tactics");
 const { addFormation, editFormation, getAllFormations, getFormation, deleteFormation, createFromTemplate: createFormationFromTemplate, updateFormationUsage, getFormationTemplates } = require("./controllers/formations");
 const { startOnboarding, trackStep, completeOnboarding: completeOnboardingAnalytics, getAnalytics, getPersonalAnalytics } = require("./controllers/onboardingAnalytics");
+const { getTodaysMood: getTrainerTodaysMood, updateMoodEntry: updateTrainerMoodEntry, getMoodAnalytics: getTrainerMoodAnalytics, getRecentMoodEntries: getRecentTrainerMoodEntries } = require("./controllers/trainerMood");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -503,6 +504,33 @@ app.get("/api/debug/team-members", async (req, res) => {
       error: error.message
     });
   }
+});
+
+// *** Trainer Mood Tracking Routes ***
+const { getTodaysMood, updateMoodEntry, getMoodAnalytics, getRecentMoodEntries, deleteMoodEntry, getMoodEntry } = require('./controllers/trainerMood');
+
+app.get("/api/trainer-mood/today", authenticateToken, async (req, res) => {
+  getTodaysMood(req, res);
+});
+
+app.get("/api/trainer-mood/analytics", authenticateToken, async (req, res) => {
+  getMoodAnalytics(req, res);
+});
+
+app.get("/api/trainer-mood/recent", authenticateToken, async (req, res) => {
+  getRecentMoodEntries(req, res);
+});
+
+app.get("/api/trainer-mood/:id", authenticateToken, async (req, res) => {
+  getMoodEntry(req, res);
+});
+
+app.put("/api/trainer-mood/:id", authenticateToken, async (req, res) => {
+  updateMoodEntry(req, res);
+});
+
+app.delete("/api/trainer-mood/:id", authenticateToken, async (req, res) => {
+  deleteMoodEntry(req, res);
 });
 
 // *** Server starten ***

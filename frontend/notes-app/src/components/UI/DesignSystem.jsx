@@ -423,3 +423,190 @@ export const Input = ({
     </div>
   );
 };
+
+// Mood-spezifische UI-Komponenten zum Design-System hinzufügen
+// Mood Slider Component
+export const MoodSlider = ({ 
+  label, 
+  value, 
+  onChange, 
+  min = 1, 
+  max = 10, 
+  emoji = false,
+  color = 'blue',
+  disabled = false 
+}) => {
+  const getEmojiForValue = (val) => {
+    if (!emoji) return null;
+    const emojiMap = {
+      1: '😞', 2: '😔', 3: '😕', 4: '😐', 5: '🙂', 
+      6: '😊', 7: '😄', 8: '😁', 9: '🤩', 10: '🥳'
+    };
+    return emojiMap[val] || '😐';
+  };
+
+  const getColorClass = () => {
+    const colorMap = {
+      blue: 'accent-blue-500',
+      green: 'accent-green-500',
+      yellow: 'accent-yellow-500',
+      red: 'accent-red-500',
+      purple: 'accent-purple-500'
+    };
+    return colorMap[color] || 'accent-blue-500';
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <div className="flex items-center space-x-2">
+          {emoji && value && (
+            <span className="text-2xl">{getEmojiForValue(value)}</span>
+          )}
+          <span className="text-lg font-bold text-gray-800 min-w-[2rem] text-center">
+            {value || '-'}
+          </span>
+        </div>
+      </div>
+      <div className="relative">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={value || min}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          disabled={disabled}
+          className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer ${getColorClass()} disabled:opacity-50 disabled:cursor-not-allowed`}
+        />
+        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <span>{min}</span>
+          <span>{max}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Tag Selector Component
+export const TagSelector = ({ 
+  availableTags = [], 
+  selectedTags = [], 
+  onChange, 
+  maxTags = 5 
+}) => {
+  const toggleTag = (tag) => {
+    if (selectedTags.includes(tag)) {
+      onChange(selectedTags.filter(t => t !== tag));
+    } else if (selectedTags.length < maxTags) {
+      onChange([...selectedTags, tag]);
+    }
+  };
+
+  const tagEmojis = {
+    'great-day': '🌟',
+    'tough-day': '💪',
+    'breakthrough': '💡',
+    'frustrating': '😤',
+    'energetic': '⚡',
+    'tired': '😴',
+    'motivated': '🔥',
+    'stressed': '😰',
+    'team-focused': '👥',
+    'tactical-success': '🎯',
+    'communication-good': '💬',
+    'player-issues': '⚠️',
+    'personal-growth': '📈',
+    'need-break': '🏖️'
+  };
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-700">
+        Heute war... ({selectedTags.length}/{maxTags})
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {availableTags.map(tag => {
+          const isSelected = selectedTags.includes(tag);
+          const emoji = tagEmojis[tag] || '';
+          const displayName = tag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          
+          return (
+            <button
+              key={tag}
+              onClick={() => toggleTag(tag)}
+              disabled={!isSelected && selectedTags.length >= maxTags}
+              className={`
+                inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all
+                ${isSelected 
+                  ? 'bg-blue-100 text-blue-800 border-2 border-blue-300' 
+                  : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:bg-gray-200'
+                }
+                disabled:opacity-50 disabled:cursor-not-allowed
+              `}
+            >
+              {emoji && <span className="mr-1">{emoji}</span>}
+              {displayName}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Mood Chart Component (simplified)
+export const MoodChart = ({ data, height = 200 }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className={`h-${height} flex items-center justify-center bg-gray-50 rounded-lg`}>
+        <p className="text-gray-500">Keine Daten verfügbar</p>
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...data.map(d => d.mood || 0));
+  const minValue = Math.min(...data.map(d => d.mood || 0));
+  const range = maxValue - minValue || 1; // Avoid division by zero
+
+  return (
+    <div className="space-y-2">
+      <div className={`h-${height} bg-gray-50 rounded-lg p-4 relative overflow-hidden`}>
+        <svg className="w-full h-full">
+          {data.map((point, index) => {
+            const x = data.length > 1 ? (index / (data.length - 1)) * 100 : 50;
+            const y = ((maxValue - (point.mood || 0)) / range) * 80 + 10;
+            
+            // Ensure values are valid numbers
+            if (isNaN(x) || isNaN(y)) return null;
+            
+            return (
+              <g key={index}>
+                <circle
+                  cx={`${x}%`}
+                  cy={`${y}%`}
+                  r="4"
+                  fill="#3b82f6"
+                  className="hover:r-6 transition-all cursor-pointer"
+                />                {index > 0 && data.length > 1 && (
+                  <line
+                    x1={`${((index - 1) / (data.length - 1)) * 100}%`}
+                    y1={`${((maxValue - (data[index - 1].mood || 0)) / range) * 80 + 10}%`}
+                    x2={`${x}%`}
+                    y2={`${y}%`}
+                    stroke="#3b82f6"
+                    strokeWidth="2"
+                  />
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+      <div className="flex justify-between text-xs text-gray-500">
+        <span>{data[0]?.date ? new Date(data[0].date).toLocaleDateString('de-DE') : ''}</span>
+        <span>{data[data.length - 1]?.date ? new Date(data[data.length - 1].date).toLocaleDateString('de-DE') : ''}</span>
+      </div>
+    </div>
+  );
+};
