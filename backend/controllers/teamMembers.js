@@ -92,100 +92,122 @@ const inviteTeamMember = async (req, res) => {
   }
 };
 
-// Accept team invitation
+// Accept team invitation - Vereinfachter Ansatz mit automatischer User-Erstellung
 const acceptInvitation = async (req, res) => {
   try {
     const { token } = req.params;
+    console.log('🔍 Accept invitation called with token:', token);
     
-    // Finde die Einladung zuerst
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token ist erforderlich'
+      });
+    }
+    
+    // Finde die Einladung mit Debug-Logging
+    console.log('🔍 Searching for team member with token...');
     const teamMember = await TeamMember.findOne({
       inviteToken: token,
       inviteExpiresAt: { $gt: new Date() },
       status: 'pending'
     });
     
+    console.log('🔍 Team member found:', teamMember ? 'Yes' : 'No');
+    
+    // Wenn nicht gefunden, suche ohne Zeitlimit um zu sehen ob Token existiert
     if (!teamMember) {
+      console.log('🔍 Searching for token without time constraint...');
+      const anyTeamMember = await TeamMember.findOne({ inviteToken: token });
+      console.log('🔍 Token exists in database:', anyTeamMember ? 'Yes' : 'No');
+      
+      if (anyTeamMember) {
+        console.log('🔍 Token details:', {
+          status: anyTeamMember.status,
+          expiresAt: anyTeamMember.inviteExpiresAt,
+          isExpired: anyTeamMember.inviteExpiresAt < new Date()
+        });
+      }
+      
       return res.status(404).json({
         success: false,
         message: 'Einladung nicht gefunden oder abgelaufen'
       });
     }
-      let userId = null;
     
-    // Prüfen ob es sich um eine temporäre Link-Einladung handelt
-    const isTemporaryInvite = teamMember.email.includes('.invite@temp-') && teamMember.email.endsWith('.local');
+    console.log('🔍 Team member details:', {
+      email: teamMember.email,
+      name: teamMember.name,
+      role: teamMember.role,
+      status: teamMember.status
+    });
     
-    // Prüfen ob Benutzer authentifiziert ist
-    if (req.user && req.user.user) {
-      userId = req.user.user._id;
-      
-      // Bei temporären Einladungen: E-Mail-Überprüfung überspringen
-      if (!isTemporaryInvite) {
-        // Prüfen ob die E-Mail-Adresse übereinstimmt (nur bei echten E-Mail-Einladungen)
-        if (teamMember.email.toLowerCase() !== req.user.user.email.toLowerCase()) {
-          return res.status(400).json({
-            success: false,
-            message: 'E-Mail-Adresse stimmt nicht mit der Einladung überein'
-          });
-        }
-      }
+    // Prüfe ob bereits ein User mit dieser E-Mail existiert
+    let existingUser = await User.findOne({ 
+      email: teamMember.email.toLowerCase() 
+    });
+    
+    let user;
+    let isNewUser = false;
+    let temporaryPassword = null;
+    
+    if (existingUser) {
+      // User existiert bereits - verwende den existierenden User
+      user = existingUser;
     } else {
-      if (isTemporaryInvite) {
-        // Temporäre Einladung: Benutzer muss sich einloggen, aber E-Mail-Match ist nicht nötig
-        return res.status(400).json({
-          success: false,
-          message: 'Sie müssen sich zuerst einloggen, um die Einladung anzunehmen'
-        });
-      } else {
-        // Normale E-Mail-Einladung: Suche nach existierendem Benutzer mit der E-Mail
-        const existingUser = await User.findOne({ 
-          email: teamMember.email.toLowerCase() 
-        });
-        
-        if (!existingUser) {
-          return res.status(400).json({
-            success: false,
-            message: 'Sie müssen sich zuerst registrieren oder einloggen, um die Einladung anzunehmen'
-          });
-        }
-        
-        userId = existingUser._id;
-      }
+      // Erstelle neuen User mit temporären Credentials
+      temporaryPassword = `Temp${Math.random().toString(36).substring(2, 8)}${Date.now().toString().slice(-4)}!`;
+      
+      user = new User({
+        fullName: teamMember.name,
+        email: teamMember.email.toLowerCase(),
+        password: temporaryPassword,
+        userType: 'invited',
+        isInvited: true,
+        invitedAt: new Date(),
+        onboardingCompleted: false,
+        tourCompleted: false
+      });
+      
+      await user.save();
+      isNewUser = true;
+      
+      console.log(`Neuer User erstellt: ${user.email} mit temporärem Passwort: ${temporaryPassword}`);
     }
     
-    // Validate that user exists
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Benutzer nicht gefunden'
-      });
-    }
-      // Update team member
+    // Update team member
     teamMember.userId = user._id;
     teamMember.status = 'active';
     teamMember.joinedAt = new Date();
     teamMember.inviteToken = undefined;
     teamMember.inviteExpiresAt = undefined;
     
-    // Bei temporären Einladungen: Echte E-Mail-Adresse aktualisieren
-    if (isTemporaryInvite) {
-      teamMember.email = user.email;
-    }
-    
     await teamMember.save();
     
-    // Update user to mark as invited user
-    await User.findByIdAndUpdate(user._id, {
-      isInvited: true,
-      userType: 'invited',
-      tourCompleted: false,
-      invitedAt: new Date()
-    });
-      res.status(200).json({
+    // Falls es ein existierender User war, aktualisiere seine Invitation-Flags
+    if (!isNewUser) {
+      await User.findByIdAndUpdate(user._id, {
+        isInvited: true,
+        userType: 'invited',
+        invitedAt: new Date()
+      });
+    }
+    
+    res.status(200).json({
       success: true,
       message: 'Einladung erfolgreich angenommen',
-      teamMember
+      isNewUser,
+      userEmail: user.email,
+      temporaryPassword: isNewUser ? temporaryPassword : null,
+      redirectTo: '/login',
+      instructions: isNewUser ? 
+        'Ein temporärer Account wurde für Sie erstellt. Bitte loggen Sie sich mit den bereitgestellten Credentials ein und ändern Sie Ihr Passwort.' :
+        'Bitte loggen Sie sich mit Ihrem bestehenden Account ein.',
+      teamMember: {
+        name: teamMember.name,
+        role: teamMember.role,
+        status: teamMember.status
+      }
     });
   } catch (error) {
     console.error('Fehler beim Annehmen der Einladung:', error);
@@ -459,6 +481,27 @@ const sendInvitationEmail = async (email, inviteToken, inviterName, role) => {
   }
 };
 
+// Debug endpoint - ONLY FOR DEVELOPMENT
+const debugTeamMembers = async (req, res) => {
+  try {
+    const allTeamMembers = await TeamMember.find({}).select('inviteToken email name status inviteExpiresAt');
+    
+    console.log('All team members in database:', allTeamMembers);
+    
+    res.status(200).json({
+      success: true,
+      count: allTeamMembers.length,
+      teamMembers: allTeamMembers
+    });
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getTeamMembers,
   inviteTeamMember,
@@ -466,5 +509,6 @@ module.exports = {
   validateInvitationToken,
   acceptInvitation,
   updateTeamMember,
-  removeTeamMember
+  removeTeamMember,
+  debugTeamMembers
 };

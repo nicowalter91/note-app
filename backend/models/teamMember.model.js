@@ -66,11 +66,11 @@ const teamMemberSchema = new mongoose.Schema({
   joinedAt: {
     type: Date,
     default: null
-  },
-  inviteToken: {
+  },  inviteToken: {
     type: String,
-    required: true,
-    unique: true
+    required: false, // Nicht mehr required, da es nach Annahme gelöscht wird
+    unique: true,
+    sparse: true // Erlaubt null/undefined Werte für unique constraint
   },
   inviteExpiresAt: {
     type: Date,

@@ -6,12 +6,12 @@ import { FaUsers, FaCheckCircle, FaTimesCircle, FaBuilding, FaClock } from 'reac
 
 const Join = () => {
   const { token } = useParams();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();  const [loading, setLoading] = useState(true);
   const [invitation, setInvitation] = useState(null);
   const [error, setError] = useState(null);
   const [accepting, setAccepting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     validateToken();
@@ -28,16 +28,35 @@ const Join = () => {
     } finally {
       setLoading(false);
     }
-  };
-  const handleAcceptInvitation = async () => {
+  };  const handleAcceptInvitation = async () => {
     try {
       setAccepting(true);
-      await acceptInvitation(token);
-      setSuccess(true);
+      const response = await acceptInvitation(token);
       
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
+      if (response.success) {
+        setSuccess(true);
+        
+        // Zeige spezielle Nachrichten basierend auf der Antwort
+        if (response.isNewUser) {
+          setError(null);
+          setSuccess(false);
+          setMessage(`Ein Account wurde für Sie erstellt!
+          
+E-Mail: ${response.userEmail}
+Temporäres Passwort: ${response.temporaryPassword}
+
+Bitte notieren Sie sich diese Daten und ändern Sie Ihr Passwort nach dem ersten Login.`);
+          
+          setTimeout(() => {
+            navigate('/login?newUser=true&email=' + encodeURIComponent(response.userEmail));
+          }, 5000);
+        } else {
+          setMessage('Einladung angenommen! Sie werden zur Login-Seite weitergeleitet...');
+          setTimeout(() => {
+            navigate('/login?email=' + encodeURIComponent(response.userEmail));
+          }, 2000);
+        }
+      }
     } catch (error) {
       console.error('Fehler beim Annehmen der Einladung:', error);
       
@@ -115,7 +134,6 @@ const Join = () => {
       </div>
     );
   }
-
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
@@ -127,6 +145,24 @@ const Join = () => {
               Sie wurden erfolgreich zum Team hinzugefügt. Sie werden gleich weitergeleitet...
             </p>
             <LoadingSpinner />
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (message) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <Card className="max-w-lg w-full">
+          <div className="p-8 text-center">
+            <FaCheckCircle className="mx-auto text-5xl text-blue-500 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Account erstellt!</h1>
+            <div className="bg-blue-50 rounded-lg p-4 mb-6 text-left">
+              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono">{message}</pre>
+            </div>
+            <LoadingSpinner />
+            <p className="text-sm text-gray-500 mt-2">Sie werden automatisch weitergeleitet...</p>
           </div>
         </Card>
       </div>

@@ -58,6 +58,29 @@ app.get("/", (req, res) => {
   res.json({ data: "hello" });
 });
 
+// Direkte Debug-Route für TeamMembers
+app.get("/debug-team-members", async (req, res) => {
+  try {
+    console.log('Debug route called');
+    const TeamMember = require('./models/teamMember.model');
+    const allTeamMembers = await TeamMember.find({}).select('inviteToken email name status inviteExpiresAt');
+    
+    console.log('All team members in database:', allTeamMembers);
+    
+    res.status(200).json({
+      success: true,
+      count: allTeamMembers.length,
+      teamMembers: allTeamMembers
+    });
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // *** Benutzerverwaltungsrouten ***
 // Route zum Erstellen eines neuen Benutzerkontos
 app.post("/create-account", async (req, res) => {
@@ -415,7 +438,7 @@ app.put("/api/formations/:formationId/usage", authenticateToken, async (req, res
 
 // *** Settings-Routen ***
 const { getClubSettings, updateClubSettings, uploadClubLogo } = require('./controllers/clubSettings');
-const { getTeamMembers, inviteTeamMember, generateInvitationLink, validateInvitationToken, acceptInvitation, updateTeamMember, removeTeamMember } = require('./controllers/teamMembers');
+const { getTeamMembers, inviteTeamMember, generateInvitationLink, validateInvitationToken, acceptInvitation, updateTeamMember, removeTeamMember, debugTeamMembers } = require('./controllers/teamMembers');
 
 // Club Settings Routes
 app.get("/api/club-settings", authenticateToken, async (req, res) => {
@@ -457,6 +480,29 @@ app.put("/api/team-members/:id", authenticateToken, async (req, res) => {
 
 app.delete("/api/team-members/:id", authenticateToken, async (req, res) => {
   removeTeamMember(req, res);
+});
+
+// Debug route - DEVELOPMENT ONLY
+app.get("/api/debug/team-members", async (req, res) => {
+  try {
+    console.log('Debug route called');
+    const TeamMember = require('./models/teamMember.model');
+    const allTeamMembers = await TeamMember.find({}).select('inviteToken email name status inviteExpiresAt');
+    
+    console.log('All team members in database:', allTeamMembers);
+    
+    res.status(200).json({
+      success: true,
+      count: allTeamMembers.length,
+      teamMembers: allTeamMembers
+    });
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // *** Server starten ***

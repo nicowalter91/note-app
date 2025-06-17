@@ -135,7 +135,7 @@ const Login = () => {  const [email, setEmail] = useState(""); // Zustand für E
             <p className="text-lg italic mb-4">
               "Diese App hat meine Produktivität komplett verändert. Alles ist an einem Ort und einfach zu verwalten."
             </p>
-            <p className="font-medium">- Nico Walter (U17 Coach SG Quelle Fürth)</p>
+            <p className="font-medium">- Neuer Benutzer</p>
           </div>
         </div>
       </div>
