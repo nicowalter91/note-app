@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../../components/Layout/Layout';
+import { PageHeader, Card, Button, Badge, LoadingSpinner } from '../../components/UI/DesignSystem';
 import { FaUpload, FaFileImport, FaFileAlt, FaFileExcel, FaFileCsv, FaCheck, FaInfo } from 'react-icons/fa';
 
 const ImportData = () => {
@@ -41,80 +42,87 @@ const ImportData = () => {
       setImportStatus('success');
     }, 2000);
   };
-  
-  return (
+    return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Import Data</h1>
+        <PageHeader 
+          title="Daten importieren"
+          subtitle="Importieren Sie Ihre Daten aus verschiedenen Dateiformaten"
+        />
         
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+        <Card className="p-8 mb-8">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-3 rounded-full mr-4">
-              <FaFileImport className="text-blue-600" />
+              <FaFileImport className="text-blue-600" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold">Data Import</h2>
-              <p className="text-gray-600">Import your data from files in various formats</p>
+              <h2 className="text-xl font-semibold">Datenimport</h2>
+              <p className="text-gray-600">Importieren Sie Ihre Daten aus Dateien in verschiedenen Formaten</p>
             </div>
           </div>
           
           {/* Import Type Selection */}
           <div className="mb-8">
-            <h3 className="text-lg font-medium mb-4">What would you like to import?</h3>
+            <h3 className="text-lg font-medium mb-4">Was möchten Sie importieren?</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div 
+              <Card 
                 onClick={() => handleImportTypeChange('notes')}
-                className={`flex items-center p-4 border rounded-lg cursor-pointer transition ${
+                className={`p-4 cursor-pointer transition border-l-4 ${
                   importType === 'notes' 
                     ? 'border-blue-500 bg-blue-50 text-blue-700' 
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <FaFileAlt className="text-xl mr-3" />
-                <span className="font-medium">Notes</span>
-                {importType === 'notes' && (
-                  <FaCheck className="ml-auto text-blue-600" />
-                )}
-              </div>
+                <div className="flex items-center">
+                  <FaFileAlt className="text-xl mr-3" />
+                  <span className="font-medium">Aufgaben</span>
+                  {importType === 'notes' && (
+                    <FaCheck className="ml-auto text-blue-600" />
+                  )}
+                </div>
+              </Card>
               
-              <div 
+              <Card 
                 onClick={() => handleImportTypeChange('players')}
-                className={`flex items-center p-4 border rounded-lg cursor-pointer transition ${
+                className={`p-4 cursor-pointer transition border-l-4 ${
                   importType === 'players' 
                     ? 'border-blue-500 bg-blue-50 text-blue-700' 
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <FaFileExcel className="text-xl mr-3" />
-                <span className="font-medium">Player Data</span>
-                {importType === 'players' && (
-                  <FaCheck className="ml-auto text-blue-600" />
-                )}
-              </div>
+                <div className="flex items-center">
+                  <FaFileExcel className="text-xl mr-3" />
+                  <span className="font-medium">Spielerdaten</span>
+                  {importType === 'players' && (
+                    <FaCheck className="ml-auto text-blue-600" />
+                  )}
+                </div>
+              </Card>
               
-              <div 
+              <Card 
                 onClick={() => handleImportTypeChange('exercises')}
-                className={`flex items-center p-4 border rounded-lg cursor-pointer transition ${
+                className={`p-4 cursor-pointer transition border-l-4 ${
                   importType === 'exercises' 
                     ? 'border-blue-500 bg-blue-50 text-blue-700' 
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <FaFileCsv className="text-xl mr-3" />
-                <span className="font-medium">Exercises</span>
-                {importType === 'exercises' && (
-                  <FaCheck className="ml-auto text-blue-600" />
-                )}
-              </div>
+                <div className="flex items-center">
+                  <FaFileCsv className="text-xl mr-3" />
+                  <span className="font-medium">Übungen</span>
+                  {importType === 'exercises' && (
+                    <FaCheck className="ml-auto text-blue-600" />
+                  )}
+                </div>
+              </Card>
             </div>
           </div>
-          
-          {/* File Upload Section */}
+            {/* File Upload Section */}
           <div className="mb-8">
-            <h3 className="text-lg font-medium mb-4">Upload File</h3>
+            <h3 className="text-lg font-medium mb-4">Datei hochladen</h3>
             
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <Card className="border-2 border-dashed border-gray-300 p-8 text-center hover:border-blue-400 transition-colors">
               <input
                 type="file"
                 id="file-upload"
@@ -133,72 +141,70 @@ const ImportData = () => {
                     <FaFileAlt className="text-blue-600 text-2xl mr-2" />
                     <span className="font-medium">{selectedFile.name}</span>
                   </div>
-                  <span className="text-sm text-gray-500">
+                  <Badge variant="info" className="text-sm">
                     {(selectedFile.size / 1024).toFixed(2)} KB
-                  </span>
+                  </Badge>
                 </div>
               ) : (
                 <div className="mb-4">
                   <FaUpload className="text-blue-600 text-3xl mx-auto mb-2" />
                   <p className="text-gray-600">
-                    Drag and drop a file here, or click to select a file
+                    Datei hierher ziehen oder klicken, um eine Datei auszuwählen
                   </p>
                 </div>
               )}
               
-              <label
+              <Button
+                as="label"
                 htmlFor="file-upload"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md cursor-pointer transition"
+                variant="primary"
+                className="cursor-pointer"
               >
-                {selectedFile ? 'Change File' : 'Select File'}
-              </label>
-            </div>
+                {selectedFile ? 'Datei ändern' : 'Datei auswählen'}
+              </Button>
+            </Card>
             
             {/* Supported Formats Info */}
-            <div className="mt-4 flex items-start text-sm text-gray-600">
-              <FaInfo className="text-blue-500 mr-2 mt-1" />
-              <div>
-                <p className="font-medium">Supported file formats:</p>
-                <p>
-                  {importType === 'notes' && 'JSON, TXT'}
-                  {importType === 'players' && 'Excel (XLSX), CSV, JSON'}
-                  {importType === 'exercises' && 'CSV, JSON'}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Status and Import Button */}
-          {importStatus === 'uploading' && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
-              <div className="flex items-center">
-                <div className="mr-2 animate-spin">
-                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+            <Card className="mt-4 bg-blue-50 border-blue-200">
+              <div className="flex items-start text-sm text-gray-600">
+                <FaInfo className="text-blue-500 mr-2 mt-1" />
+                <div>
+                  <p className="font-medium">Unterstützte Dateiformate:</p>
+                  <p>
+                    {importType === 'notes' && 'JSON, TXT'}
+                    {importType === 'players' && 'Excel (XLSX), CSV, JSON'}
+                    {importType === 'exercises' && 'CSV, JSON'}
+                  </p>
                 </div>
-                <p>Uploading and processing your file...</p>
               </div>
-            </div>
+            </Card>
+          </div>
+            {/* Status and Import Button */}
+          {importStatus === 'uploading' && (
+            <Card className="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6">
+              <div className="flex items-center">
+                <LoadingSpinner size="sm" className="mr-2" />
+                <p>Datei wird hochgeladen und verarbeitet...</p>
+              </div>
+            </Card>
           )}
           
           {importStatus === 'success' && (
-            <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <Card className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6">
               <div className="flex">
                 <div className="mr-2">
                   <FaCheck />
                 </div>
                 <div>
-                  <p className="font-medium">Import successful!</p>
-                  <p>Your data has been imported successfully.</p>
+                  <p className="font-medium">Import erfolgreich!</p>
+                  <p>Ihre Daten wurden erfolgreich importiert.</p>
                 </div>
               </div>
-            </div>
+            </Card>
           )}
           
           {importStatus === 'error' && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+            <Card className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6">
               <div className="flex">
                 <div className="mr-2">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -206,35 +212,35 @@ const ImportData = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium">Import failed</p>
+                  <p className="font-medium">Import fehlgeschlagen</p>
                   <p>{errorMessage}</p>
                 </div>
               </div>
-            </div>
+            </Card>
           )}
           
           <div className="flex justify-center">
-            <button
+            <Button
               onClick={handleImport}
               disabled={!selectedFile || importStatus === 'uploading'}
-              className={`flex items-center py-2 px-6 rounded-md font-medium ${
-                !selectedFile || importStatus === 'uploading'
-                  ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white transition'
-              }`}
+              variant={!selectedFile || importStatus === 'uploading' ? 'secondary' : 'primary'}
+              className="flex items-center"
             >
               <FaFileImport className="mr-2" />
-              Import Data
-            </button>
+              Daten importieren
+            </Button>
           </div>
-        </div>
+        </Card>
         
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
-          <h3 className="font-medium mb-1">Important Note</h3>
+        <Card className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4">
+          <h3 className="font-medium mb-1 flex items-center">
+            <FaInfo className="mr-2" />
+            Wichtiger Hinweis
+          </h3>
           <p className="text-sm">
-            Importing data may overwrite existing data if there are conflicts. Make sure to back up your data before importing.
+            Das Importieren von Daten kann vorhandene Daten überschreiben, wenn es Konflikte gibt. Stellen Sie sicher, dass Sie Ihre Daten sichern, bevor Sie importieren.
           </p>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

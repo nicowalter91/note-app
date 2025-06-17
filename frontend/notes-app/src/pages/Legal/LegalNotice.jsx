@@ -1,56 +1,76 @@
 import React from 'react';
 import Layout from '../../components/Layout/Layout';
+import { PageHeader, Card } from '../../components/UI/DesignSystem';
 
 const LegalNotice = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Legal Notice</h1>
+        <PageHeader 
+          title="Impressum"
+          subtitle="Gesetzlich erforderliche Angaben gemäß TMG"
+        />
         
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Company Information</h2>
-          <p className="mb-4">
-            mytacticlab GmbH<br />
-            Sample Street 123<br />
-            12345 Berlin<br />
-            Germany
-          </p>
-          
-          <h2 className="text-xl font-semibold mb-4 mt-8">Contact</h2>
-          <p className="mb-4">
-            Email: info@mytacticlab.com<br />
-            Phone: +49 123 456789
-          </p>
-          
-          <h2 className="text-xl font-semibold mb-4 mt-8">Management</h2>
-          <p className="mb-4">
-            John Doe (CEO)<br />
-            Jane Smith (CTO)
-          </p>
-          
-          <h2 className="text-xl font-semibold mb-4 mt-8">Registration</h2>
-          <p className="mb-4">
-            Commercial Register: Local Court Berlin<br />
-            Registration Number: HRB 123456
-          </p>
-          
-          <h2 className="text-xl font-semibold mb-4 mt-8">VAT Identification Number</h2>
-          <p className="mb-4">
-            VAT ID: DE123456789
-          </p>
-          
-          <h2 className="text-xl font-semibold mb-4 mt-8">Responsible for Content</h2>
-          <p className="mb-4">
-            John Doe<br />
-            Sample Street 123<br />
-            12345 Berlin<br />
-            Germany
-          </p>
-          
-          <div className="mt-8 text-sm text-gray-500">
-            <p>Last updated: June 14, 2025</p>
+        <Card className="p-6">
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Unternehmensangaben</h2>
+              <p className="text-gray-700">
+                mytacticlab GmbH<br />
+                Musterstraße 123<br />
+                12345 Berlin<br />
+                Deutschland
+              </p>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Kontakt</h2>
+              <p className="text-gray-700">
+                E-Mail: info@mytacticlab.com<br />
+                Telefon: +49 123 456789
+              </p>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Geschäftsführung</h2>
+              <p className="text-gray-700">
+                Max Mustermann (Geschäftsführer)<br />
+                Maria Musterfrau (Technische Leitung)
+              </p>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Registrierung</h2>
+              <p className="text-gray-700">
+                Handelsregister: Amtsgericht Berlin<br />
+                Registernummer: HRB 123456
+              </p>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Umsatzsteuer-Identifikationsnummer</h2>
+              <p className="text-gray-700">
+                USt-ID: DE123456789
+              </p>
+            </div>
+            
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-blue-600">Verantwortlich für den Inhalt</h2>
+              <p className="text-gray-700">
+                Max Mustermann<br />
+                Musterstraße 123<br />
+                12345 Berlin<br />
+                Deutschland
+              </p>
+            </div>
+            
+            <div className="pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-500">
+                Letzte Aktualisierung: 17. Juni 2025
+              </p>
+            </div>
           </div>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

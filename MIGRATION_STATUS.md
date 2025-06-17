@@ -15,16 +15,16 @@
 ## 🟡 PRIORITÄT MITTEL (Support & Hilfe-Seiten)
 
 ### **Support Pages**
-- ❌ `src/pages/Support/HelpCenter.jsx` - Nutzt alte Card-Struktur
+- ✅ `src/pages/Support/HelpCenter.jsx` - **MIGRIERT** - PageHeader, Card, Button, Badge aus DesignSystem
 - ❌ `src/pages/Support/Feedback.jsx` - Noch zu prüfen  
 - ❌ `src/pages/Support/ContactSupport.jsx` - Noch zu prüfen
 
 ### **Data Management**
-- ❌ `src/pages/Data/ImportData.jsx` - Nutzt alte Styling-Patterns
+- ✅ `src/pages/Data/ImportData.jsx` - **MIGRIERT** - PageHeader, Card, Button, Badge, LoadingSpinner aus DesignSystem
 - ❌ `src/pages/Data/ExportData.jsx` - Noch zu prüfen
 
 ### **Legal Pages**
-- ❌ `src/pages/Legal/LegalNotice.jsx` - Nutzt alte Card-Struktur
+- ✅ `src/pages/Legal/LegalNotice.jsx` - **MIGRIERT** - PageHeader, Card aus DesignSystem
 - ❌ `src/pages/Legal/PrivacyPolicy.jsx` - Noch zu prüfen
 - ❌ `src/pages/Legal/TermsOfService.jsx` - Noch zu prüfen
 

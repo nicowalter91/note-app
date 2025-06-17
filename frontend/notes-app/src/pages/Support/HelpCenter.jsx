@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '../../components/Layout/Layout';
+import { PageHeader, Card, Button, Badge } from '../../components/UI/DesignSystem';
 import { FaSearch, FaBook, FaVideo, FaQuestionCircle } from 'react-icons/fa';
 
 const HelpCenter = () => {
@@ -45,62 +46,72 @@ const HelpCenter = () => {
       description: "Häufig gestellte Fragen und Antworten"
     }
   ];
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Help Center</h1>
+        <PageHeader 
+          title="Help Center"
+          subtitle="Finden Sie Antworten auf Ihre Fragen und Hilfe zu allen Funktionen der App"
+        />
         
         {/* Search Bar */}
-        <div className="mb-8">
+        <Card className="mb-8">
           <div className="relative">
             <input
               type="text"
-              placeholder="Search for help topics..."
-              className="w-full px-4 py-3 pl-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nach Hilfethemen suchen..."
+              className="w-full px-4 py-3 pl-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all"
             />
             <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
-        </div>
+        </Card>
         
         {/* Help Categories */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {helpCategories.map((category, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+            <Card key={index} className="p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-blue-500">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">{category.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{category.title}</h3>
                 <p className="text-gray-600">{category.description}</p>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
         
         {/* Popular FAQs */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-10">
-          <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
+        <Card className="p-6 mb-10">
+          <h2 className="text-2xl font-semibold mb-6 flex items-center">
+            <FaQuestionCircle className="mr-3 text-blue-500" />
+            Häufig gestellte Fragen
+          </h2>
           
           <div className="divide-y">
             {faqs.map((faq, index) => (
               <div key={index} className="py-4">
-                <h3 className="text-lg font-medium mb-2 text-blue-600">{faq.question}</h3>
-                <p className="text-gray-600">{faq.answer}</p>
+                <h3 className="text-lg font-medium mb-2 text-blue-600 flex items-start">
+                  <Badge variant="info" className="mr-2 mt-1">
+                    {index + 1}
+                  </Badge>
+                  {faq.question}
+                </h3>
+                <p className="text-gray-600 ml-8">{faq.answer}</p>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
         
         {/* Contact Support */}
-        <div className="bg-gray-100 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-semibold mb-3">Still need help?</h2>
-          <p className="mb-4">Our support team is ready to assist you with any questions.</p>
-          <button 
+        <Card className="p-6 text-center bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <h2 className="text-xl font-semibold mb-3">Benötigen Sie weitere Hilfe?</h2>
+          <p className="mb-4 text-gray-600">Unser Support-Team steht Ihnen gerne bei allen Fragen zur Verfügung.</p>
+          <Button 
+            variant="primary"
             onClick={() => window.location.href = '/support'}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
           >
-            Contact Support
-          </button>
-        </div>
+            Support kontaktieren
+          </Button>
+        </Card>
       </div>
     </Layout>
   );

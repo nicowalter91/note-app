@@ -2,6 +2,10 @@
 
 ## ✅ **BUILD STATUS**: ERFOLGREICH
 
+**Letzter Update:** 17. Juni 2025  
+**Migrationsstatus:** ~75% abgeschlossen  
+**Nächste Priorität:** User Profile & Settings Seiten  
+
 ---
 
 ## 🎨 **DESIGN-SYSTEM IMPLEMENTIERUNG**
@@ -22,6 +26,15 @@
   - **Design Tokens:** Farben, Spacing, Shadows, Border-Radius
 
 #### **2. Vollständig umgestellt:**
+
+**🔐 Authentication Pages** ✅
+- **Login:** `src/pages/Login/Login.jsx` - Card, Button, LoadingSpinner
+- **SignUp:** `src/pages/SignUp/SignUp.jsx` - Card, Button, LoadingSpinner
+
+**🏠 Support & Legal Pages** ✅
+- **HelpCenter:** `src/pages/Support/HelpCenter.jsx` - PageHeader, Card, Button, Badge
+- **ImportData:** `src/pages/Data/ImportData.jsx` - PageHeader, Card, Button, Badge, LoadingSpinner  
+- **LegalNotice:** `src/pages/Legal/LegalNotice.jsx` - PageHeader, Card
 
 **📝 Tasks/Aufgaben-Seite** ✅
 - **File:** `src/pages/Tasks/Tasks.jsx` (umbenannt von Notes)
