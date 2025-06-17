@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Card, Button, LoadingSpinner } from '../../components/UI/DesignSystem';
 import PasswordInput from '../../components/Input/PasswordInput';
 import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from '../../utils/helper';
@@ -92,7 +93,7 @@ const SignUp = () => {
           </div>
 
           {/* SignUp-Formular */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <Card className="p-8">
             <form onSubmit={handleSignUp} className="space-y-6">
               {/* Name-Feld */}
               <div>
@@ -180,26 +181,21 @@ const SignUp = () => {
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* SignUp-Button */}
-              <button
+              )}              {/* SignUp-Button */}
+              <Button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                variant="primary"
+                size="lg"
+                className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                  <div className="flex items-center justify-center">
+                    <LoadingSpinner size="sm" className="mr-2" />
                     Konto wird erstellt...
-                  </>
+                  </div>
                 ) : "Konto erstellen"}
-              </button>
-
-              {/* Login-Link */}
+              </Button>              {/* Login-Link */}
               <div className="text-center mt-6">
                 <p className="text-sm text-gray-600">
                   Bereits ein Konto?{" "}
@@ -209,7 +205,7 @@ const SignUp = () => {
                 </p>
               </div>
             </form>
-          </div>
+          </Card>
           
           {/* Footer */}
           <div className="text-center mt-8 text-gray-500 text-xs">
