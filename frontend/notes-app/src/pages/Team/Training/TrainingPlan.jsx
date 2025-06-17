@@ -17,7 +17,9 @@ import {
     FaFlag,
     FaTimes,
     FaImage,
-    FaUpload
+    FaUpload,
+    FaSearch,
+    FaFilter
 } from 'react-icons/fa';
 import axiosInstance from '../../../utils/axiosInstance';
 
@@ -29,7 +31,11 @@ const TrainingPlan = () => {
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentStep, setCurrentStep] = useState(1); // 1: Planung, 2: Übungen, 3: Durchführung, 4: Analyse
-    const [showCreateExercise, setShowCreateExercise] = useState(false);    const [newExercise, setNewExercise] = useState({
+    const [showCreateExercise, setShowCreateExercise] = useState(false);
+    const [exerciseSearchTerm, setExerciseSearchTerm] = useState('');
+    const [exerciseFilterCategory, setExerciseFilterCategory] = useState('');
+    const [exerciseLimit, setExerciseLimit] = useState(12); // Anfangs 12 Übungen anzeigen
+    const [showAllExercises, setShowAllExercises] = useState(false);    const [newExercise, setNewExercise] = useState({
         title: '',
         description: '',
         category: '',
@@ -307,10 +313,43 @@ const TrainingPlan = () => {
             return `http://localhost:8000/uploads/exercises/${exercise.image}`;
         }
         return null;
+    };    const exerciseHasImage = (exercise) => {
+        return exercise.imageUrl || exercise.image;
     };
 
-    const exerciseHasImage = (exercise) => {
-        return exercise.imageUrl || exercise.image;
+    // Filter- und Suchfunktionen für Übungen
+    const getFilteredExercises = () => {
+        let filtered = availableExercises.filter(ex => !selectedExercises.find(sel => sel.id === ex.id));
+
+        // Suchfilter
+        if (exerciseSearchTerm) {
+            const searchLower = exerciseSearchTerm.toLowerCase();
+            filtered = filtered.filter(exercise => 
+                exercise.title?.toLowerCase().includes(searchLower) ||
+                exercise.description?.toLowerCase().includes(searchLower) ||
+                exercise.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+            );
+        }
+
+        // Kategoriefilter
+        if (exerciseFilterCategory) {
+            filtered = filtered.filter(exercise => 
+                exercise.category?.toLowerCase() === exerciseFilterCategory.toLowerCase()
+            );
+        }
+
+        return filtered;
+    };
+
+    const getDisplayedExercises = () => {
+        const filtered = getFilteredExercises();
+        return showAllExercises ? filtered : filtered.slice(0, exerciseLimit);
+    };
+
+    const resetExerciseFilters = () => {
+        setExerciseSearchTerm('');
+        setExerciseFilterCategory('');
+        setShowAllExercises(false);
     };
 
     const getStepContent = () => {
@@ -656,41 +695,121 @@ const TrainingPlan = () => {
                                     Abbrechen
                                 </Button>
                             </div>
-                        </div>
-                    )}
+                        </div>                    )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-                        {availableExercises
-                            .filter(ex => !selectedExercises.find(sel => sel.id === ex.id))
-                            .map(exercise => (                            <div key={exercise.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                                {exerciseHasImage(exercise) && (
-                                    <img
-                                        src={getExerciseImageUrl(exercise)}
-                                        alt={exercise.title}
-                                        className="w-full h-32 object-cover rounded mb-3"
+                    {/* Such- und Filterbereich */}
+                    <div className="mb-4 space-y-3">
+                        <div className="flex flex-wrap gap-3">
+                            {/* Suchfeld */}
+                            <div className="flex-1 min-w-64">
+                                <div className="relative">
+                                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        value={exerciseSearchTerm}
+                                        onChange={(e) => setExerciseSearchTerm(e.target.value)}
+                                        placeholder="Übungen durchsuchen..."
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
-                                )}
-                                <div className="flex justify-between items-start mb-2">
-                                    <h5 className="font-medium">{exercise.title}</h5>
-                                    <Badge variant="secondary">{exercise.category}</Badge>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-3">{exercise.description}</p>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-500">
-                                        <FaClock className="inline mr-1" />
-                                        {exercise.duration || '15'} min
-                                    </span>
-                                    <Button
-                                        variant="primary"
-                                        size="sm"
-                                        icon={FaPlus}
-                                        onClick={() => addExerciseToTraining(exercise)}
-                                    >
-                                        Hinzufügen
-                                    </Button>
                                 </div>
                             </div>
-                        ))}
+                            
+                            {/* Kategoriefilter */}
+                            <div className="min-w-48">
+                                <select
+                                    value={exerciseFilterCategory}
+                                    onChange={(e) => setExerciseFilterCategory(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Alle Kategorien</option>
+                                    {exerciseCategories.map(cat => (
+                                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            
+                            {/* Filter zurücksetzen */}
+                            {(exerciseSearchTerm || exerciseFilterCategory) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    icon={FaTimes}
+                                    onClick={resetExerciseFilters}
+                                >
+                                    Filter zurücksetzen
+                                </Button>
+                            )}
+                        </div>
+                        
+                        {/* Ergebnisanzeige */}
+                        <div className="flex justify-between items-center text-sm text-gray-600">
+                            <span>
+                                {getFilteredExercises().length} Übung(en) gefunden
+                                {!showAllExercises && getFilteredExercises().length > exerciseLimit && 
+                                    ` (${exerciseLimit} angezeigt)`}
+                            </span>
+                            {getFilteredExercises().length > exerciseLimit && !showAllExercises && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowAllExercises(true)}
+                                >
+                                    Alle {getFilteredExercises().length} anzeigen
+                                </Button>
+                            )}
+                        </div>
+                    </div>                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                        {getDisplayedExercises().length > 0 ? (
+                            getDisplayedExercises().map(exercise => (
+                                <div key={exercise.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                                    {exerciseHasImage(exercise) && (
+                                        <img
+                                            src={getExerciseImageUrl(exercise)}
+                                            alt={exercise.title}
+                                            className="w-full h-32 object-cover rounded mb-3"
+                                        />
+                                    )}
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h5 className="font-medium">{exercise.title}</h5>
+                                        <Badge variant="secondary">{exercise.category}</Badge>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mb-3">{exercise.description}</p>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm text-gray-500">
+                                            <FaClock className="inline mr-1" />
+                                            {exercise.duration || '15'} min
+                                        </span>
+                                        <Button
+                                            variant="primary"
+                                            size="sm"
+                                            icon={FaPlus}
+                                            onClick={() => addExerciseToTraining(exercise)}
+                                        >
+                                            Hinzufügen
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center py-8">
+                                <FaSearch className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Übungen gefunden</h3>
+                                <p className="text-gray-500 mb-4">
+                                    {exerciseSearchTerm || exerciseFilterCategory 
+                                        ? 'Versuchen Sie andere Suchbegriffe oder Filter.'
+                                        : 'Erstellen Sie Ihre erste Übung oder laden Sie Übungen hoch.'}
+                                </p>
+                                {(exerciseSearchTerm || exerciseFilterCategory) && (
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={resetExerciseFilters}
+                                    >
+                                        Filter zurücksetzen
+                                    </Button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </Card>
