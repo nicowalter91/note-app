@@ -25,7 +25,9 @@ import {
     FaFutbol,
     FaDrawPolygon,
     FaHome,
-    FaPlane
+    FaPlane,
+    FaSnowflake,
+    FaSun
 } from 'react-icons/fa';
 import { 
     HiLightningBolt, 
@@ -237,6 +239,79 @@ const Dashboard = () => {
     // Formattiert das Datum
     const formatDate = (date) => {
         return moment(date).format('DD. MMM YYYY');
+    };
+
+    // Season phase determination
+    const getCurrentSeasonPhase = () => {
+        const month = moment().month() + 1; // moment months are 0-based
+        
+        if (month >= 1 && month <= 2) {
+            return { phase: 'Wintervorbereitung', color: 'blue', icon: FaSnowflake };
+        } else if (month >= 3 && month <= 6) {
+            return { phase: 'Rückrunde', color: 'red', icon: FaTrophy };
+        } else if (month >= 7 && month <= 8) {
+            return { phase: 'Sommervorbereitung', color: 'yellow', icon: FaSun };
+        } else if (month >= 9 && month <= 12) {
+            return { phase: 'Vorrunde', color: 'green', icon: FaTrophy };
+        }
+        return { phase: 'Vorsaison', color: 'purple', icon: FaUsers };
+    };
+
+    // Weekly context for the red thread
+    const getWeeklyContext = () => {
+        const today = moment().isoWeekday(); // 1 = Monday, 7 = Sunday
+        const weekStart = moment().startOf('isoWeek');
+        const weekEnd = moment().endOf('isoWeek');
+        
+        const weekEvents = dashboardData.events?.thisWeek || [];
+        const nextTraining = weekEvents.find(e => e.type === 'training' && moment(e.date).isAfter(moment()));
+        const nextGame = weekEvents.find(e => (e.type === 'game' || e.type === 'match') && moment(e.date).isAfter(moment()));
+        
+        let weeklyFocus = '';
+        let suggestedActions = [];
+        
+        if (today === 1) { // Monday
+            weeklyFocus = 'Wochenplanung & Analyse';
+            suggestedActions = [
+                { text: 'Letztes Spiel analysieren', action: () => navigate('/team/statistics') },
+                { text: 'Woche planen', action: () => navigate('/weekly-coach') }
+            ];
+        } else if (today === 2 || today === 3) { // Tuesday/Wednesday
+            weeklyFocus = 'Intensives Training';
+            suggestedActions = [
+                { text: 'Training vorbereiten', action: () => navigate('/team/training') },
+                { text: 'Übungen planen', action: () => navigate('/exercises') }
+            ];
+        } else if (today === 4 || today === 5) { // Thursday/Friday
+            if (nextGame) {
+                weeklyFocus = 'Spielvorbereitung';
+                suggestedActions = [
+                    { text: 'Matchday vorbereiten', action: () => navigate('/team/matchday') },
+                    { text: 'Aufstellung planen', action: () => navigate('/team/formation') }
+                ];
+            } else {
+                weeklyFocus = 'Taktisches Training';
+                suggestedActions = [
+                    { text: 'Taktik verfeinern', action: () => navigate('/team/tactics') },
+                    { text: 'Standardsituationen', action: () => navigate('/exercises?filter=standards') }
+                ];
+            }
+        } else { // Weekend
+            weeklyFocus = 'Spieltag & Regeneration';
+            suggestedActions = [
+                { text: 'Regeneration planen', action: () => navigate('/team/training') },
+                { text: 'Nächste Woche vorbereiten', action: () => navigate('/weekly-coach') }
+            ];
+        }
+        
+        return {
+            weekNumber: moment().isoWeek(),
+            weeklyFocus,
+            suggestedActions,
+            nextTraining,
+            nextGame,
+            weekRange: `${weekStart.format('DD.MM')} - ${weekEnd.format('DD.MM.YYYY')}`
+        };
     };
 
     if (loading) {
@@ -705,51 +780,161 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>            {/* Schnellzugriffe */}
+            </div>            {/* Roter Faden - Wochenorientierte Schnellzugriffe */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center">
-                        <HiLightningBolt className="text-yellow-500 text-xl mr-2" />
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Schnellzugriffe</h2>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <HiLightningBolt className="text-yellow-500 text-xl mr-2" />
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Wochenplanung</h2>
+                        </div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Roter Faden</span>
                     </div>
                 </div>
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <button 
-                        onClick={() => navigate('/players')}
-                        className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-3">
-                            <FaUserPlus className="text-blue-600 dark:text-blue-400 text-xl" />
+                <div className="p-6">
+                    {/* Hauptfeature - Wochenassistent */}
+                    <div className="mb-6">
+                        <button 
+                            onClick={() => navigate('/weekly-coach')}
+                            className="w-full flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl p-4 transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                            <div className="flex items-center">
+                                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                                    <FaTrophy className="text-xl" />
+                                </div>
+                                <div className="text-left">
+                                    <h3 className="font-semibold text-lg">Wochenassistent</h3>
+                                    <p className="text-blue-100 text-sm">Ihr persönlicher Trainerguide</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="bg-green-400 text-green-900 text-xs font-bold px-2 py-1 rounded-full mr-2">
+                                    NEU
+                                </span>
+                                <FaArrowUp className="transform rotate-45" />
+                            </div>
+                        </button>
+                    </div>
+                    
+                    {/* Schnellzugriffe Grid */}
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                        <button 
+                            onClick={() => navigate('/season')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mb-2">
+                                <FaCalendarAlt className="text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Saisonübersicht</span>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/exercises')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center mb-2">
+                                <FaDumbbell className="text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Übungen</span>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/players')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-2">
+                                <FaUsers className="text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Spieler</span>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/team/training')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mb-2">
+                                <FaRunning className="text-green-600 dark:text-green-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Training</span>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/team/matchday')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center mb-2">
+                                <FaFutbol className="text-red-600 dark:text-red-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Matchday</span>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/tasks')}
+                            className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg p-3 transition-colors border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center mb-2">
+                                <FaClipboardList className="text-yellow-600 dark:text-yellow-400" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800 dark:text-white text-center">Aufgaben</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Wochenübersicht - Roter Faden */}
+            <div className="mb-8">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-3 rounded-full">
+                                <FaCalendarWeek className="text-xl" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                                    KW {getWeeklyContext().weekNumber} - {getWeeklyContext().weeklyFocus}
+                                </h2>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    {getWeeklyContext().weekRange} • {getCurrentSeasonPhase().phase}
+                                </p>
+                            </div>
                         </div>
-                        <span className="font-medium text-gray-800 dark:text-white">Spieler hinzufügen</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate('/tasks')}
-                        className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mb-3">
-                            <FaPlus className="text-green-600 dark:text-green-400 text-xl" />
+                        <button
+                            onClick={() => navigate('/weekly-coach')}
+                            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200"
+                        >
+                            <FaArrowRight />
+                            <span>Wochenassistent</span>
+                        </button>
+                    </div>
+                    
+                    {/* Wöchentliche Empfehlungen */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {getWeeklyContext().suggestedActions.map((action, index) => (
+                            <button
+                                key={index}
+                                onClick={action.action}
+                                className="text-left p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 border border-gray-200 dark:border-gray-600"
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                        <FaPlay className="text-blue-600 dark:text-blue-400 text-sm" />
+                                    </div>
+                                    <span className="font-medium text-gray-800 dark:text-white">{action.text}</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Wochenfortschritt */}
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Diese Woche</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {moment().format('dddd')} - Tag {moment().isoWeekday()} von 7
+                            </span>
                         </div>
-                        <span className="font-medium text-gray-800 dark:text-white">Neue Aufgabe</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate('/exercises')}
-                        className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center mb-3">
-                            <FaDumbbell className="text-purple-600 dark:text-purple-400 text-xl" />
+                        <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div 
+                                className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full h-2 transition-all duration-300"
+                                style={{ width: `${(moment().isoWeekday() / 7) * 100}%` }}
+                            />
                         </div>
-                        <span className="font-medium text-gray-800 dark:text-white">Training planen</span>
-                    </button>
-                    <button 
-                        onClick={() => navigate('/contacts')}
-                        className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-xl p-4 transition-colors border border-gray-200 dark:border-gray-700"
-                    >
-                        <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center mb-3">
-                            <HiUsers className="text-orange-600 dark:text-orange-400 text-xl" />
-                        </div>
-                        <span className="font-medium text-gray-800 dark:text-white">Kontakte</span>
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>

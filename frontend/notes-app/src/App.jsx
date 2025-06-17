@@ -3,11 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Tasks from './pages/Notes/Tasks';  // Importiere die Tasks-Seite
 import Login from './pages/Login/Login';  // Importiere die Login-Seite
 import SignUp from './pages/SignUp/SignUp';  // Importiere die SignUp-Seite
-import Profil from './pages/Profil/Profil';
-import Settings from './pages/Settings/Settings';
-import Team from './pages/Team/team';
-import Tactic from './pages/Tactic/Tactic';
-import Video from './pages/Video/video';
+// Removed empty/incomplete pages: Profil, Settings, Team, Tactic, Video
 import Players from './pages/Team/Players/Players';
 import Dashboard from './pages/Dashboard/Dashboard';
 import PlayerProfile from './pages/Team/Players/Profile/PlayerProfile';
@@ -43,31 +39,30 @@ import LanguageSettings from './pages/Settings/LanguageSettings';
 import ImportData from './pages/Data/ImportData';
 import ExportData from './pages/Data/ExportData';
 
-// Import Tools pages
-import QuickActions from './pages/Tools/QuickActions';
-import ImportTemplates from './pages/Tools/ImportTemplates';
-import ExportTemplates from './pages/Tools/ExportTemplates';
-import DrawingDemo from './pages/Tools/DrawingDemo'; // Importiere die Zeichenfunktion-Demo-Seite
+// Removed redundant tools pages: QuickActions, ImportTemplates, ExportTemplates, DrawingDemo
 import DrawingToolPage from './pages/Tools/DrawingToolPage'; // Importiere die standalone Zeichenfunktion-Seite
 import FootballExerciseToolPage from './pages/Tools/FootballExerciseToolPage'; // Importiere die Fußballübungs-Seite
 import Contacts from './pages/Contacts/Contacts'; // Importiere die Kontakte-Seite
+import SeasonOverview from './pages/Season/SeasonOverview';
+import SeasonPhaseDetail from './pages/Season/PhaseDetail/SeasonPhaseDetail';
+import WeeklyCoach from './pages/Season/WeeklyCoach';
 
 // Definiere die Routen der App
 const routes = (
   <Router>  {/* Der Router verwaltet die Navigation und die URL-Verarbeitung */}
-    <Routes>  {/* Routes enthält alle Routen, die der Router verwalten soll */}      <Route path="/dashboard" exact element={<Dashboard />} />  {/* Route für die Dashboard-Seite */}
-      <Route path="/login" exact element={<Login />}/>  {/* Route für die Login-Seite */}      <Route path="/signup" exact element={<SignUp />}/>  {/* Route für die SignUp-Seite */}
-      <Route path="/tactic" exact element={<Tactic />}/>  {/* Route für Taktik-Seite */}
-      <Route path="/tasks" exact element={<Tasks />}/>  {/* Route für Aufgaben-Seite */}      <Route path="/profil" exact element={<Profil />} />
-      <Route path="/settings" exact element={<Settings />} />
+    <Routes>  {/* Routes enthält alle Routen, die der Router verwalten soll */}      {/* Core App Routes - Streamlined */}
+      <Route path="/dashboard" exact element={<Dashboard />} />
+      <Route path="/login" exact element={<Login />} />
+      <Route path="/signup" exact element={<SignUp />} />
+      <Route path="/tasks" exact element={<Tasks />} />
       <Route path="/exercises" exact element={<Exercises />} />
-      <Route path="/team" exact element={<Team />} />
-      <Route path="/video" exact element={<Video />} />      {/* Team Management Routes */}
+      <Route path="/contacts" exact element={<Contacts />} />
+      
+      {/* Team Management Routes */}
       <Route path="/players" exact element={<Players />} />
       <Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
       <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
-
       <Route path="/team/schedule" exact element={<Schedule />} />
       <Route path="/team/event/:id" exact element={<EventDetail />} />
       <Route path="/team/training/:id" exact element={<TrainingDetails />} />
@@ -80,30 +75,25 @@ const routes = (
       <Route path="/team/matchday" exact element={<MatchDay />} />
       <Route path="/team/matchday/:id" exact element={<MatchDayDetails />} />
       
-      {/* Legal Routes */}
+      {/* Season Management Routes - Core Feature */}
+      <Route path="/season" exact element={<SeasonOverview />} />
+      <Route path="/season/:phaseId" exact element={<SeasonPhaseDetail />} />
+      <Route path="/weekly-coach" exact element={<WeeklyCoach />} />
+      
+      {/* Essential Tools - Only Drawing Tools for Exercises */}
+      <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
+      <Route path="/tools/football-exercise" exact element={<FootballExerciseToolPage />} />
+      
+      {/* Settings and Data Routes - Essential Only */}
+      <Route path="/data/import" exact element={<ImportData />} />
+      <Route path="/data/export" exact element={<ExportData />} />      
+      {/* Support & Legal Routes - Moved to bottom */}
       <Route path="/legal" exact element={<LegalNotice />} />
       <Route path="/privacy" exact element={<PrivacyPolicy />} />
       <Route path="/terms" exact element={<TermsOfService />} />
-      
-      {/* Support Routes */}
       <Route path="/help" exact element={<HelpCenter />} />
       <Route path="/feedback" exact element={<Feedback />} />
       <Route path="/support" exact element={<ContactSupport />} />
-      
-      {/* Settings and Data Routes */}
-      <Route path="/settings/notifications" exact element={<NotificationSettings />} />
-      <Route path="/settings/language" exact element={<LanguageSettings />} />
-      <Route path="/data/import" exact element={<ImportData />} />
-      <Route path="/data/export" exact element={<ExportData />} />
-      
-      {/* Tools Routes */}
-      <Route path="/tools/quick-actions" exact element={<QuickActions />} />
-      <Route path="/tools/templates/import" exact element={<ImportTemplates />} />
-      <Route path="/tools/templates/export" exact element={<ExportTemplates />} />
-      <Route path="/tools/drawing-demo" exact element={<DrawingDemo />} />
-      <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
-      <Route path="/tools/football-exercise" exact element={<FootballExerciseToolPage />} />
-      <Route path="/contacts" exact element={<Contacts />} />
       
       <Route exact path="/" element={<Navigate to="/login" />}/>
     </Routes>

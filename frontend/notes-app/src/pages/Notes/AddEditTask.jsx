@@ -30,7 +30,7 @@ const AddEditTask = ({ taskData, type, getAllTasks, onClose, showToastMessage })
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await axiosInstance.get("/get-all-players");
+        const response = await axiosInstance.get("/players");
         if (response.data && response.data.players) {
           setAvailablePlayers(response.data.players);
         }

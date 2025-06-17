@@ -90,7 +90,7 @@ const MatchDayDetails = () => {
 
     const fetchPlayers = async () => {
         try {
-            const response = await axiosInstance.get('/get-all-players');
+            const response = await axiosInstance.get('/players');
             setPlayers(response.data.players || []);
         } catch (err) {
             console.error('Fehler beim Laden der Spieler:', err);

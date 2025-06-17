@@ -82,6 +82,10 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       newExpandedMenus.settings = true;
     }
     
+    if (path.includes('/season') || path.includes('/weekly-coach')) {
+      newExpandedMenus.season = true;
+    }
+    
     setExpandedMenus(newExpandedMenus);
     
     // Start animation for menu items
@@ -235,7 +239,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
         )}
       </div>
     );
-  };  // Team submenu - konsolidiert und logisch gruppiert
+  };  // Team submenu - streamlined and focused
   const teamSubmenu = [
     { 
       icon: <HiUsers />, 
@@ -251,7 +255,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     },
     { 
       icon: <HiViewBoards />, 
-      label: 'Taktik', 
+      label: 'Taktik & Formation', 
       path: '/team/tactics', 
       onClick: () => navigate('/team/tactics') 
     },
@@ -267,7 +271,32 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       path: '/team/finance', 
       onClick: () => navigate('/team/finance')
     }
-  ];    // Training submenu
+  ];
+
+  // Season Management submenu - main feature
+  const seasonSubmenu = [
+    { 
+      icon: <HiCalendar />, 
+      label: 'Saisonübersicht', 
+      path: '/season', 
+      onClick: () => navigate('/season') 
+    },
+    { 
+      icon: <HiClipboardCheck />, 
+      label: 'Wochenassistent', 
+      path: '/weekly-coach', 
+      onClick: () => navigate('/weekly-coach'),
+      isNew: true
+    },
+    { 
+      icon: <HiChartBar />, 
+      label: 'Saisonplanung (Legacy)', 
+      path: '/team/planning', 
+      onClick: () => navigate('/team/planning') 
+    }
+  ];
+
+  // Training submenu - integrated tools
   const trainingSubmenu = [
     { 
       icon: <HiOutlineClipboard />, 
@@ -282,12 +311,6 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       onClick: () => navigate('/team/training') 
     },
     { 
-      icon: <HiCalendar />, 
-      label: 'Spielplan', 
-      path: '/team/schedule', 
-      onClick: () => navigate('/team/schedule') 
-    },
-    { 
       icon: <HiClipboardCheck />, 
       label: 'Spieltagsplanung', 
       path: '/team/matchday', 
@@ -297,25 +320,13 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     { 
       icon: <HiPencilAlt />, 
       label: 'Übungen zeichnen', 
-      path: '/tools/drawing-demo', 
-      onClick: () => navigate('/tools/drawing-demo')
-    },
-    { 
-      icon: <HiVideoCamera />, 
-      label: 'Video-Analyse', 
-      path: '/video', 
-      onClick: () => navigate('/video')
+      path: '/tools/football-exercise', 
+      onClick: () => navigate('/tools/football-exercise')
     }
   ];
 
-  // Settings submenu - vereinfacht
+  // Settings submenu - essential only
   const settingsSubmenu = [
-    { 
-      icon: <HiUser />, 
-      label: 'Profil', 
-      path: '/profil', 
-      onClick: () => navigate('/profil') 
-    },
     { 
       icon: <HiDownload />, 
       label: 'Daten exportieren', 
@@ -337,10 +348,11 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     { 
       icon: <HiInformationCircle />, 
       label: 'Rechtliches', 
-      path: '/legal', 
+      path: '/legal',
       onClick: () => navigate('/legal') 
     }
   ];
+
   return (
     <div className="h-full bg-[#1e293b] text-white flex flex-col shadow-lg overflow-y-auto">
       {/* User Profile Section */}      <div className="p-4 mb-4">
@@ -353,21 +365,27 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           </div>
         </div>
       </div>      <div className="flex-grow overflow-y-auto px-3 py-2 space-y-6 custom-scrollbar">
-        {/* Hauptbereich */}
+        {/* Wochenplanung - Roter Faden */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Hauptbereich</p>
-          </div>          <nav className="space-y-1">
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Wochenplanung</p>
+          </div>
+          <nav className="space-y-1">
             <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
-            <NavItem icon={<HiClipboardCheck />} label="Aufgaben" onClick={() => navigate('/tasks')} />
-            <NavItem icon={<HiUserGroup />} label="Kontakte" onClick={() => navigate('/contacts')} />
+            <NavItem 
+              icon={<HiClipboardCheck />} 
+              label="Wochenassistent" 
+              onClick={() => navigate('/weekly-coach')}
+              isNew={true}
+            />
+            <NavItem icon={<HiCalendar />} label="Saisonübersicht" onClick={() => navigate('/season')} />
           </nav>
         </div>
 
-        {/* Team & Spieler */}
+        {/* Team & Training */}
         <div>
           <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Team & Spieler</p>
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Team & Training</p>
           </div>
           <nav className="space-y-1">
             <NavItem 
@@ -376,21 +394,23 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
               path="team" 
               submenu={teamSubmenu}
             />
-          </nav>
-        </div>
-
-        {/* Training */}
-        <div>
-          <div className="mb-2 px-3">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Training</p>
-          </div>
-          <nav className="space-y-1">
             <NavItem 
               icon={<HiAcademicCap />} 
               label="Training & Übungen" 
               path="training" 
               submenu={trainingSubmenu}
             />
+          </nav>
+        </div>
+
+        {/* Verwaltung */}
+        <div>
+          <div className="mb-2 px-3">
+            <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Verwaltung</p>
+          </div>
+          <nav className="space-y-1">
+            <NavItem icon={<HiClipboardCheck />} label="Aufgaben" onClick={() => navigate('/tasks')} />
+            <NavItem icon={<HiUserGroup />} label="Kontakte" onClick={() => navigate('/contacts')} />
           </nav>
         </div>
 
@@ -402,7 +422,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           <nav className="space-y-1">
             <NavItem 
               icon={<HiCog />} 
-              label="Einstellungen" 
+              label="Daten & Hilfe" 
               path="settings" 
               submenu={settingsSubmenu}
             />
