@@ -27,13 +27,15 @@ import {
     FaMedkit,
     FaKey,
     FaShieldAlt,
-    FaEye,    FaEyeSlash,    FaRedo,
-    FaBug,
-    FaQuestionCircle,
-    FaChartLine
+    FaEye,
+    FaEyeSlash,
+    FaRedo,
+    FaChartLine,
+    FaLink,
+    FaCopy
 } from 'react-icons/fa';
 import { getClubSettings, updateClubSettings, uploadClubLogo } from '../../utils/clubSettingsService';
-import { getTeamMembers, inviteTeamMember, removeTeamMember } from '../../utils/teamMembersService';
+import { getTeamMembers, inviteTeamMember, generateInvitationLink, removeTeamMember } from '../../utils/teamMembersService';
 import OnboardingAnalytics from '../../components/Analytics/OnboardingAnalytics';
 import axiosInstance from '../../utils/axiosInstance';
 
@@ -52,7 +54,13 @@ const Settings = () => {
         email: ''
     });const [teamMembers, setTeamMembers] = useState([]);
     const [inviteEmail, setInviteEmail] = useState('');
-    const [inviteRole, setInviteRole] = useState('assistant');    // Password Reset States
+    const [inviteName, setInviteName] = useState('');
+    const [inviteRole, setInviteRole] = useState('assistant');
+    const [inviteMethod, setInviteMethod] = useState('email'); // 'email' oder 'link'
+    const [generatedInviteLink, setGeneratedInviteLink] = useState('');
+    const [showInviteLink, setShowInviteLink] = useState(false);
+
+    // Password Reset States
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
         newPassword: '',
@@ -140,35 +148,109 @@ const Settings = () => {
     };
 
     const handleInviteMember = async () => {
-        if (!inviteEmail || !inviteRole) return;
-
+        if (inviteMethod === 'email') {
+            try {
+                setLoading(true);
+                const response = await inviteTeamMember({ 
+                    email: inviteEmail, 
+                    role: inviteRole,
+                    name: inviteEmail.split('@')[0] 
+                });
+                
+                setTeamMembers([...teamMembers, response.teamMember]);
+                setInviteEmail('');
+                setInviteRole('assistant');
+                alert('Einladungs-E-Mail erfolgreich versendet!');
+            } catch (error) {
+                console.error('Fehler beim Einladen:', error);
+                alert('Fehler beim Versenden der Einladung.');
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            // Link generieren
+            handleGenerateInviteLink();
+        }
+    };    const handleGenerateInviteLink = async () => {
         try {
             setLoading(true);
-            const response = await inviteTeamMember({ 
-                email: inviteEmail, 
+            
+            // Für Link-Generierung: Verwende Name und generiere temporäre E-Mail
+            const tempEmail = `${inviteName.toLowerCase().replace(/\s+/g, '.')}.invite@temp-${Date.now()}.local`;
+            
+            const response = await generateInvitationLink({ 
+                email: tempEmail, 
                 role: inviteRole,
-                name: inviteEmail.split('@')[0] 
+                name: inviteName
             });
             
+            setGeneratedInviteLink(response.inviteLink);
+            setShowInviteLink(true);
             setTeamMembers([...teamMembers, response.teamMember]);
-            setInviteEmail('');
+            
+            // Reset form für nächste Einladung
+            setInviteName('');
             setInviteRole('assistant');
-            // Optional: Show success message
+            
         } catch (error) {
-            console.error('Fehler beim Einladen:', error);
+            console.error('Fehler beim Erstellen des Links:', error);
+            alert('Fehler beim Erstellen des Einladungslinks.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRemoveMember = async (memberId) => {
+    const copyInviteLink = () => {
+        navigator.clipboard.writeText(generatedInviteLink);
+        alert('Einladungslink in Zwischenablage kopiert!');
+    };    const handleRemoveMember = async (memberId, memberData) => {
+        const member = teamMembers.find(m => m._id === memberId);
+        if (!member) return;
+        
+        // Prüfen ob es ein eingeladener Benutzer ist (hat userId und ist vom Typ 'invited')
+        const isInvitedUser = member.userId && member.userId.userType === 'invited';
+        
+        let confirmMessage = `Möchten Sie ${member.name} (${member.email}) aus dem Team entfernen?`;
+        let deleteUser = false;
+        
+        if (isInvitedUser) {
+            const shouldProceed = confirm(
+                `${confirmMessage}\n\n` +
+                `Dieser Benutzer wurde von Ihnen eingeladen.\n\n` +
+                `Wählen Sie OK um fortzufahren.`
+            );
+            
+            if (!shouldProceed) return; // Abgebrochen
+            
+            // Zweite Frage: Soll das Benutzerkonto komplett gelöscht werden?
+            deleteUser = confirm(
+                `⚠️ Benutzerkonto komplett löschen?\n\n` +
+                `Möchten Sie das komplette Benutzerkonto von ${member.name} löschen?\n\n` +
+                `- OK: Komplettes Konto löschen (nicht rückgängig machbar)\n` +
+                `- Abbrechen: Nur aus Team entfernen (Benutzer behält Account)`
+            );
+        } else {
+            // Normale Bestätigung für reguläre Teammitglieder oder pending invitations
+            if (!confirm(confirmMessage)) return;
+        }
+        
         try {
-            await removeTeamMember(memberId);
+            setLoading(true);
+            const response = await removeTeamMember(memberId, deleteUser);
             setTeamMembers(teamMembers.filter(m => m._id !== memberId));
+            
+            if (response.deletedUser) {
+                alert(`✅ ${member.name} wurde erfolgreich aus dem Team entfernt und das Benutzerkonto wurde gelöscht.`);
+            } else {
+                alert(`✅ ${member.name} wurde erfolgreich aus dem Team entfernt.`);
+            }
         } catch (error) {
             console.error('Fehler beim Entfernen:', error);
+            alert('❌ Fehler beim Entfernen des Teammitglieds.');
+        } finally {
+            setLoading(false);
         }
-    };    const handleLogoUpload = (event) => {
+    };const handleLogoUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -197,6 +279,29 @@ const Settings = () => {
         } catch (error) {
             console.error('Fehler beim Zurücksetzen des Onboardings:', error);
             alert('Fehler beim Zurücksetzen des Onboardings.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Test function to reset tour
+    const handleResetTour = async () => {
+        if (!confirm('Möchten Sie die Tour wirklich zurücksetzen? Das Dashboard wird nach dem Reset neu geladen.')) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axiosInstance.put('/reset-tour');
+            
+            if (response.data.success) {
+                alert('Tour-Status zurückgesetzt! Das Dashboard wird neu geladen.');
+                // Redirect to dashboard to trigger tour
+                window.location.href = '/dashboard';
+            }
+        } catch (error) {
+            console.error('Fehler beim Zurücksetzen der Tour:', error);
+            alert('Fehler beim Zurücksetzen der Tour.');
         } finally {
             setLoading(false);
         }
@@ -462,16 +567,55 @@ const Settings = () => {
                         <FaUserPlus className="mr-2 text-blue-600" />
                         Teammitglied einladen
                     </h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Input
-                            label="E-Mail-Adresse"
-                            type="email"
-                            value={inviteEmail}
-                            onChange={(e) => setInviteEmail(e.target.value)}
-                            placeholder="trainer@example.com"
-                            icon={FaEnvelope}
-                        />
+                      {/* Einladungsmethode auswählen */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Einladungsmethode
+                        </label>
+                        <div className="flex space-x-4">
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    value="email"
+                                    checked={inviteMethod === 'email'}
+                                    onChange={(e) => setInviteMethod(e.target.value)}
+                                    className="mr-2"
+                                />
+                                <FaEnvelope className="mr-1" />
+                                E-Mail versenden
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    value="link"
+                                    checked={inviteMethod === 'link'}
+                                    onChange={(e) => setInviteMethod(e.target.value)}
+                                    className="mr-2"
+                                />
+                                <FaLink className="mr-1" />
+                                Link erstellen
+                            </label>
+                        </div>
+                    </div>                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {inviteMethod === 'email' ? (
+                            <Input
+                                label="E-Mail-Adresse"
+                                type="email"
+                                value={inviteEmail}
+                                onChange={(e) => setInviteEmail(e.target.value)}
+                                placeholder="trainer@example.com"
+                                icon={FaEnvelope}
+                            />
+                        ) : (
+                            <Input
+                                label="Name der Person"
+                                type="text"
+                                value={inviteName}
+                                onChange={(e) => setInviteName(e.target.value)}
+                                placeholder="Max Mustermann"
+                                icon={FaUserPlus}
+                            />
+                        )}
                         
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -487,21 +631,76 @@ const Settings = () => {
                                         {role.label}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
+                            </select>                        </div>
                         
-                        <div className="flex items-end">
-                            <Button 
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Aktion
+                            </label>                            <Button 
                                 variant="primary"
                                 onClick={handleInviteMember}
-                                disabled={!inviteEmail || !inviteRole}
+                                disabled={
+                                    inviteMethod === 'email' 
+                                        ? (!inviteEmail || !inviteRole)
+                                        : (!inviteName || !inviteRole)
+                                }
                                 loading={loading}
-                                className="w-full"
+                                className="w-full flex items-center justify-center h-[42px]"
                             >
-                                Einladen
+                                {inviteMethod === 'email' ? (
+                                    <>
+                                        <FaEnvelope className="mr-2" />
+                                        E-Mail senden
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaLink className="mr-2" />
+                                        Link erstellen
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>
+
+                    {/* Invite Link Display */}
+                    {showInviteLink && generatedInviteLink && (
+                        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-semibold text-green-800 flex items-center">
+                                    <FaLink className="mr-2" />
+                                    Einladungslink erstellt
+                                </h4>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setShowInviteLink(false)}
+                                    className="text-green-600 border-green-300 hover:bg-green-100"
+                                >
+                                    ✕
+                                </Button>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2 mb-3">
+                                <input
+                                    type="text"
+                                    value={generatedInviteLink}
+                                    readOnly
+                                    className="flex-1 px-3 py-2 border border-green-300 rounded-md bg-white text-sm font-mono"
+                                />
+                                <Button
+                                    variant="outline"
+                                    onClick={copyInviteLink}
+                                    className="flex items-center text-green-600 border-green-300 hover:bg-green-100"
+                                >
+                                    <FaCopy className="mr-1" />
+                                    Kopieren
+                                </Button>
+                            </div>
+                            
+                            <p className="text-xs text-green-700">
+                                💡 <strong>Tipp:</strong> Der Link ist 7 Tage gültig. Teilen Sie ihn über Ihren bevorzugten Kommunikationsweg.
+                            </p>
+                        </div>                    )}
                 </div>
             </Card>
 
@@ -516,18 +715,26 @@ const Settings = () => {
                             title="Noch keine Teammitglieder"
                             description="Laden Sie Co-Trainer, Betreuer und andere Teammitglieder ein."
                         />
-                    ) : (
-                        <div className="space-y-3">
+                    ) : (                        <div className="space-y-3">
                             {teamMembers.map(member => {
                                 const roleInfo = getRoleInfo(member.role);
+                                const isInvitedUser = member.userId && member.userId.userType === 'invited';
+                                
                                 return (
-                                    <div key={member.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div key={member._id || member.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                                         <div className="flex items-center space-x-4">
                                             <div className={`w-10 h-10 rounded-full bg-${roleInfo.color}-100 flex items-center justify-center`}>
                                                 <roleInfo.icon className={`text-${roleInfo.color}-600`} />
                                             </div>
                                             <div>
-                                                <h4 className="font-medium text-gray-900">{member.name}</h4>
+                                                <div className="flex items-center space-x-2">
+                                                    <h4 className="font-medium text-gray-900">{member.name}</h4>
+                                                    {isInvitedUser && (
+                                                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                                            Eingeladen
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-sm text-gray-500">{member.email}</p>
                                             </div>
                                         </div>
@@ -549,8 +756,8 @@ const Settings = () => {
                                                     variant="ghost"
                                                     size="sm"
                                                     icon={FaTrash}
-                                                    onClick={() => handleRemoveMember(member.id)}
-                                                    title="Entfernen"
+                                                    onClick={() => handleRemoveMember(member._id || member.id, member)}
+                                                    title={isInvitedUser ? "Aus Team entfernen (mit Option Konto zu löschen)" : "Aus Team entfernen"}
                                                     className="text-red-600 hover:text-red-700"
                                                 />
                                             </div>
@@ -826,6 +1033,25 @@ const Settings = () => {
                             <p className="text-sm text-blue-700">
                                 <strong>Onboarding zurücksetzen:</strong> Startet den Einrichtungsassistenten erneut. 
                                 Nützlich zum Testen oder wenn Sie die Einführung wiederholen möchten.
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <Button 
+                                variant="warning" 
+                                onClick={handleResetTour}
+                                disabled={loading}
+                                className="flex items-center justify-center"
+                            >
+                                <FaRedo className="mr-2" />
+                                Tour zurücksetzen
+                            </Button>
+                        </div>
+                        
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                            <p className="text-sm text-orange-700">
+                                <strong>Tour zurücksetzen:</strong> Startet die App-Einführung für eingeladene Benutzer erneut. 
+                                Zeigt Overlay-Tooltips zur Navigation.
                             </p>
                         </div>
                     </div>

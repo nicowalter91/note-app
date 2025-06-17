@@ -312,4 +312,30 @@ const resetOnboarding = async (req, res) => {
   }
 };
 
-module.exports = { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding };
+// Reset tour (for testing purposes)
+const resetTour = async (req, res) => {
+  try {
+    const { user } = req.user;
+
+    // Reset user tour status
+    await User.findByIdAndUpdate(user._id, {
+      tourCompleted: false,
+      tourCompletedAt: null,
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Tour-Status zurückgesetzt"
+    });
+
+  } catch (error) {
+    console.error('Fehler beim Zurücksetzen der Tour:', error);
+    res.status(500).json({
+      success: false,
+      message: "Interner Serverfehler beim Zurücksetzen der Tour"
+    });
+  }
+};
+
+module.exports = { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding, resetTour };

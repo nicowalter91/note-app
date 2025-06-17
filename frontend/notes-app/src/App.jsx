@@ -25,6 +25,7 @@ import TrainingPlan from './pages/Team/Training/TrainingPlan';
 import MatchDay from './pages/Team/MatchDay/MatchDay';
 import MatchDayDetails from './pages/Team/MatchDay/MatchDayDetails';
 import TeamInvitation from './pages/Team/Invitation/TeamInvitation';
+import Join from './pages/Join/Join'; // Importiere die Join-Seite
 
 // Importiere Rechtsseiten
 import LegalNotice from './pages/Legal/LegalNotice';
@@ -75,9 +76,11 @@ const routes = (
       <Route path="/team/finance" exact element={<TeamFinance />} />      <Route path="/team/planning" exact element={<SeasonPlanning />} />
       <Route path="/team/matchday" exact element={<MatchDay />} />
       <Route path="/team/matchday/:id" exact element={<MatchDayDetails />} />
-      
-      {/* Team Invitation Route */}
+        {/* Team Invitation Route */}
       <Route path="/invite/:token" exact element={<TeamInvitation />} />
+      
+      {/* Join Route - Neue Route für die Join-Seite */}
+      <Route path="/join/:token" exact element={<Join />} />
       
       {/* Season Management Routes - Core Feature */}
       <Route path="/season" exact element={<SeasonOverview />} />

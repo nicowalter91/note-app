@@ -11,6 +11,10 @@ const userSchema = new Schema({
     onboardingCompleted: {type: Boolean, default: false},
     onboardingCompletedAt: {type: Date, default: null},
     userType: {type: String, enum: ['main', 'invited'], default: 'main'}, // main = Haupt-Trainer, invited = eingeladener User
+    isInvited: {type: Boolean, default: false},
+    invitedAt: {type: Date, default: null},
+    tourCompleted: {type: Boolean, default: false},
+    tourCompletedAt: {type: Date, default: null},
 });
 
 // Middleware, die vor dem Speichern ausgeführt wird

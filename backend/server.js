@@ -2,7 +2,7 @@
 require("dotenv").config();
 const config = require("./config.json");
 
-const { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding } = require("./controllers/user");
+const { getUser, loginUser, createUser, changePassword, changeEmail, completeOnboarding, completeTour, resetOnboarding, resetTour } = require("./controllers/user");
 const { addNote, editNote, getNotes, deleteNote, isPinned, searchNote } = require("./controllers/notes");
 const { addPlayer, editPlayer, getPlayers, getPlayer, deletePlayer } = require("./controllers/players");
 const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./controllers/playerProfileImage");
@@ -36,6 +36,7 @@ const Contact = require("./models/contact.model");
 const express = require("express");
 const cors = require("cors");
 const { authenticateToken } = require("./utilities");
+const optionalAuth = require("./middleware/optionalAuth");
 
 const app = express();
 
@@ -96,6 +97,11 @@ app.put("/complete-tour", authenticateToken, async (req, res) => {
 // Route zum Zurücksetzen des Onboardings (für Testing)
 app.put("/reset-onboarding", authenticateToken, async (req, res) => {
   resetOnboarding(req, res);
+});
+
+// Route zum Zurücksetzen der Tour (für Testing)
+app.put("/reset-tour", authenticateToken, async (req, res) => {
+  resetTour(req, res);
 });
 
 // *** Analytics-Routen ***
@@ -409,7 +415,7 @@ app.put("/api/formations/:formationId/usage", authenticateToken, async (req, res
 
 // *** Settings-Routen ***
 const { getClubSettings, updateClubSettings, uploadClubLogo } = require('./controllers/clubSettings');
-const { getTeamMembers, inviteTeamMember, acceptInvitation, updateTeamMember, removeTeamMember } = require('./controllers/teamMembers');
+const { getTeamMembers, inviteTeamMember, generateInvitationLink, validateInvitationToken, acceptInvitation, updateTeamMember, removeTeamMember } = require('./controllers/teamMembers');
 
 // Club Settings Routes
 app.get("/api/club-settings", authenticateToken, async (req, res) => {
@@ -433,7 +439,15 @@ app.post("/api/team-members/invite", authenticateToken, async (req, res) => {
   inviteTeamMember(req, res);
 });
 
-app.post("/api/team-members/accept/:token", authenticateToken, async (req, res) => {
+app.post("/api/team-members/generate-link", authenticateToken, async (req, res) => {
+  generateInvitationLink(req, res);
+});
+
+app.get("/api/invitation/validate/:token", async (req, res) => {
+  validateInvitationToken(req, res);
+});
+
+app.post("/api/team-members/accept/:token", optionalAuth, async (req, res) => {
   acceptInvitation(req, res);
 });
 

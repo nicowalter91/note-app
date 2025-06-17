@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Card, Button, LoadingSpinner } from '../../components/UI/DesignSystem';
 import PasswordInput from '../../components/Input/PasswordInput';
 import axiosInstance from '../../utils/axiosInstance';
@@ -19,6 +19,7 @@ const Login = () => {  const [email, setEmail] = useState(""); // Zustand für E
   const [rememberMe, setRememberMe] = useState(false); // Remember me Option
 
   const navigate = useNavigate(); // React Router Hook für Navigation
+  const location = useLocation(); // Hook für URL-Parameter
 
   // Email aus localStorage beim Start laden, falls vorhanden
   useEffect(() => {
@@ -87,7 +88,18 @@ const Login = () => {  const [email, setEmail] = useState(""); // Zustand für E
         console.log("Login successful, saving token:", response.data.accessToken);
         localStorage.setItem("token", response.data.accessToken); // Token im Local Storage speichern
         console.log("Token saved, navigating to dashboard");
-        navigate("/dashboard"); // Benutzer zum Dashboard weiterleiten
+        
+        // Prüfe ob es einen Einladungstoken gibt
+        const urlParams = new URLSearchParams(location.search);
+        const inviteToken = urlParams.get('invite');
+        
+        if (inviteToken) {
+          // Weiterleitung zur Einladungsannahme
+          navigate(`/join/${inviteToken}`);
+        } else {
+          // Normale Weiterleitung zum Dashboard
+          navigate("/dashboard");
+        }
       } else {
         console.log("Login response missing token:", response.data);
         setError("Login erfolgreich, aber kein Token erhalten.");

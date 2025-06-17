@@ -24,6 +24,28 @@ export const inviteTeamMember = async (memberData) => {
   }
 };
 
+// Generate invitation link (ohne E-Mail zu versenden)
+export const generateInvitationLink = async (memberData) => {
+  try {
+    const response = await axiosInstance.post(`${API_BASE_URL}/generate-link`, memberData);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Erstellen des Einladungslinks:', error);
+    throw error;
+  }
+};
+
+// Validate invitation token
+export const validateInvitationToken = async (token) => {
+  try {
+    const response = await axiosInstance.get(`/api/invitation/validate/${token}`);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Validieren des Einladungslinks:', error);
+    throw error;
+  }
+};
+
 // Accept team invitation
 export const acceptInvitation = async (token) => {
   try {
@@ -47,9 +69,11 @@ export const updateTeamMember = async (memberId, updateData) => {
 };
 
 // Remove team member
-export const removeTeamMember = async (memberId) => {
+export const removeTeamMember = async (memberId, deleteUser = false) => {
   try {
-    const response = await axiosInstance.delete(`${API_BASE_URL}/${memberId}`);
+    const response = await axiosInstance.delete(`${API_BASE_URL}/${memberId}`, {
+      data: { deleteUser }
+    });
     return response.data;
   } catch (error) {
     console.error('Fehler beim Entfernen des Team-Mitglieds:', error);
