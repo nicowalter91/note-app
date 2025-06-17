@@ -339,18 +339,17 @@ const Dashboard = () => {
                         {/* Nächstes Training */}
                         {dashboardData.events.nextTraining && (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
-                                <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+                                <div className="bg-gray-50 border-l-4 border-green-500 px-6 py-4">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                                <FaRunning className="text-2xl text-white" />
+                                        <div className="flex items-center">                                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                                <FaRunning className="text-2xl text-green-600" />
                                             </div>
                                             <div className="ml-3">
-                                                <h3 className="text-xl font-semibold text-white">Nächstes Training</h3>
-                                                <p className="text-green-100 text-sm">Vorbereitung ist der Schlüssel</p>
+                                                <h3 className="text-xl font-semibold text-gray-800">Nächstes Training</h3>
+                                                <p className="text-gray-600 text-sm">Vorbereitung ist der Schlüssel</p>
                                             </div>
                                         </div>
-                                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+                                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                                             Training
                                         </span>
                                     </div>
@@ -417,27 +416,25 @@ const Dashboard = () => {
                         )}                        {/* Nächstes Spiel */}
                         {dashboardData.events.nextGame && (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
-                                <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+                                <div className="bg-gray-50 border-l-4 border-blue-500 px-6 py-4">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                                <FaFutbol className="text-2xl text-white" />
+                                        <div className="flex items-center">                                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <FaFutbol className="text-2xl text-blue-600" />
                                             </div>
                                             <div className="ml-3">
-                                                <h3 className="text-xl font-semibold text-white">Nächstes Spiel</h3>
-                                                <p className="text-blue-100 text-sm">Zeit zu gewinnen</p>
+                                                <h3 className="text-xl font-semibold text-gray-800">Nächstes Spiel</h3>
+                                                <p className="text-gray-600 text-sm">Zeit zu gewinnen</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center space-x-2">
-                                            {dashboardData.events.nextGame.isHome !== undefined && (
+                                        <div className="flex items-center space-x-2">                                            {dashboardData.events.nextGame.isHome !== undefined && (
                                                 <div className="flex items-center space-x-1">
                                                     {dashboardData.events.nextGame.isHome ? 
-                                                        <FaHome className="text-white text-sm" /> : 
-                                                        <FaPlane className="text-white text-sm" />
+                                                        <FaHome className="text-blue-600 text-sm" /> : 
+                                                        <FaPlane className="text-blue-600 text-sm" />
                                                     }
                                                 </div>
                                             )}
-                                            <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+                                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                                                 {dashboardData.events.nextGame.isHome ? 'Heim' : 'Auswärts'}
                                             </span>
                                         </div>
