@@ -21,7 +21,11 @@ import {
     FaMapMarkerAlt,
     FaFire,
     FaRunning,
-    FaTrophy
+    FaTrophy,
+    FaFutbol,
+    FaDrawPolygon,
+    FaHome,
+    FaPlane
 } from 'react-icons/fa';
 import { 
     HiLightningBolt, 
@@ -126,14 +130,12 @@ const Dashboard = () => {
                 const upcomingEvents = events.filter(event => {
                     const eventDate = new Date(event.date);
                     return eventDate >= now && eventDate <= nextWeek;
-                });
-
-                // Nächstes Training und nächstes Spiel finden
+                });                // Nächstes Training und nächstes Spiel finden
                 const futureEvents = events.filter(event => new Date(event.date) >= now)
                     .sort((a, b) => new Date(a.date) - new Date(b.date));
                 
                 const nextTraining = futureEvents.find(event => event.type === 'training');
-                const nextGame = futureEvents.find(event => event.type === 'game');
+                const nextGame = futureEvents.find(event => event.type === 'match' || event.type === 'game');
 
                 // Neueste Items (letzte 5)
                 const recentTasks = tasks
@@ -343,42 +345,55 @@ const Dashboard = () => {
                                     </button>
                                 </div>
                             </div>
-                        )}
-
-                        {/* Nächstes Spiel */}
+                        )}                        {/* Nächstes Spiel */}
                         {dashboardData.events.nextGame && (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
-                                <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                                <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center">
                                             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                                <FaTrophy className="text-2xl text-white" />
+                                                <FaFutbol className="text-2xl text-white" />
                                             </div>
                                             <div className="ml-3">
                                                 <h3 className="text-xl font-semibold text-white">Nächstes Spiel</h3>
-                                                <p className="text-blue-100 text-sm">Zeit zu glänzen</p>
+                                                <p className="text-blue-100 text-sm">Zeit zu gewinnen</p>
                                             </div>
                                         </div>
-                                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
-                                            Spiel
-                                        </span>
+                                        <div className="flex items-center space-x-2">
+                                            {dashboardData.events.nextGame.isHome !== undefined && (
+                                                <div className="flex items-center space-x-1">
+                                                    {dashboardData.events.nextGame.isHome ? 
+                                                        <FaHome className="text-white text-sm" /> : 
+                                                        <FaPlane className="text-white text-sm" />
+                                                    }
+                                                </div>
+                                            )}
+                                            <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium text-white">
+                                                {dashboardData.events.nextGame.isHome ? 'Heim' : 'Auswärts'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="p-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <h4 className="text-lg font-semibold text-gray-800 dark:text-white">
-                                            {dashboardData.events.nextGame.gameData?.opponent 
-                                                ? `vs ${dashboardData.events.nextGame.gameData.opponent}`
+                                            {dashboardData.events.nextGame.opponent 
+                                                ? `vs ${dashboardData.events.nextGame.opponent}`
                                                 : dashboardData.events.nextGame.title
                                             }
                                         </h4>
-                                        {dashboardData.events.nextGame.gameData?.isHome !== undefined && (
+                                        {dashboardData.events.nextGame.matchType && (
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                dashboardData.events.nextGame.gameData.isHome 
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
-                                                    : 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
+                                                dashboardData.events.nextGame.matchType === 'league' 
+                                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                                                    : dashboardData.events.nextGame.matchType === 'cup'
+                                                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
+                                                    : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                                             }`}>
-                                                {dashboardData.events.nextGame.gameData.isHome ? 'Heimspiel' : 'Auswärts'}
+                                                {dashboardData.events.nextGame.matchType === 'league' ? 'Liga' :
+                                                 dashboardData.events.nextGame.matchType === 'cup' ? 'Pokal' :
+                                                 dashboardData.events.nextGame.matchType === 'friendly' ? 'Freundschaft' :
+                                                 'Turnier'}
                                             </span>
                                         )}
                                     </div>
@@ -419,20 +434,48 @@ const Dashboard = () => {
                                                     <p className="text-sm text-gray-500 dark:text-gray-400">Spielort</p>
                                                 </div>
                                             </div>
+                                        )}                                        {dashboardData.events.nextGame.matchData?.formation && (
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
+                                                    <FaDrawPolygon className="text-xl text-green-600 dark:text-green-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-800 dark:text-white">
+                                                        {dashboardData.events.nextGame.matchData.formation}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">Formation</p>
+                                                </div>
+                                            </div>
                                         )}
-                                    </div>                                    <button 
-                                        onClick={() => {
-                                            if (dashboardData.events.nextGame._id) {
-                                                navigate(`/team/event/${dashboardData.events.nextGame._id}`);
-                                            } else {
-                                                navigate('/team/schedule');
-                                            }
-                                        }}
-                                        className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
-                                    >
-                                        <FaTrophy className="mr-2" />
-                                        Spiel ansehen
-                                    </button>
+                                    </div>
+
+                                    <div className="flex space-x-2 mt-4">
+                                        <button 
+                                            onClick={() => {
+                                                if (dashboardData.events.nextGame._id) {
+                                                    navigate(`/team/matchday/${dashboardData.events.nextGame._id}`);
+                                                } else {
+                                                    navigate('/team/matchday');
+                                                }
+                                            }}
+                                            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                                        >
+                                            <FaFutbol className="mr-2" />
+                                            Details
+                                        </button>                                        <button 
+                                            onClick={() => {
+                                                if (dashboardData.events.nextGame._id) {
+                                                    navigate(`/team/formation?match=${dashboardData.events.nextGame._id}`);
+                                                } else {
+                                                    navigate('/team/formation');
+                                                }
+                                            }}
+                                            className="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                                        >
+                                            <FaDrawPolygon className="mr-2" />
+                                            Aufstellung
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}

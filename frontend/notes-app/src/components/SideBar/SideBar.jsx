@@ -267,8 +267,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       path: '/team/finance', 
       onClick: () => navigate('/team/finance')
     }
-  ];
-    // Training submenu
+  ];    // Training submenu
   const trainingSubmenu = [
     { 
       icon: <HiOutlineClipboard />, 
@@ -289,11 +288,17 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
       onClick: () => navigate('/team/schedule') 
     },
     { 
+      icon: <HiClipboardCheck />, 
+      label: 'Spieltagsplanung', 
+      path: '/team/matchday', 
+      onClick: () => navigate('/team/matchday'),
+      isNew: true
+    },
+    { 
       icon: <HiPencilAlt />, 
       label: 'Übungen zeichnen', 
       path: '/tools/drawing-demo', 
-      onClick: () => navigate('/tools/drawing-demo'),
-      isNew: true
+      onClick: () => navigate('/tools/drawing-demo')
     },
     { 
       icon: <HiVideoCamera />, 
