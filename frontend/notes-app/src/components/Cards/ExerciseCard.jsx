@@ -21,9 +21,24 @@ const ExerciseCard = ({
     // Zustand für das Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     // Zustand für das Image Modal (Vollbildansicht)
-    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-    // Extrahiere Exercise-Daten
-    const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, drawing, date, isPinned } = exerciseData || {};
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);    // Extrahiere Exercise-Daten
+    const { title, organisation, durchfuehrung, coaching, variante, tags, category, image, imageUrl, drawing, date, isPinned } = exerciseData || {};
+
+    // Hilfsfunktion für Bild-URL - unterstützt sowohl alte image als auch neue imageUrl Felder
+    const getImageUrl = () => {
+        if (imageUrl) {
+            // Neue imageUrl (vollständige URL von neu erstellten Übungen)
+            return imageUrl;
+        } else if (image) {
+            // Alte image (Dateiname für bestehende Übungen)
+            return `http://localhost:8000/uploads/exercises/${image}`;
+        }
+        return null;
+    };
+
+    const hasImage = () => {
+        return imageUrl || image;
+    };
 
     // Kategorie-Farben für bessere visuelle Unterscheidung
     const getCategoryColor = (category) => {
@@ -103,12 +118,11 @@ const ExerciseCard = ({
         return (
             <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden w-full">
                 <div className="cursor-pointer p-4" onClick={openModal}>
-                    <div className="flex items-center gap-3">
-                        {/* Image Thumbnail */}
+                    <div className="flex items-center gap-3">                        {/* Image Thumbnail */}
                         <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
-                            {image ? (
+                            {hasImage() ? (
                                 <img 
-                                    src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                    src={getImageUrl()} 
                                     alt={title}
                                     className="w-full h-full object-cover"
                                 />
@@ -269,13 +283,13 @@ const ExerciseCard = ({
                             {/* Left Column - Image */}
                             <div className="space-y-4 order-2 xl:order-1">
                                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
-                                    {image ? (
+                                    {hasImage() ? (
                                         <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
                                             e.stopPropagation();
                                             openImageModal(e);
                                         }}>
                                             <img 
-                                                src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                                src={getImageUrl()} 
                                                 alt={title}
                                                 className="w-full h-full object-cover"
                                             />
@@ -410,13 +424,13 @@ const ExerciseCard = ({
             <div className="cursor-pointer flex-1 flex flex-col" onClick={openModal}>
                 {/* Card Layout */}
                 <div className="flex flex-col h-full">                    {/* Image Section - Top */}                    <div className="h-40 bg-gray-100 overflow-hidden relative">
-                        {image ? (
+                        {hasImage() ? (
                             <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
                                 e.stopPropagation(); // Verhindert, dass das Haupt-Modal geöffnet wird
                                 openImageModal(e);
                             }}>
                                 <img 
-                                    src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                    src={getImageUrl()} 
                                     alt={title}
                                     className="w-full h-full object-cover"
                                 />
@@ -600,15 +614,14 @@ const ExerciseCard = ({
                 {/* Modal Content */}                <div className="p-4 sm:p-6">
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                         {/* Left Column - Image */}
-                        <div className="space-y-4 order-2 xl:order-1">
-                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
-                                {image ? (
+                        <div className="space-y-4 order-2 xl:order-1">                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-sm">
+                                {hasImage() ? (
                                     <div className="relative w-full h-full group cursor-pointer" onClick={(e) => {
                                         e.stopPropagation();
                                         openImageModal(e);
                                     }}>
                                         <img 
-                                            src={`http://localhost:8000/uploads/exercises/${image}`} 
+                                            src={getImageUrl()} 
                                             alt={title}
                                             className="w-full h-full object-cover"
                                         />
@@ -772,9 +785,9 @@ const ExerciseCard = ({
                     }
                 }}
             >                <div className="relative flex items-center justify-center w-full h-full">
-                    {image && (
+                    {hasImage() && (
                         <img 
-                            src={`http://localhost:8000/uploads/exercises/${image}`} 
+                            src={getImageUrl()} 
                             alt={title}
                             className="max-w-[90vw] max-h-[85vh] object-contain rounded shadow-lg"
                             style={{ objectFit: 'contain' }}
