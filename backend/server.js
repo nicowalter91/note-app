@@ -9,6 +9,9 @@ const { uploadProfileImage, getProfileImage, deleteProfileImage } = require("./c
 const { addExercise, editExercise, getAllExercises, deleteExercise, updateExercisePinned, searchExercises } = require("./controllers/exercises");
 const { addEvent, editEvent, getAllEvents, getEvent, deleteEvent, updatePlayerAttendance, getEventStats, addRecurringTraining } = require("./controllers/events");
 const { addContact, editContact, getAllContacts, getContact, deleteContact, updateContactPinned, updateLastContactDate } = require("./controllers/contacts");
+const { getStatistics, recalculateStatistics } = require("./controllers/statistics");
+const { addTactic, editTactic, getAllTactics, getTactic, deleteTactic, createFromTemplate: createTacticFromTemplate, updateTacticUsage } = require("./controllers/tactics");
+const { addFormation, editFormation, getAllFormations, getFormation, deleteFormation, createFromTemplate: createFormationFromTemplate, updateFormationUsage, getFormationTemplates } = require("./controllers/formations");
 const upload = require("./middleware/uploadMiddleware");
 const path = require("path");
 
@@ -262,6 +265,94 @@ app.put("/update-contact-pinned/:contactId", authenticateToken, async (req, res)
 // Route zum Aktualisieren des letzten Kontaktdatums
 app.put("/update-last-contact/:contactId", authenticateToken, async (req, res) => {
   updateLastContactDate(req, res);
+});
+
+// *** STATISTICS API ROUTES ***
+// Route zum Abrufen von Statistiken
+app.get("/api/statistics", authenticateToken, async (req, res) => {
+  getStatistics(req, res);
+});
+
+// Route zum Neuberechnen von Statistiken
+app.post("/api/statistics/recalculate", authenticateToken, async (req, res) => {
+  recalculateStatistics(req, res);
+});
+
+// *** TACTICS API ROUTES ***
+// Route zum Hinzufügen einer neuen Taktik
+app.post("/api/tactics", authenticateToken, async (req, res) => {
+  addTactic(req, res);
+});
+
+// Route zum Bearbeiten einer Taktik
+app.put("/api/tactics/:tacticId", authenticateToken, async (req, res) => {
+  editTactic(req, res);
+});
+
+// Route zum Abrufen aller Taktiken
+app.get("/api/tactics", authenticateToken, async (req, res) => {
+  getAllTactics(req, res);
+});
+
+// Route zum Abrufen einer einzelnen Taktik
+app.get("/api/tactics/:tacticId", authenticateToken, async (req, res) => {
+  getTactic(req, res);
+});
+
+// Route zum Löschen einer Taktik
+app.delete("/api/tactics/:tacticId", authenticateToken, async (req, res) => {
+  deleteTactic(req, res);
+});
+
+// Route zum Erstellen einer Taktik aus Vorlage
+app.post("/api/tactics/from-template", authenticateToken, async (req, res) => {
+  createTacticFromTemplate(req, res);
+});
+
+// Route zum Aktualisieren der Taktik-Nutzungsstatistiken
+app.put("/api/tactics/:tacticId/usage", authenticateToken, async (req, res) => {
+  updateTacticUsage(req, res);
+});
+
+// *** FORMATIONS API ROUTES ***
+// Route zum Hinzufügen einer neuen Formation
+app.post("/api/formations", authenticateToken, async (req, res) => {
+  addFormation(req, res);
+});
+
+// Route zum Bearbeiten einer Formation
+app.put("/api/formations/:formationId", authenticateToken, async (req, res) => {
+  editFormation(req, res);
+});
+
+// Route zum Abrufen aller Formationen
+app.get("/api/formations", authenticateToken, async (req, res) => {
+  getAllFormations(req, res);
+});
+
+// Route zum Abrufen einer einzelnen Formation
+app.get("/api/formations/:formationId", authenticateToken, async (req, res) => {
+  getFormation(req, res);
+});
+
+// Route zum Löschen einer Formation
+app.delete("/api/formations/:formationId", authenticateToken, async (req, res) => {
+  deleteFormation(req, res);
+});
+
+// Route zum Erstellen einer Formation aus Vorlage
+app.post("/api/formations/from-template", authenticateToken, async (req, res) => {
+  createFormationFromTemplate(req, res);
+});
+
+// Route zum Abrufen der Formation-Vorlagen
+app.get("/api/formations/templates", authenticateToken, async (req, res) => {
+  getFormationTemplates(req, res);
+});
+
+// Route zum Aktualisieren der Formation-Nutzungsstatistiken
+app.put("/api/formations/:formationId/usage", authenticateToken, async (req, res) => {
+  updateFormationUsage(req, res);
 });
 
 // *** Server starten ***

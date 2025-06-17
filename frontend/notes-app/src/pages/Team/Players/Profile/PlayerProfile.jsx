@@ -585,87 +585,10 @@ const PlayerProfile = () => {
                             </div>
                         </div>
                     </>
-                );
-
-            default:
+                );            default:
                 return null;
         }
     };
-
-    // Testdaten für einen Spieler generieren
-const generateSamplePlayer = () => {
-  if (player) {
-    const samplePlayerData = {
-      ...player,
-      name: player.name || "Max Mustermann",
-      age: player.age || 23,
-      position: player.position || "MF",
-      number: player.number || 10,
-      dob: player.dob || "1999-05-15",
-      status: player.status || "Available",
-      height: player.height || 180,
-      weight: player.weight || 75,
-      physicalAttributes: player.physicalAttributes || {
-        speed: 85,
-        strength: 72,
-        agility: 88,
-        endurance: 78,
-        fitness: 81
-      },
-      skills: player.skills || {
-        passing: 87,
-        shooting: 75,
-        tackling: 68,
-        dribbling: 82,
-        heading: 65,
-        ballControl: 84
-      },
-      stats: player.stats || {
-        games: 25,
-        minutesPlayed: 2150,
-        goals: 8,
-        assists: 12,
-        yellowCards: 3,
-        redCards: 0
-      },
-      injuries: player.injuries || [
-        {
-          type: "Muskelzerrung",
-          date: "2022-11-05",
-          duration: "2 Wochen",
-          status: "Erholt"
-        }
-      ],
-      development: player.development || {
-        goals: [
-          "Verbesserung der Schusstechnik",
-          "Steigerung der Kopfballstärke",
-          "Ausbau der Führungsqualitäten"
-        ],
-        recentProgress: [
-          { skill: "Passing", date: "2023-02-10", change: 5 },
-          { skill: "Ballkontrolle", date: "2023-02-10", change: 3 },
-          { skill: "Schusstechnik", date: "2023-01-20", change: -2 }
-        ]
-      },
-      notes: player.notes || [
-        {
-          date: "2023-01-15",
-          author: "Trainer Schmidt",
-          text: "Zeigt gute Fortschritte im Passspiel. Sollte mehr an seiner Schusstechnik arbeiten."
-        },
-        {
-          date: "2022-12-05",
-          author: "Co-Trainer Müller",
-          text: "Sehr gute Einstellung im Training. Arbeitet hart an seinen Schwächen."
-        }
-      ]
-    };
-    
-    setPlayer(samplePlayerData);
-    console.log("Testdaten generiert:", samplePlayerData);
-  }
-};
 
     return (
         <Layout>

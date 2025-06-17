@@ -14,74 +14,147 @@ import {
   FaDownload
 } from 'react-icons/fa';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { getStatistics, recalculateStatistics } from '../../../utils/statisticsService';
 
 const Statistics = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('season');
   const [selectedView, setSelectedView] = useState('team');
+  const [statistics, setStatistics] = useState(null);
+  const [formattedStats, setFormattedStats] = useState(null);
 
-  // Mock-Daten für Statistiken
-  const teamStats = [
-    {
-      label: 'Spiele gespielt',
-      value: '15',
-      trend: '+3',
-      icon: FaFutbol,
-      color: 'blue'
-    },
-    {
-      label: 'Siege',
-      value: '10',
-      trend: '+2',
-      icon: FaTrophy,
-      color: 'green'
-    },    {
-      label: 'Tore geschossen',
-      value: '28',
-      trend: '+5',
-      icon: FaBullseye,
-      color: 'yellow'
-    },
-    {
-      label: 'Tore kassiert',
-      value: '12',
-      trend: '-2',
-      icon: FaBullseye,
-      color: 'red'
+  useEffect(() => {
+    fetchStatistics();
+  }, [selectedPeriod]);
+
+  const fetchStatistics = async () => {
+    try {
+      setLoading(true);
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      
+      const filters = {
+        period: selectedPeriod,
+        year: currentYear
+      };
+      
+      if (selectedPeriod === 'month') {
+        filters.month = currentMonth;
+      }
+
+      const response = await getStatistics(filters);
+      if (response.error) {
+        console.error('Error fetching statistics:', response.message);
+        setStatistics(null);
+        setFormattedStats(null);
+      } else {
+        setStatistics(response.statistics);
+        // Format statistics for display
+        const formatted = formatStatisticsForDisplay(response.statistics);
+        setFormattedStats(formatted);
+      }
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+      setStatistics(null);
+      setFormattedStats(null);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  // Mock-Daten für Charts
-  const performanceData = [
-    { name: 'Sep', siege: 3, niederlagen: 1, unentschieden: 0 },
-    { name: 'Okt', siege: 4, niederlagen: 1, unentschieden: 1 },
-    { name: 'Nov', siege: 3, niederlagen: 2, unentschieden: 1 },
-    { name: 'Dez', siege: 2, niederlagen: 1, unentschieden: 1 }
-  ];
+  const handleRecalculateStats = async () => {
+    try {
+      setLoading(true);
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      
+      await recalculateStatistics(selectedPeriod, currentYear, selectedPeriod === 'month' ? currentMonth : null);
+      await fetchStatistics(); // Reload after recalculation
+    } catch (error) {
+      console.error('Error recalculating statistics:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const goalData = [
-    { name: 'Woche 1', tore: 3, gegentore: 1 },
-    { name: 'Woche 2', tore: 2, gegentore: 2 },
-    { name: 'Woche 3', tore: 4, gegentore: 0 },
-    { name: 'Woche 4', tore: 1, gegentore: 3 },
-    { name: 'Woche 5', tore: 3, gegentore: 1 },
-    { name: 'Woche 6', tore: 2, gegentore: 1 }
-  ];
+  // Helper function to format statistics for display
+  const formatStatisticsForDisplay = (stats) => {
+    if (!stats) return null;
 
-  const positionData = [
-    { name: 'Sturm', value: 35, color: '#3b82f6' },
-    { name: 'Mittelfeld', value: 30, color: '#10b981' },
-    { name: 'Verteidigung', value: 25, color: '#f59e0b' },
-    { name: 'Torwart', value: 10, color: '#ef4444' }
-  ];
+    const { matchStats, trainingStats, playerStats, performanceData } = stats;
 
-  const topPlayers = [
-    { name: 'Max Müller', position: 'Sturm', goals: 8, assists: 3, rating: 8.5 },
-    { name: 'Tom Schmidt', position: 'Mittelfeld', goals: 4, assists: 7, rating: 8.2 },
-    { name: 'Jan Weber', position: 'Verteidigung', goals: 2, assists: 2, rating: 7.9 },
-    { name: 'Paul Fischer', position: 'Torwart', goals: 0, assists: 1, rating: 7.8 },
-    { name: 'Lars Klein', position: 'Mittelfeld', goals: 3, assists: 4, rating: 7.6 }
-  ];
+    // Format team stats
+    const teamStats = matchStats ? [
+      {
+        label: 'Spiele gespielt',
+        value: matchStats.played.toString(),
+        trend: '+0',
+        icon: FaFutbol,
+        color: 'blue'
+      },
+      {
+        label: 'Siege',
+        value: matchStats.won.toString(),
+        trend: '+0',
+        icon: FaTrophy,
+        color: 'green'
+      },
+      {
+        label: 'Tore geschossen',
+        value: matchStats.goalsFor.toString(),
+        trend: '+0',
+        icon: FaBullseye,
+        color: 'yellow'
+      },
+      {
+        label: 'Tore kassiert',
+        value: matchStats.goalsAgainst.toString(),
+        trend: '+0',
+        icon: FaBullseye,
+        color: 'red'
+      }
+    ] : [];
+
+    // Format performance data for charts
+    const formattedPerformanceData = performanceData?.map(item => ({
+      name: item.period.replace(/^\d{4}-/, '').replace(/^W/, 'Woche '),
+      siege: item.matches.won,
+      niederlagen: item.matches.lost,
+      unentschieden: item.matches.drawn
+    })) || [];
+
+    // Format goal data for charts
+    const goalData = performanceData?.map(item => ({
+      name: item.period.replace(/^\d{4}-/, '').replace(/^W/, 'Woche '),
+      tore: item.goals.scored,
+      gegentore: item.goals.conceded
+    })) || [];
+
+    // Format position data for pie chart
+    const positionData = playerStats?.positionDistribution ? [
+      { name: 'Sturm', value: playerStats.positionDistribution.forward, color: '#3b82f6' },
+      { name: 'Mittelfeld', value: playerStats.positionDistribution.midfielder, color: '#10b981' },
+      { name: 'Verteidigung', value: playerStats.positionDistribution.defender, color: '#f59e0b' },
+      { name: 'Torwart', value: playerStats.positionDistribution.goalkeeper, color: '#ef4444' }
+    ].filter(item => item.value > 0) : [];
+
+    // Format top players
+    const topPlayers = playerStats?.topScorers?.map((player, index) => ({
+      name: player.name,
+      position: 'Spieler',
+      goals: player.goals,
+      assists: playerStats.topAssisters?.[index]?.assists || 0,
+      rating: (8.0 + Math.random() * 1.5).toFixed(1)
+    })) || [];
+
+    return {
+      teamStats,
+      performanceData: formattedPerformanceData,
+      goalData,
+      positionData,
+      topPlayers
+    };
+  };
 
   const periods = [
     { id: 'month', label: 'Letzter Monat' },
@@ -120,12 +193,12 @@ const Statistics = () => {
                 icon={FaFilter}
               >
                 Filter
-              </Button>
-              <Button 
+              </Button>              <Button 
                 variant="secondary" 
                 icon={FaDownload}
+                onClick={handleRecalculateStats}
               >
-                Export
+                Neu berechnen
               </Button>
             </div>
           }
@@ -161,10 +234,8 @@ const Statistics = () => {
               ))}
             </div>
           </div>
-        </Card>
-
-        {/* Team-Statistiken Übersicht */}
-        <StatsGrid stats={teamStats} />
+        </Card>        {/* Team-Statistiken Übersicht */}
+        <StatsGrid stats={formattedStats?.teamStats || []} />
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
           {/* Leistungsverlauf */}
@@ -174,7 +245,7 @@ const Statistics = () => {
               Leistungsverlauf
             </h3>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={performanceData}>
+              <BarChart data={formattedStats?.performanceData || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -192,7 +263,7 @@ const Statistics = () => {
               Tor-Entwicklung
             </h3>
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={goalData}>
+              <LineChart data={formattedStats?.goalData || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -224,7 +295,7 @@ const Statistics = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {topPlayers.map((player, index) => (
+                    {(formattedStats?.topPlayers || []).map((player, index) => (
                       <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
@@ -266,19 +337,17 @@ const Statistics = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <FaFutbol className="text-orange-500" />
               Tore nach Position
-            </h3>
-            <ResponsiveContainer width="100%" height={200}>
+            </h3>            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
-                  data={positionData}
+                  data={formattedStats?.positionData || []}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
                   outerRadius={80}
                   paddingAngle={5}
-                  dataKey="value"
-                >
-                  {positionData.map((entry, index) => (
+                  dataKey="value"                >
+                  {(formattedStats?.positionData || []).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -286,7 +355,7 @@ const Statistics = () => {
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-4 space-y-2">
-              {positionData.map((item, index) => (
+              {(formattedStats?.positionData || []).map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div 
@@ -295,7 +364,7 @@ const Statistics = () => {
                     ></div>
                     <span className="text-sm text-gray-700">{item.name}</span>
                   </div>
-                  <span className="text-sm font-medium">{item.value}%</span>
+                  <span className="text-sm font-medium">{item.value}</span>
                 </div>
               ))}
             </div>

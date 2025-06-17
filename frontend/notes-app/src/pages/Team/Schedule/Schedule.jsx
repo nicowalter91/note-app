@@ -15,6 +15,7 @@ import {
     FaCalendarCheck,
     FaCalendarTimes
 } from 'react-icons/fa';
+import { getAllEvents, deleteEvent, formatEventFromAPI } from '../../../utils/eventService';
 
 const Schedule = () => {
     const [events, setEvents] = useState([]);
@@ -31,94 +32,36 @@ const Schedule = () => {
             year: now.getFullYear(),
             month: now.getMonth()
         };
-    });
-
-    // Mock-Daten für Events
-    const mockEvents = [
-        {
-            id: 1,
-            title: 'vs. FC Rivalen',
-            type: 'match',
-            date: '2025-06-21',
-            time: '15:00',
-            location: 'Auswärtsspiel - Rivalenstadion',
-            status: 'scheduled',
-            description: 'Wichtiges Ligaspiel gegen den Hauptrivalen',
-            opponent: 'FC Rivalen',
-            homeAway: 'away'
-        },
-        {
-            id: 2,
-            title: 'Konditionstraining',
-            type: 'training',
-            date: '2025-06-18',
-            time: '18:00',
-            location: 'Sportplatz A',
-            status: 'scheduled',
-            description: 'Intensives Konditionstraining',
-            duration: '90 min'
-        },
-        {
-            id: 3,
-            title: 'vs. SV Heimat',
-            type: 'match',
-            date: '2025-06-28',
-            time: '14:00',
-            location: 'Heimspiel - Unser Stadion',
-            status: 'scheduled',
-            description: 'Heimspiel in der Liga',
-            opponent: 'SV Heimat',
-            homeAway: 'home'
-        },
-        {
-            id: 4,
-            title: 'Taktiktraining',
-            type: 'training',
-            date: '2025-06-19',
-            time: '19:00',
-            location: 'Halle 1',
-            status: 'scheduled',
-            description: 'Vorbereitung auf das nächste Spiel',
-            duration: '120 min'
-        },
-        {
-            id: 5,
-            title: 'Freundschaftsspiel',
-            type: 'friendly',
-            date: '2025-06-25',
-            time: '16:00',
-            location: 'Neutraler Platz',
-            status: 'scheduled',
-            description: 'Testspiel zur Vorbereitung',
-            opponent: 'TSV Test',
-            homeAway: 'neutral'
-        },
-        {
-            id: 6,
-            title: 'vs. Alte Herren',
-            type: 'match',
-            date: '2025-06-15',
-            time: '13:00',
-            location: 'Heimspiel - Unser Stadion',
-            status: 'completed',
-            description: 'Gewonnenes Spiel (3:1)',
-            opponent: 'Alte Herren',
-            homeAway: 'home',
-            result: '3:1'
-        }
-    ];    useEffect(() => {
-        // Simuliere API-Aufruf
-        console.log('Schedule useEffect triggered');
-        setLoading(true);
-        const timer = setTimeout(() => {
-            console.log('Setting events:', mockEvents);
-            setEvents(mockEvents);
-            setLoading(false);
-            console.log('Loading finished');
-        }, 500);
-        
-        return () => clearTimeout(timer);
+    });    useEffect(() => {
+        fetchEvents();
     }, []);
+
+    const fetchEvents = async () => {
+        try {
+            setLoading(true);
+            const response = await getAllEvents();
+            if (response.error) {
+                console.error('Error fetching events:', response.message);
+                setEvents([]);
+            } else {
+                // Format events from API and convert terminology
+                const formattedEvents = response.events.map(event => {
+                    const formatted = formatEventFromAPI(event);
+                    // Convert backend 'game' type to frontend 'match' type
+                    if (formatted.type === 'game') {
+                        formatted.type = 'match';
+                    }
+                    return formatted;
+                });
+                setEvents(formattedEvents);
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+            setEvents([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getEventTypeColor = (type) => {
         switch (type) {
@@ -231,14 +174,22 @@ const Schedule = () => {
         setEditingEvent(event);
         setShowAddModal(true);
         console.log('Event bearbeiten:', eventId);
-    };
-
-    const handleDeleteEvent = (eventId) => {
+    };    const handleDeleteEvent = async (eventId) => {
         if (window.confirm('Möchten Sie diesen Termin wirklich löschen?')) {
-            setEvents(prevEvents => prevEvents.filter(e => e.id !== eventId));
-            console.log('Event gelöscht:', eventId);
+            try {
+                const response = await deleteEvent(eventId);
+                if (response.error) {
+                    console.error('Error deleting event:', response.message);
+                } else {
+                    // Remove from local state
+                    setEvents(prevEvents => prevEvents.filter(e => e.id !== eventId));
+                    console.log('Event erfolgreich gelöscht:', eventId);
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+            }
         }
-    };    const handleCloseModals = () => {
+    };const handleCloseModals = () => {
         setShowAddModal(false);
         setShowFilterModal(false);
         setEditingEvent(null);

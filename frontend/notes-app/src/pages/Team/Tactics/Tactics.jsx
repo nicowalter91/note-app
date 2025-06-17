@@ -18,7 +18,7 @@ import {
     FaFilter,
     FaEye
 } from 'react-icons/fa';
-import axiosInstance from '../../../utils/axiosInstance';
+import { getAllTactics, createFromTemplate, deleteTactic, createTactic } from '../../../utils/tacticsService';
 
 const Tactics = () => {
     const [searchParams] = useSearchParams();
@@ -117,42 +117,68 @@ const Tactics = () => {
                 'Kurze Wege zum Tor'
             ]
         }
-    ];
-
-    useEffect(() => {
+    ];    useEffect(() => {
         fetchTactics();
     }, []);
 
     const fetchTactics = async () => {
         try {
             setLoading(true);
-            // Hier würde normalerweise die Taktik-API aufgerufen werden
-            // Vorerst verwenden wir Mock-Daten basierend auf den Templates
-            const mockTactics = tacticTemplates.map((template, index) => ({
-                id: index + 1,
-                ...template,
-                created: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-                matchId: Math.random() > 0.5 ? matchId : null
-            }));
-            setTactics(mockTactics);
-        } catch (err) {
-            console.error('Fehler beim Laden der Taktiken:', err);
+            const response = await getAllTactics({ includeTemplates: 'true' });
+            if (response.error) {
+                console.error('Error fetching tactics:', response.message);
+                setTactics([]);
+            } else {
+                setTactics(response.tactics || []);
+            }
+        } catch (error) {
+            console.error('Error fetching tactics:', error);
+            setTactics([]);
         } finally {
             setLoading(false);
         }
+    };    const handleCreateTactic = async (template) => {
+        try {
+            if (template.isTemplate) {
+                // Create from template
+                const response = await createFromTemplate(template.id, {
+                    name: `${template.name} - Kopie`,
+                    matchId: matchId
+                });
+                if (!response.error) {
+                    await fetchTactics(); // Refresh list
+                    console.log('Taktik aus Vorlage erstellt:', response.tactic);
+                }
+            } else {
+                // Create new custom tactic
+                const newTacticData = {
+                    ...template,
+                    matchId: matchId,
+                    name: template.name || 'Neue Taktik'
+                };
+                const response = await createTactic(newTacticData);
+                if (!response.error) {
+                    await fetchTactics(); // Refresh list
+                    console.log('Neue Taktik erstellt:', response.tactic);
+                }
+            }
+        } catch (error) {
+            console.error('Error creating tactic:', error);
+        }
     };
 
-    const handleCreateTactic = (template) => {
-        const newTactic = {
-            ...template,
-            id: Date.now(),
-            created: new Date(),
-            matchId: matchId,
-            customNotes: ''
-        };
-        setTactics(prev => [newTactic, ...prev]);
-        setSelectedTactic(newTactic);
-        setShowAddTactic(false);
+    const handleDeleteTactic = async (tacticId) => {
+        if (window.confirm('Möchten Sie diese Taktik wirklich löschen?')) {
+            try {
+                const response = await deleteTactic(tacticId);
+                if (!response.error) {
+                    await fetchTactics(); // Refresh list
+                    console.log('Taktik gelöscht:', tacticId);
+                }
+            } catch (error) {
+                console.error('Error deleting tactic:', error);
+            }
+        }
     };
 
     const getCategoryColor = (category) => {

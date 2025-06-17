@@ -17,7 +17,8 @@ import {
 } from 'react-icons/fa';
 import { HiOutlineSwitchHorizontal } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../../utils/axiosInstance';
+import { getAllFormations, createFormation, createFromTemplate, getPositionsForFormation } from '../../../utils/formationService';
+import { getAllPlayers } from '../../../utils/playerService';
 
 const Formation = () => {
     const navigate = useNavigate();
@@ -88,43 +89,41 @@ const Formation = () => {
             default:
                 return [];
         }
-    };
-
-    useEffect(() => {
+    };    useEffect(() => {
         setPositions(getPositionsForFormation(selectedFormation));
     }, [selectedFormation]);
 
     useEffect(() => {
         fetchPlayers();
+        fetchSavedFormations();
     }, []);
 
     const fetchPlayers = async () => {
         try {
             setLoading(true);
-            // Mock-Daten für die Demo
-            const dummyPlayers = [
-                { id: 1, name: 'Manuel Neuer', position: 'GK', number: 1 },
-                { id: 2, name: 'Joshua Kimmich', position: 'RB', number: 6 },
-                { id: 3, name: 'Niklas Süle', position: 'CB', number: 4 },
-                { id: 4, name: 'David Alaba', position: 'CB', number: 27 },
-                { id: 5, name: 'Alphonso Davies', position: 'LB', number: 19 },
-                { id: 6, name: 'Leon Goretzka', position: 'CM', number: 18 },
-                { id: 7, name: 'Thomas Müller', position: 'AM', number: 25 },
-                { id: 8, name: 'Serge Gnabry', position: 'RW', number: 7 },
-                { id: 9, name: 'Leroy Sané', position: 'LW', number: 10 },
-                { id: 10, name: 'Robert Lewandowski', position: 'ST', number: 9 },
-                { id: 11, name: 'Kingsley Coman', position: 'LW', number: 29 },
-                { id: 12, name: 'Marc-André ter Stegen', position: 'GK', number: 22 },
-                { id: 13, name: 'Toni Kroos', position: 'CM', number: 8 },
-                { id: 14, name: 'Kai Havertz', position: 'AM', number: 29 },
-                { id: 15, name: 'Ilkay Gündogan', position: 'CM', number: 21 }
-            ];
-            setPlayers(dummyPlayers);
+            const response = await getAllPlayers();
+            if (response.error) {
+                console.error('Error fetching players:', response.message);
+                setPlayers([]);
+            } else {
+                setPlayers(response.players || []);
+            }
         } catch (error) {
-            console.error('Fehler beim Laden der Spieler:', error);
+            console.error('Error fetching players:', error);
             setPlayers([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchSavedFormations = async () => {
+        try {
+            const response = await getAllFormations({ includeTemplates: 'true' });
+            if (!response.error) {
+                setSavedFormations(response.formations || []);
+            }
+        } catch (error) {
+            console.error('Error fetching formations:', error);
         }
     };
 
@@ -146,18 +145,31 @@ const Formation = () => {
             delete updated[positionId];
             return updated;
         });
-    };
+    };    const saveFormation = async () => {
+        try {
+            const formationData = {
+                name: formationName,
+                formation: selectedFormation,
+                description: `Formation ${selectedFormation} mit ${Object.keys(selectedPlayers).length} zugewiesenen Spielern`,
+                positions: positions.map(pos => ({
+                    ...pos,
+                    playerId: selectedPlayers[pos.id] || null,
+                    playerName: selectedPlayers[pos.id] ? 
+                        players.find(p => p._id === selectedPlayers[pos.id])?.name || '' : ''
+                })),
+                style: 'balanced'
+            };
 
-    const saveFormation = () => {
-        const formation = {
-            id: Date.now(),
-            name: formationName,
-            type: selectedFormation,
-            players: selectedPlayers,
-            created: new Date()
-        };
-        setSavedFormations(prev => [formation, ...prev]);
-        // Hier würde normalerweise eine API-Anfrage zum Speichern gemacht
+            const response = await createFormation(formationData);
+            if (!response.error) {
+                await fetchSavedFormations(); // Refresh saved formations
+                console.log('Formation gespeichert:', response.formation);
+            } else {
+                console.error('Error saving formation:', response.message);
+            }
+        } catch (error) {
+            console.error('Error saving formation:', error);
+        }
     };
 
     const getAssignedPlayers = () => {
