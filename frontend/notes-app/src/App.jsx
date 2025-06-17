@@ -11,7 +11,8 @@ import PlayerEdit from './pages/Team/Players/Profile/PlayerEdit';
 import Exercises from './pages/Exercises/Exercises';
 
 // Importiere die Team-bezogenen Seiten
-// Schedule temporarily removed
+import Team from './pages/Team/Team';
+import Schedule from './pages/Team/Schedule/Schedule';
 import Statistics from './pages/Team/Statistics/Statistics';
 import Training from './pages/Team/Training/Training';
 import Tactics from './pages/Team/Tactics/Tactics';
@@ -56,13 +57,12 @@ const routes = (
       <Route path="/signup" exact element={<SignUp />} />
       <Route path="/tasks" exact element={<Tasks />} />
       <Route path="/exercises" exact element={<Exercises />} />
-      <Route path="/contacts" exact element={<Contacts />} />
-        {/* Team Management Routes */}
-      <Route path="/players" exact element={<Players />} />
-      <Route path="/team/players" exact element={<Players />} />
+      <Route path="/contacts" exact element={<Contacts />} />        {/* Team Management Routes */}
+      <Route path="/team" exact element={<Team />} />
+      <Route path="/players" exact element={<Players />} /><Route path="/team/players" exact element={<Players />} />
       <Route path="/team/players/:id" exact element={<PlayerProfile />} />
       <Route path="/team/players/edit/:id" exact element={<PlayerEdit />} />
-      {/* <Route path="/team/schedule" exact element={<Schedule />} /> */}
+      <Route path="/team/schedule" exact element={<Schedule />} />
       <Route path="/team/event/:id" exact element={<EventDetail />} />
       <Route path="/team/training/:id" exact element={<TrainingDetails />} />
       <Route path="/team/statistics" exact element={<Statistics />} />

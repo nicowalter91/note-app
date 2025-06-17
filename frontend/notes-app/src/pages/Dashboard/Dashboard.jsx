@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
+import { PageHeader, LoadingSpinner } from '../../components/UI/DesignSystem';
 import { useNavigate } from 'react-router-dom';
 import { 
     FaChartLine, 
@@ -313,15 +314,11 @@ const Dashboard = () => {
             nextGame,
             weekRange: `${weekStart.format('DD.MM')} - ${weekEnd.format('DD.MM.YYYY')}`
         };
-    };
-
-    if (loading) {
+    };    if (loading) {
         return (
             <Layout>
-                <div className="container mx-auto px-4 py-6">
-                    <div className="flex items-center justify-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                    </div>
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                    <LoadingSpinner size="lg" />
                 </div>
             </Layout>
         );
@@ -329,16 +326,12 @@ const Dashboard = () => {
 
     return (
     <Layout>
-        <div className="container mx-auto px-4 py-6">
-            {/* Begrüßung und Header - modern styled */}
-            <div className="mb-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-md">
-                <div className="flex items-center space-x-2 mb-1">
-                    <HiHome className="text-2xl" />
-                    <h2 className="text-lg font-medium opacity-90">Dashboard</h2>
-                </div>
-                <h1 className="text-3xl font-bold mb-2">{getGreeting()}, {userInfo?.name || 'Trainer'}!</h1>
-                <p className="opacity-90">Hier ist ein Überblick über dein Team und anstehende Aufgaben.</p>
-            </div>            {/* Nächste wichtige Termine - Konsistent mit App-Design */}
+        <div className="container mx-auto px-4 py-6">            {/* Dashboard Header */}
+            <PageHeader
+                title={`${getGreeting()}, ${userInfo?.name || 'Trainer'}!`}
+                subtitle="Hier ist ein Überblick über dein Team und anstehende Aufgaben"
+                icon={HiHome}
+            />{/* Nächste wichtige Termine - Konsistent mit App-Design */}
             {(dashboardData.events.nextTraining || dashboardData.events.nextGame) && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Nächste Termine</h2>

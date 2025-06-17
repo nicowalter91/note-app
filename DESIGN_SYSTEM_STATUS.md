@@ -68,13 +68,14 @@
   - ✅ EmptyState mit Call-to-Action
   - ✅ Responsive Grid-Layout
 
-**🏠 Dashboard** ✅ 
+**🏠 Dashboard** ✅ TEILWEISE MIGRIERT
 - **File:** `src/pages/Dashboard/Dashboard.jsx`
 - **Features:**
-  - ✅ Konsistente Card-Layouts
-  - ✅ StatsGrid Integration
-  - ✅ Einheitliche Farb-Kodierung
-  - ✅ Modern Design
+  - ✅ PageHeader mit Begrüßung und Action-Buttons
+  - ✅ StatsGrid für Dashboard-Übersicht (Aufgaben, Spieler, Übungen, Termine)
+  - ✅ LoadingSpinner modernisiert
+  - 🚧 Weitere Dashboard-Bereiche noch zu migrieren
+  - ✅ Build-Test erfolgreich
 
 **⚽ WeeklyCoach** ✅
 - **File:** `src/pages/Season/WeeklyCoach.jsx`
