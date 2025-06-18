@@ -126,13 +126,16 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
     if (path && location.pathname.startsWith(`/${path.toLowerCase()}/`)) {
       return true;
     }
-    
-    // Handle special cases
+      // Handle special cases
     if (path === 'players' && location.pathname.includes('/players')) {
       return true;
     }
     
     if (path === 'trainer-mood' && location.pathname.includes('/trainer-mood')) {
+      return true;
+    }
+    
+    if (path === 'video-analysis' && location.pathname.includes('/video-analysis')) {
       return true;
     }
     
@@ -376,8 +379,7 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
           <div className="mb-2 px-3">
             <p className="text-xs uppercase tracking-wider text-gray-400 font-medium">Wochenplanung</p>
           </div>
-          <nav className="space-y-1">
-            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
+          <nav className="space-y-1">            <NavItem icon={<HiHome />} label="Dashboard" onClick={() => navigate('/dashboard')} />
             <NavItem 
               icon={<HiClipboardCheck />} 
               label="Assistent" 
@@ -390,6 +392,12 @@ const Sidebar = ({ onLogout, userInfo, isDarkMode, toggleTheme }) => {
               label="TrainerMood" 
               onClick={() => navigate('/trainer-mood')}
               dataTour="trainer-mood-menu"
+            />
+            <NavItem 
+              icon={<HiVideoCamera />} 
+              label="Videoanalyse" 
+              onClick={() => navigate('/video-analysis')}
+              dataTour="video-analysis-menu"
             />
           </nav>
         </div>

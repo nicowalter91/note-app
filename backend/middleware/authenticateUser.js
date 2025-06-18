@@ -9,12 +9,16 @@ function authenticateUser(req, res, next) {
     const token = authHeader && authHeader.split(" ")[1];
 
     // Wenn kein Token vorhanden ist, wird der Zugriff verweigert (Status 401 Unauthorized)
-    if (!token) return res.sendStatus(401);
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Benutzer nicht authentifiziert' });
+    }
 
     // Überprüft das Token mit dem SECRET-Schlüssel, der in der Umgebungsvariable gespeichert ist
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         // Wenn ein Fehler beim Verifizieren des Tokens auftritt, wird der Zugriff verweigert
-        if (err) return res.sendStatus(401);
+        if (err) {
+            return res.status(401).json({ success: false, message: 'Benutzer nicht authentifiziert' });
+        }
 
         // Wenn das Token gültig ist, wird der Benutzer (user) aus dem Token extrahiert
         // und in das req.user-Objekt eingefügt, damit die nachfolgenden Routen darauf zugreifen können

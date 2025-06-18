@@ -272,6 +272,10 @@ app.use('/team-finance', teamFinanceRoutes);
 const drawingsRoutes = require('./routes/drawings');
 app.use('/api/exercises', drawingsRoutes);
 
+// *** Video Analysis Routes ***
+const videoRoutes = require('./routes/videos');
+app.use('/api/videos', videoRoutes);
+
 // *** Event/Planning-Routen ***
 // Route zum Hinzufügen eines neuen Events
 app.post("/add-event", authenticateToken, async (req, res) => {

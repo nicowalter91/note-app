@@ -52,6 +52,7 @@ import SeasonOverview from './pages/Season/SeasonOverview';
 import SeasonPhaseDetail from './pages/Season/PhaseDetail/SeasonPhaseDetail';
 import WeeklyCoach from './pages/Season/WeeklyCoach';
 import TrainerMood from './pages/TrainerMood/TrainerMood'; // Importiere die Trainer Mood-Seite
+import VideoAnalysis from './pages/VideoAnalysis/VideoAnalysis'; // Importiere die Video Analysis-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -82,12 +83,12 @@ const routes = (
       
       {/* Join Route - Neue Route für die Join-Seite */}
       <Route path="/join/:token" exact element={<Join />} />
-      
-      {/* Season Management Routes - Core Feature */}
+        {/* Season Management Routes - Core Feature */}
       <Route path="/season" exact element={<SeasonOverview />} />
       <Route path="/season/:phaseId" exact element={<SeasonPhaseDetail />} />
       <Route path="/weekly-coach" exact element={<WeeklyCoach />} />
       <Route path="/trainer-mood" exact element={<TrainerMood />} />
+      <Route path="/video-analysis" exact element={<VideoAnalysis />} />
       
       {/* Essential Tools - Only Drawing Tools for Exercises */}
       <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />
