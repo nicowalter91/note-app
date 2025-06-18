@@ -39,6 +39,7 @@ const TrainerMood = () => {
   const [editData, setEditData] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [currentDate] = useState(new Date());
 
   const availableTags = [
     'great-day', 'tough-day', 'breakthrough', 'frustrating',
@@ -46,6 +47,16 @@ const TrainerMood = () => {
     'team-focused', 'tactical-success', 'communication-good',
     'player-issues', 'personal-growth', 'need-break'
   ];
+
+  // Format current date for display
+  const formatCurrentDate = () => {
+    return currentDate.toLocaleDateString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
 
   useEffect(() => {
     loadData();
@@ -159,8 +170,7 @@ const TrainerMood = () => {
     );
   }
 
-  return (
-    <Layout>
+  return (    <Layout>
       <PageHeader
         title="Trainer Mood Tracker"
         subtitle="Verfolge deine Stimmung und reflektiere deinen Tag"
@@ -198,6 +208,19 @@ const TrainerMood = () => {
           </div>
         }
       />
+
+      {/* Date Display */}
+      <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="flex items-center justify-center">
+          <FaCalendarDay className="text-blue-600 dark:text-blue-400 mr-3 text-xl" />
+          <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
+            {formatCurrentDate()}
+          </h2>
+        </div>
+        <p className="text-center text-blue-700 dark:text-blue-300 text-sm mt-1">
+          Dein Mood-Eintrag für heute
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Today's Mood Entry */}
@@ -426,9 +449,7 @@ const TrainerMood = () => {
             </Card>
           )}
         </div>
-      </div>
-
-      {/* Recent Entries Section */}
+      </div>      {/* Recent Entries Section */}
       {recentEntries && recentEntries.length > 0 && (
         <div className="mt-8">          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
             <FaCalendarDay className="mr-2 text-green-600" />
@@ -437,7 +458,14 @@ const TrainerMood = () => {
           
           <Card>
             <div className="space-y-4">
-              {recentEntries.slice(0, 7).map((entry, index) => {
+              {recentEntries
+                .filter(entry => {
+                  const entryDate = new Date(entry.date);
+                  const today = new Date();
+                  return entryDate.toDateString() !== today.toDateString();
+                })
+                .slice(0, 7)
+                .map((entry, index) => {
                 const entryDate = new Date(entry.date);
                 const isToday = entryDate.toDateString() === new Date().toDateString();
                 
