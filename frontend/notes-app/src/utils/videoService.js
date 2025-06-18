@@ -39,6 +39,17 @@ export const getVideo = async (videoId) => {
   }
 };
 
+// Get single video by ID
+export const getVideoById = async (videoId) => {
+  try {
+    const response = await axiosInstance.get(`${VIDEO_API_PATH}/${videoId}`);
+    return response.data.video;
+  } catch (error) {
+    console.error('Error fetching video:', error);
+    throw error.response?.data || error;
+  }
+};
+
 // Upload video
 export const uploadVideo = async (videoData, onProgress) => {
   try {

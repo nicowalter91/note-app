@@ -94,7 +94,8 @@ const getVideo = async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user.user._id;
 
-    const video = await Video.findOne({ _id: videoId, userId });
+    const video = await Video.findOne({ _id: videoId, userId })
+      .populate('annotations.playerId', 'name position jersey');
     if (!video) {
       return res.status(404).json({
         success: false,

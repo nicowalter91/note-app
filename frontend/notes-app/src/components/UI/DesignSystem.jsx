@@ -372,57 +372,171 @@ export const ErrorFallback = ({ error, resetError }) => (
 );
 
 // Einheitliche Input-Komponente
-export const Input = ({
-  label,
-  type = 'text',
-  placeholder,
-  value,
-  onChange,
-  error,
-  icon: Icon,
+export const Input = ({ 
+  label, 
+  id, 
+  error, 
+  helpText, 
+  size = 'default', // 'sm', 'default', 'lg'
+  variant = 'default', // 'default', 'error'
   className = '',
-  required = false,
-  disabled = false,
-  ...props
+  ...props 
 }) => {
-  const inputClasses = `
-    w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-    ${error ? 'border-red-500' : 'border-gray-300'}
-    ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}
-    ${Icon ? 'pl-10' : ''}
-    ${className}
-  `;
+  const baseClasses = 'block w-full rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1';
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    default: 'px-3 py-2',
+    lg: 'px-4 py-3 text-lg'
+  };
+  
+  const variantClasses = {
+    default: 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500',
+    error: 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-white focus:ring-red-500 focus:border-red-500'
+  };
+
+  const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+  const inputVariant = error ? 'error' : variant;
 
   return (
-    <div className="mb-4">
+    <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      <div className="relative">
-        {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon className="h-5 w-5 text-gray-400" />
-          </div>
-        )}
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          className={inputClasses}
-          {...props}
-        />
-      </div>
+      <input
+        id={inputId}
+        className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[inputVariant]} ${className}`}
+        {...props}
+      />
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
+      {helpText && !error && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
       )}
     </div>
   );
 };
+
+// Einheitliche Textarea-Komponente
+export const Textarea = ({ 
+  label, 
+  id, 
+  error, 
+  helpText, 
+  size = 'default',
+  variant = 'default',
+  className = '',
+  ...props 
+}) => {
+  const baseClasses = 'block w-full rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 resize-vertical';
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    default: 'px-3 py-2',
+    lg: 'px-4 py-3 text-lg'
+  };
+  
+  const variantClasses = {
+    default: 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500',
+    error: 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-white focus:ring-red-500 focus:border-red-500'
+  };
+
+  const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+  const inputVariant = error ? 'error' : variant;
+
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
+      )}
+      <textarea
+        id={inputId}
+        className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[inputVariant]} ${className}`}
+        {...props}
+      />
+      {error && (
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
+      {helpText && !error && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
+      )}
+    </div>
+  );
+};
+
+// Einheitliche Select-Komponente
+export const Select = ({ 
+  label, 
+  id, 
+  options = [], 
+  error, 
+  helpText, 
+  size = 'default',
+  variant = 'default',
+  placeholder = 'Bitte wählen...',
+  className = '',
+  ...props 
+}) => {
+  const baseClasses = 'block w-full rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white dark:bg-gray-700';
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    default: 'px-3 py-2',
+    lg: 'px-4 py-3 text-lg'
+  };
+  
+  const variantClasses = {
+    default: 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500',
+    error: 'border-red-300 dark:border-red-600 text-gray-900 dark:text-white focus:ring-red-500 focus:border-red-500'
+  };
+
+  const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+  const inputVariant = error ? 'error' : variant;
+
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
+      )}
+      <select
+        id={inputId}
+        className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[inputVariant]} ${className}`}
+        {...props}
+      >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {error && (
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
+      {helpText && !error && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
+      )}
+    </div>
+  );
+};
+
+// Form Group für bessere Organisation
+export const FormGroup = ({ children, className = '' }) => (
+  <div className={`space-y-4 ${className}`}>
+    {children}
+  </div>
+);
 
 // Mood-spezifische UI-Komponenten zum Design-System hinzufügen
 // Mood Slider Component
@@ -607,6 +721,46 @@ export const MoodChart = ({ data, height = 200 }) => {
         <span>{data[0]?.date ? new Date(data[0].date).toLocaleDateString('de-DE') : ''}</span>
         <span>{data[data.length - 1]?.date ? new Date(data[data.length - 1].date).toLocaleDateString('de-DE') : ''}</span>
       </div>
+    </div>
+  );
+};
+
+// Einheitliche Modal-Komponente
+export const Modal = ({ 
+  isOpen, 
+  onClose, 
+  title, 
+  children, 
+  size = 'default', // 'sm', 'default', 'lg', 'xl'
+  className = '' 
+}) => {
+  const sizeClasses = {
+    sm: 'max-w-sm',
+    default: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-2xl'
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <Card className={`w-full ${sizeClasses[size]} mx-4 ${className}`}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h3>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onClose}
+            className="p-2"
+          >
+            ✕
+          </Button>
+        </div>
+        {children}
+      </Card>
     </div>
   );
 };

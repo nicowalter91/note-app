@@ -60,11 +60,15 @@ const videoSchema = new mongoose.Schema({
     description: {
       type: String,
       default: ""
-    },
-    category: {
+    },    category: {
       type: String,
       enum: ['general', 'tactics', 'technique', 'mistake', 'highlight'],
       default: 'general'
+    },
+    playerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Player',
+      default: null
     },
     createdAt: {
       type: Date,

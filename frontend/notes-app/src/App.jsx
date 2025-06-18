@@ -53,6 +53,7 @@ import SeasonPhaseDetail from './pages/Season/PhaseDetail/SeasonPhaseDetail';
 import WeeklyCoach from './pages/Season/WeeklyCoach';
 import TrainerMood from './pages/TrainerMood/TrainerMood'; // Importiere die Trainer Mood-Seite
 import VideoAnalysis from './pages/VideoAnalysis/VideoAnalysis'; // Importiere die Video Analysis-Seite
+import VideoDetail from './pages/VideoAnalysis/VideoDetail'; // Importiere die Video Detail-Seite
 
 // Definiere die Routen der App
 const routes = (
@@ -89,6 +90,7 @@ const routes = (
       <Route path="/weekly-coach" exact element={<WeeklyCoach />} />
       <Route path="/trainer-mood" exact element={<TrainerMood />} />
       <Route path="/video-analysis" exact element={<VideoAnalysis />} />
+      <Route path="/video-analysis/:videoId" exact element={<VideoDetail />} />
       
       {/* Essential Tools - Only Drawing Tools for Exercises */}
       <Route path="/tools/drawing-tool" exact element={<DrawingToolPage />} />

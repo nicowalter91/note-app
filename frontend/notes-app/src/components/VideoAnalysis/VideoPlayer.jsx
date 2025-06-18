@@ -1,4 +1,14 @@
 import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { getAllPlayers } from '../../utils/playerService';
+import { 
+  Card,
+  Button,
+  Input,
+  Textarea,
+  Select,
+  FormGroup,
+  Modal
+} from '../UI/DesignSystem';
 import { 
   FaPlay, 
   FaPause, 
@@ -22,6 +32,7 @@ const VideoPlayer = forwardRef(({ video, annotations = [], onAddAnnotation, clas
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showAnnotationForm, setShowAnnotationForm] = useState(false);
+  const [players, setPlayers] = useState([]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -37,7 +48,23 @@ const VideoPlayer = forwardRef(({ video, annotations = [], onAddAnnotation, clas
       video.removeEventListener('timeupdate', updateTime);
       video.removeEventListener('loadedmetadata', updateDuration);
     };
-  }, []);  const togglePlay = () => {
+  }, []);
+
+  useEffect(() => {
+    const loadPlayers = async () => {
+      try {
+        const playersData = await getAllPlayers();
+        setPlayers(playersData || []);
+      } catch (error) {
+        console.error('Error loading players:', error);
+        setPlayers([]);
+      }
+    };
+
+    loadPlayers();
+  }, []);
+
+  const togglePlay = () => {
     const video = videoRef.current;
     
     if (isPlaying) {
@@ -254,87 +281,78 @@ const VideoPlayer = forwardRef(({ video, annotations = [], onAddAnnotation, clas
             </div>
           </div>
         </div>
-      </div>
+      </div>      {/* Annotation Form Modal */}
+      <Modal
+        isOpen={showAnnotationForm}
+        onClose={() => setShowAnnotationForm(false)}
+        title={`Annotation hinzufügen (${formatTime(currentTime)})`}
+        size="default"
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          handleAnnotationSubmit({
+            title: formData.get('title'),
+            description: formData.get('description'),
+            category: formData.get('category'),
+            playerId: formData.get('playerId') || null
+          });
+        }}>
+          <FormGroup>
+            <Input
+              name="title"
+              label="Titel"
+              required
+              placeholder="z.B. Gute Kombination"
+            />
 
-      {/* Annotation Form Modal */}
-      {showAnnotationForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 max-w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Annotation hinzufügen ({formatTime(currentTime)})
-            </h3>
-            
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              handleAnnotationSubmit({
-                title: formData.get('title'),
-                description: formData.get('description'),
-                category: formData.get('category')
-              });
-            }}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Titel
-                  </label>
-                  <input
-                    name="title"
-                    type="text"
-                    required
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="z.B. Gute Kombination"
-                  />
-                </div>
+            <Select
+              name="category"
+              label="Kategorie"
+              options={[
+                { value: 'general', label: 'Allgemein' },
+                { value: 'tactics', label: 'Taktik' },
+                { value: 'technique', label: 'Technik' },
+                { value: 'mistake', label: 'Fehler' },
+                { value: 'highlight', label: 'Highlight' }
+              ]}
+            />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Kategorie
-                  </label>
-                  <select
-                    name="category"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="general">Allgemein</option>
-                    <option value="tactics">Taktik</option>
-                    <option value="technique">Technik</option>
-                    <option value="mistake">Fehler</option>
-                    <option value="highlight">Highlight</option>
-                  </select>
-                </div>
+            <Select
+              name="playerId"
+              label="Spieler (optional)"
+              placeholder="Kein Spieler ausgewählt"
+              options={players.map(player => ({
+                value: player._id,
+                label: `${player.jersey ? `#${player.jersey} ` : ''}${player.name}${player.position ? ` (${player.position})` : ''}`
+              }))}
+            />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Beschreibung
-                  </label>
-                  <textarea
-                    name="description"
-                    rows={3}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="Detaillierte Beschreibung der Szene..."
-                  />
-                </div>
-              </div>
+            <Textarea
+              name="description"
+              label="Beschreibung"
+              rows={3}
+              placeholder="Detaillierte Beschreibung der Szene..."
+            />
+          </FormGroup>
 
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowAnnotationForm(false)}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                >
-                  Abbrechen
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Hinzufügen
-                </button>
-              </div>
-            </form>
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setShowAnnotationForm(false)}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+            >
+              Hinzufügen
+            </Button>
           </div>
-        </div>
-      )}    </div>
+        </form>
+      </Modal></div>
   );
 });
 
